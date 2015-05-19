@@ -1,0 +1,14 @@
+digraph workflow {
+
+	node [shape=box]
+
+	pr [label="Problem"]
+	re [label="Representation"]
+	so [label="Solver"]
+	mo [label="Solution"]
+
+	pr -> re -> so -> mo
+
+	rankdir="LR"
+	ranksep = 1
+}

@@ -1,0 +1,30 @@
+digraph covers {
+
+	node [shape="box"]
+
+	ty [label="Typing Information"]
+	pd [label="Predicate Definitions"]
+	bg [label="User background knowledge"]
+	sb [label="Generated background knowledge"]
+	cl [label="Clause"]
+	ex [label="Example"]
+	vo [label="Vocabulary"]
+	lt [label="Logical Theory"]
+	st [label="Structure"]
+
+	ty -> vo
+	pd -> vo
+	pd -> bg[style=invisible, arrowhead=none]
+
+	bg -> lt
+	sb -> lt
+	cl -> lt
+	cl -> ex[style=invisible, arrowhead=none]
+
+	ex -> st
+
+	rankdir="LR"
+	ranksep = 1
+	{rank=same ty pd bg sb cl ex}
+	{rank=same vo lt st}
+}

@@ -1,0 +1,111 @@
+\documentclass[master=cws,masteroption=ai,english,fleqn]{kulemt}
+\setup{title={Learning Constraints and Optimization Criteria},
+  author={Samuel Kolb},
+  promotor={Prof.\,dr.\ Luc De Raedt},
+  assessor={},
+  assistant={Dr. ir.\ Anton Dries}}
+
+% The following \setup may be removed entirely if no filing card is wanted
+\setup{filingcard, translatedtitle={Nederlandse titel}, udc=, shortabstract={}}
+% Uncomment the next line for generating the cover page
+%\setup{coverpageonly}
+% Uncomment the next \setup to generate only the first pages (e.g., if you
+% are a Word user.
+%\setup{frontpagesonly}
+
+% Choose the main text font (e.g., Latin Modern)
+\setup{font=lm}
+
+% If you want to include other LaTeX packages, do it here. 
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{etoolbox}
+
+\graphicspath{{Graphics/}, {Graphics/Graphs/}}
+
+\newcommand{\sym}[1]{\ensuremath{\mathcal{#1}}}
+\newcommand{\obj}[1]{\ensuremath{#1}}
+
+\newtheorem{definition}{Definition}[chapter]
+\AfterEndEnvironment{definition}{\noindent\ignorespaces}
+
+\theoremstyle{definition}
+\newtheorem{ex}{Example}[chapter]
+\AfterEndEnvironment{ex}{\noindent\ignorespaces}
+
+\newcommand{\svm}{SVM$^{rank}$}
+\newcommand{\cen}[1]{
+	\begin{center}
+		#1
+	\end{center}
+}
+
+% Finally the hyperref package is used for pdf files.
+% This can be commented out for printed versions.
+\usepackage[pdfusetitle,colorlinks,plainpages=false]{hyperref}
+
+%\includeonly{chap-n}
+\begin{document}
+
+\begin{preface}
+  
+\end{preface}
+
+\tableofcontents*
+
+\begin{abstract}
+My abstract
+\end{abstract}
+
+\begin{abstract*}
+Mijn abstract
+\end{abstract*}
+
+% A list of figures and tables is optional
+%\listoffigures
+%\listoftables
+% If you only have a few figures and tables you can use the following instead
+\listoffiguresandtables
+
+% Now comes the main text
+\mainmatter
+
+\include{Chap-Introduction}
+
+\include{Chap-Background}
+
+\include{Chap-RelatedLiterature}
+
+\include{Chap-ConstraintLearning}
+
+\include{Chap-Methods}
+
+\include{Chap-Evaluation}
+
+\include{Chap-Conclusion}
+
+\include{Planning}
+
+
+% If you have appendices:
+%\appendixpage*          % if wanted
+%\appendix
+%\include{app-A}
+% ... and so on until
+%\include{app-n}
+
+\backmatter
+% The bibliography comes after the appendices.
+% You can replace the standard "abbrv" bibliography style by another one.
+\bibliographystyle{apalike}
+\bibliography{Bibliography}
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

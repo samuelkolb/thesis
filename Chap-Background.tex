@@ -1,0 +1,71 @@
+%!TEX root=Thesis.tex
+\chapter{Concepts}
+\label{cha:bg}
+
+In this chapter the most important concepts and terms are explained. It is assumed that the reader is familiar with the basics of logic and constraint programming.
+
+\section{Clausal logic}
+In this thesis constraints are represented as logical clauses. A logical clause consists of a head and a body. In the clause\cen{$H_1, ..., H_n \leftarrow B_1, ..., B_m$,} the atoms $H_1, ..., H_n$ form the head of the clause and $B_1, ..., B_m$ the body. 
+
+Atoms represent facts, that is they are either true or false. Trivially, the logical constants $true$ and $false$ are atoms. Furthermore, an atom can be formed using a predicate symbol and a set of terms, e.g. $friends(Jack, x)$. The predicate symbol is the name of the predicate. Predicates denote relations between terms, which either exist or not. Terms are expressions representing logical objects, either constants (such as $Jack$) or variables (such as $x$). The arity of a predicate is the number of terms it is applied to, e.g. the arity of the previous $friends$ predicate is $2$.
+
+Clauses are in fact a special form of logical implications in which all variables are implicitly universally quantified. The clause mentioned above represents the implication: \cen{$B_1 \land ... \land B_m \Rightarrow H_1 \lor ... \lor H_n$.} Therefore, a clause can also be written as a disjunction of literals: \cen{$\lnot B_1 \lor ... \lor \lnot B_m \lor H_1 \lor ... \lor H_n$.} A literal consists of either an atom or a negation of an atom. Since a clause is a disjunction of literals, adding an atom to the head or the body, will make always make the clause more general. Moreover, a clause can be written as a set: \cen{$\{\lnot B_1, ..., \lnot B_m, H_1, ..., H_n\}$.}
+
+[!! thoery => CNF] Several concepts concerning clauses will be important in the context of this thesis:
+\begin{definition}
+A clause is functor-free iff all the terms occurring in it are variables.
+\end{definition}
+Functor-free clauses do not contain constants and are independent of any . Such clauses are generic clauses, in the sense that they are not associated with a specific domain.
+\begin{ex}
+\label{ex:functor_free}
+Consider two domains $\sym{D}_1 = \{MyCat, MyDog\}$ and $\sym{D}_2 = \{John, Suzy\}$ and two clauses \cen{$c_1 = friends(y, x) \leftarrow friends(x, y)$\\
+$c_2 = friends(MyDog, x) \leftarrow friends(MyCat, x)$.}
+Clause~$c_1$ expresses that friendship is symmetric. It is a functor-free clause and thus independent of the domain. Clause~$c_2$ expresses that all friends of $MyCat$ are also friends of $MyDog$. It is not functor-free and can only be used in the context of $\sym{D}_1$. 
+\end{ex}
+
+\begin{definition}
+A clause is range-restricted iff there is no variable in the head of the clause which does not also appear in the body of the clause.
+\end{definition}
+
+\begin{ex}
+Clause~$c_1$ from example~\ref{ex:functor_free} is range-restricted, because the variables occuring in the head ($x$ and~$y$) also occur in the body. On the other hand, the clause \cen{$friends(x, x) \leftarrow true$} is not range-restricted, since the variable~$x$ only occurs in the head.
+\end{ex}
+
+\begin{definition}
+A clause is connected iff for any two non-empty subsets of terms that occur in the clause, there must be at least one variable which occurs in both subsets.
+\end{definition}
+
+\begin{ex}
+Consider the clauses \cen{$c_1 = \{friends(x, y), friends(y, z)\}$\\$c_2 = \{friends(x, y), friends(a, b)\}$.} In clause~$c_1$ the two terms in the body of the clause are linked by variable $y$. Therefore, clause~$c_1$ is connected. The two terms occuring in the body of $c_2$, however, do not share a common variable and thus $c_2$ is not connected.
+\end{ex}
+
+[!! Explain interpretation?]
+
+\section{Refinement Operator}
+A refinement operator is a function $\rho : \sym{L} \mapsto 2^\sym{L}$ that maps an element (clause) in \sym{L} to a set of (child) elements that are also members of \sym{L}. It is used to traverse the search space $2^\sym{L}$. In the context of this thesis, the search space consists of clauses and \sym{L} is the set of atoms that can occur in the clauses. Refinement operators can either specialize or generalize a clause. In the algorithms explored in this research, however, the refinement operator will be used solely for generalization. Therefore, the refinement operator will be assumed to be a generalization operator from now on.
+
+It will be useful to consider the recursive application of a refinement operator $\rho$. Recursively applying $\rho$ means applying $\rho$ to a clause $c$, then to every element in $\rho(c)$ and so on.
+\begin{definition}
+Given a language \sym{L} and a refinement operator $\rho: \sym{L} \mapsto 2^\sym{L}$, then $\rho^* : \sym{L} \mapsto 2^\sym{L}$ is a function that maps a clause to the total set of clauses that can be obtained by recursively applying $\rho$.
+\end{definition}
+There are three important properties that a refinement operator can have:
+\begin{definition}
+A refinement operator $\rho$ is ideal iff every clause in $\rho(c)$ is only minimally more general then $c$.
+\end{definition}
+Ideality is important in order to fully enumerate a search space. If $\rho$ is ideal then for any pair of clauses $c_s, c_g$ such that $c_g \in \rho(c_s)$, there cannot be a clause $c$ which is more general than $c_s$ and more specific than $c_g$.
+\begin{definition}
+A refinement operator $\rho$ is complete w.r.t. to a language \sym{L} iff $\sym{L} = \rho^*(\square)$, where $\square$ is the empty clause.
+\end{definition}
+When considering the recursive application of a refinement operator $\rho$, an element $c_n$ is reachable from $c_1$ iff $c_n \in \rho^*(c_1)$. In that case there is at least one path $(c_1, c_2, ..., c_n)$, where $\forall i > 1: c_i \in \rho(c_{i-1})$. This allows us to define the optimality property:
+\begin{definition}
+A refinement operator $\rho$ is optimal iff for every element $c_i \in \rho^*(c)$ there is exactly one path from $c$ to $c_i$.
+\end{definition}
+Optimal refinement operators are desirable because they can be used to search a language space \sym{L} without visiting any element more than once.
+
+\subsection{Object Identity}
+The main task of a refinement operator is to calculate the (minimal) generalizations of a clause. Object Identity (OI) is a strategy that is used in order to facilitate this task. Contrary to intuition, in logic two variables $x$ and~$y$ occurring in a clause might denote the same object. Under the OI assumption, however, different variables must denote different objects. This restricts the search space and simplifies the refinement operator. It, however, also limits expressiveness. In practice clauses are expanded with pairwise inequalities between variables. E.g. clause~$c_1$ from example~\ref{ex:functor_free} would be expanded to \cen{$friends(y, x) \leftarrow friends(x, y) \land x \neq y$.}
+
+\section{Bias}
+Using a refinement operator, a learning system can traverse the search space of candidate hypothesis. A bias influences the results of the search space, by constraining the search space. Without bias, many search spaces become too large to reasonably explore. Using clauses to represent constraints is a form of bias, since not all constraints can be expressed using clauses. Several biases have been explored so far. One can restrict the search space to clauses that are range-restricted and\,/\,or connected. Object Identity also forms an important bias on the format of clauses. These all form so called \textit{language} biases. Another form of bias is a \textit{preference} bias. For example, an algorithm can prefer a set of smaller (more specific) clauses over a set of larger (more general) clauses.
+
+Some biases are internal to the learning algorithm. It is, however, also possible to let a user determine a bias. A user can for example limit the maximal number of terms in a clause or provide typing information. Both examples constrain the search space. Such an explicit bias, which can be specified by the user, is called a \textit{declarative} bias.

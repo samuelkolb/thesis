@@ -1,0 +1,40 @@
+%!TEX root=Thesis.tex
+\chapter{Introduction}
+\label{cha:intro}
+
+\begin{figure}
+
+	\caption{From problem to solution}
+	\centering
+		\includegraphics[width=0.9\textwidth]{ProblemToSolution.pdf}
+	\label{fig:problem_to_solution}
+
+\end{figure}
+
+People use computers to solve complex problems, which are hard to solve by hand. Traditionally, this is done by writing programs or algorithms, which are essentially step-by-step instructions that tell the computer how to solve a particular problem. This approach is usually called imperative programming. Alternatively, declarative programming suggests to specify a high level language in which problem can be formulated without specifying how to solve it. Generic programs, called solvers, are used to find solutions to problems formulated in this language. Ideally, a user now just has to focus on formulating his problem. Figure~\ref{fig:problem_to_solution} shows the typical steps to obtain a solution for a problem.
+
+A popular movement within declarative programming is constraint programming. The idea behind constraint programming is that users specify constraints that act upon a set of variables, each of which has a specified domain. It is the task of the constraint solver to assign values from these domains to the different variables such that all the constraints hold. The solver has a lot of freedom in choosing a search strategy and ideally the user does not need to be familiar with the underlying algorithms.
+
+\paragraph{Problem}
+Aside from successful applications in research, constraint programming has gained adoption outside of academia and is being used in industrial applications \cite{Simonis:IndustrialApplicationsCP}. Most research, however, is focused on obtaining a solution, giving a representation of the problem. In practice it can however be challenging for non-experts to formulate the constraints to describe their problems. The high learning curve limits the amount of people that can use constraint solvers.
+
+By automating the step of modeling a problem, this thesis attempts to, amongst others, make constraint solving more accessible. In this approach a computer system is used to automatically find constraints using examples of what the user considers valid solutions. The resulting constraints can then be used by an existing constraint solver. [Insert Example !] Constraints can not only be used to describe valid solutions. So called soft constraints express (usually desirable) properties that a solution may or may not fulfill. Solutions that obey desirable soft constraints are considered better than solutions who do not. By assigning weights to soft constraints, an optimal solution can be identified.
+
+The system outlined in this thesis attempts to learn from examples and extract knowledge. It can be used directly by a user trying to model a problem or as part of another program. The system attempts to help users bridge the gap between an unknown problem and obtaining a formal representation. Therefore, it also focuses on being easy to use and make realistic assumptions about what information a user can provide. 
+
+\paragraph{Relevance}
+The wide adoption of constraint programming demonstrates its potential to solve complicated problems. It is often used in scheduling and planning applications. However, constraint programming can be used to solve a variety of programming problems \cite{Dymchenki:GoogleCodeJamEclipse}. Improving constraint solvers is an active research domain, which shows there is an interest in using constraint solvers for problem solving.
+
+As stated above there is a substantial effort required to be able to use constraint solvers. This usability problem has already been examined in \cite{Wallace:PrinciplesCP}. The difficulty that many people experience when modeling problems using constraints has already led to several approaches to automate this process. [!! Interest in optimization]
+
+\paragraph{State of the art}
+Model seeker \cite{Beldiceanu:ModelSeeker} is a system that uses a specialized approach to learn constraints. Other systems like Conacq [Ref Conacq !] and \cite{Lallouet:LearningCP} use algorithms that are based on established machine learning strategies. These systems are examined in chapter \ref{cha:rellit}.
+
+\paragraph{Novelty}
+In this thesis, the approach of using established ILP techniques to learn constraints is examined. Research by \cite{Lallouet:LearningCP} and [Ref Quote Andrea ?] has shown that there is potential for exploiting the parallels between ILP and learning constraints. Some of the characteristics of learning constraints are challenging, especially the small set of examples one can typically expect from a user. Therefore, this thesis specifically examines the use of clausal discovery for constraint learning.
+
+Clausal discovery is an ILP algorithm that is adept at identifying structure in small sets of examples. In this thesis the algorithm, which was originally implemented in a system called Claudien, will be revisited. There are some key differences compared to Claudien. The new implementation tries to use information that is easy for a user to provide. Furthermore, some of the key functions in the algorithm are implemented to make use of a generic logical system (ASP solver) instead of Prolog query evaluation. This also enables the use of rich background knowledge, which is passed to the solver. Hereby, this clause learning system can benefit from advances in the field of logical solvers.
+
+So far, there seems to be no other research that has attempted to use this algorithm for constraint learning. [!! Revisit]
+
+Weighted constraints can induce an order over solutions. Given a set of examples, the clause learning system can find soft constraints. The system implemented in this thesis can automatically assign weights to these soft constraints, such that the induced order maximally agrees with user-provided rankings over the given examples. Automatically learning optimization criteria has been done before for propositional formulas [!! Ref Andrea]. In this thesis, this approach is extended to first order logic clauses. Furthermore, instead of using absolute scores over examples, the user preferences are expressed in relative rankings over examples. To our knowledge, these two features have not yet been implemented before.

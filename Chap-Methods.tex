@@ -15,8 +15,8 @@
 
 Figure~\ref{fig:high_level_structure} provides an overview of the approach implemented in this thesis.
 One feature of the system is clause learning, the ability to automatically learn clauses from examples.
-At the core of the clause learning process is a new version of the clausal discovery system is.
-The main differences to Claudien [!! Ref] are a different bias and a different refinement operator.
+At the core of the clause learning process is a new version of the clausal discovery system.
+The main differences to clausal discovery engine Claudien (see chapter~\ref{cha:rellit}) are a different bias and a different refinement operator.
 Furthermore, the clausal discovery program interacts with a generic logical system to calculate coverage and entailment.
 The second feature is clausal optimization.
 Hereby user-provided rankings and the \svm{} [!! Ref] program are used to produce weighted soft constraints.
@@ -25,25 +25,51 @@ These are clauses that have a weight assigned to them, expressing how desirable 
 Clausal discovery and the clause learning / clausal optimization workflows are implemented in Java.
 Interaction with the user, the logical system as well as the \svm{} software is achieved through files and standard input / output.
 
+Through this chapter the map coloring problem will be used as an example for clause learning applications.
+In this problem there is a set of countries and every country is assigned a color.
+Some countries are neighbors of each other.
+A constraint is that neighboring countries may not have the same color.
+
 \section{Output}
 In order to understand the goal of this approach and this thesis, this section will provide more details on the produced outputs: constraints and weighted soft constraints.
-For the application at hand, a problem can be viewed as a description of its domain and rules.
+For the application at hand, a problem can be viewed as a description of its domain and a set of rules.
 The domain consists of all potential solutions to the problems and members of the problem domain will be referred to as instances or models.
 If an instance fulfills all the rules, it is considered to be valid or a solution to the problem.
-These rules can therefor be seen as hard constraints, constraints which an instance must fulfill in order to be a solution to the problem.
-Considering, for example, the graph coloring problem, then all colored graphs are potential solutions but only graphs in which nodes never have the same color as their neighbors are actual solutions.
-Hard constraints can be used to generate new solutions, check if an instance is valid and expand a partial model into a solution.
+These rules can therefor be seen as \textit{hard} constraints, constraints which an instance must fulfill in order to form a solution to the problem.
+Considering, for example, the map coloring problem, then all colored maps are potential solutions.
+However, only maps in which countries never have the same color as their neighbors are actual solutions.
+
+\begin{ex}
+Given multiple examples of correctly colored maps, the output of the clause learning system would consist of a set of clauses. One of the clauses would express the constraint: \cen{$false \leftarrow color(c_1, color_1) \land neighbor(c_1, c_2) \land color(c_2, color_1)$.}
+Because of Object Identity (see chapter~\ref{cha:bg}), variables with different names always denote different object.
+\end{ex}
+
+Learned constraints can be used to generate new solutions, check if an instance is valid or expand a partial instance into a solution.
 The clauses produced by the system are considered hard constraints if they cover all the provided examples.
-A user can however also provide a custom minimum support value, e.g. $80\%$, then all clauses are returned that cover at least $80\%$ of the provided examples.
+A user can, however, also provide a custom minimum support value, e.g. $80\%$, then all clauses are returned that cover at least $80\%$ of the provided examples.
 This can be used to find constraints that hold most of the time but not always and is also a way to deal with noise on the examples.
 
 Problems potentially have many solutions and not all solutions might be equally good.
 Soft constraints are constraints which solutions might fulfill but do not have to.
-By using soft constraints one can discriminate between better and worse solutions.
+By using soft constraints, one can discriminate between better and worse solutions.
 Every soft constraint has a weight associated with it and every solution can be assigned a score by summing the weights of the soft constraints that it fulfills.
-[!! Max-SAT?] For clausal optimization, negative weights are also allowed.
+[!! Max-SAT?]
+
+Clausal optimization uses clause learning to find soft constraints in examples.
+It then automatically assign weights to them based on the preferences a user expresses over the examples.
+For clausal optimization, negative weights are also allowed.
 This means that examples that fulfill these negatively weighted constraints actually get scored less than the ones that do not.
-One can obtain non-negative weights by negating the clauses that have negative weights, the resulting logical formula would not be a clause anymore.
+One can obtain non-negative weights by negating the clauses that have negative weights.
+The resulting logical formula would, however, not be a clause anymore.
+
+The output of the clausal optimization system consists of set of weighted clauses: \cen{$weight_1: clause_1$\\...\\$weight_n: clause_n$.}
+For a particular instance \sym{I} a variable $v_i$ can be introduced for every clause $c_i$.
+If $c_i$ is true for \sym{I}, then $v_i$ is $1$, otherwise it is $0$. The score of \sym{I} can then be calculated as:
+\begin{equation}
+\sum\limits^n w_i \cdot v_i
+\end{equation}
+
+The optimal solution can be found by choosing objects and relations such that
 
 [!! Why clauses?]
 

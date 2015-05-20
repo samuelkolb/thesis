@@ -2,6 +2,8 @@
 \chapter{Approach}
 \label{cha:meth}
 
+[!! Bridge to previous chapter]
+
 \begin{figure}
 
 	\caption{High level structure}
@@ -11,100 +13,219 @@
 
 \end{figure}
 
-Figure~\ref{fig:high_level_structure} provides an overview of the approach implemented in this thesis. One feature of the system is clause learning, the ability to learn clauses - relational logical constraints - from examples. A new version of the clausal discovery system is at the core of the clause learning process. The main differences to Claudien [!! Ref] are a different bias and a different refinement operator. Furthermore, the clausal discovery program interacts with a generic logical system to calculate coverage and entailment. The second feature is clausal optimization. Hereby user-provided rankings and the \svm{} [!! Ref] program are used to produce weighted soft constraints. These are clauses that have a weight assigned to them, expressing how desirable it is to fulfill that clause.
+Figure~\ref{fig:high_level_structure} provides an overview of the approach implemented in this thesis.
+One feature of the system is clause learning, the ability to automatically learn clauses from examples.
+At the core of the clause learning process is a new version of the clausal discovery system.
+The main differences to clausal discovery engine Claudien (see chapter~\ref{cha:rellit}) are a different bias and a different refinement operator.
+Furthermore, the clausal discovery program interacts with a generic logical system to calculate coverage and entailment.
+The second feature is clausal optimization.
+Hereby user-provided rankings and the \svm{} [!! Ref] program are used to produce weighted soft constraints.
+These are clauses that have a weight assigned to them, expressing how desirable it is to fulfill that clause.
 
-Clausal discovery and the clause learning / clausal optimization workflows are implemented in Java. Interaction with the user, the logical system as well as the \svm{} software is achieved through files and standard input / output. 
+Clausal discovery and the clause learning / clausal optimization workflows are implemented in Java.
+Interaction with the user, the logical system as well as the \svm{} software is achieved through files and standard input / output.
+
+Through this chapter the map coloring problem will be used as an example for clause learning applications.
+In this problem there is a set of countries and every country is assigned a color.
+Some countries are neighbors of each other.
+A constraint is that neighboring countries may not have the same color.
 
 \section{Output}
-In order to understand the goal of this approach and this thesis, this section will provide more details on the produced outputs: constraints and weighted soft constraints. For the application at hand, a problem can be viewed as a description of its domain and rules. The domain consists of all potential solutions to the problems and members of the problem domain will be referred to as instances or models. If an instance fulfills all the rules, it is considered to be valid or a solution to the problem. These rules can therefor be seen as hard constraints, constraints which an instance must fulfill in order to be a solution to the problem. Considering, for example, the graph coloring problem, then all colored graphs are potential solutions but only graphs in which nodes never have the same color as their neighbors are actual solutions. Hard constraints can be used to generate new solutions, check if an instance is valid and expand a partial model into a solution. The clauses produced by the system are considered hard constraints if they cover all the provided examples. A user can however also provide a custom minimum support value, e.g. $80\%$, then all clauses are returned that cover at least $80\%$ of the provided examples. This can be used to find constraints that hold most of the time but not always and is also a way to deal with noise on the examples.
+In order to understand the goal of this approach and this thesis, this section will provide more details on the produced outputs: constraints and weighted soft constraints.
+For the application at hand, a problem can be viewed as a description of its domain and a set of rules.
+The domain consists of all potential solutions to the problems and members of the problem domain will be referred to as instances or models.
+If an instance fulfills all the rules, it is considered to be valid or a solution to the problem.
+These rules can therefor be seen as \textit{hard} constraints, constraints which an instance must fulfill in order to form a solution to the problem.
+Considering, for example, the map coloring problem, then all colored maps are potential solutions.
+However, only maps in which countries never have the same color as their neighbors are actual solutions.
 
-Problems potentially have many solutions and not all solutions might be equally good. Soft constraints are constraints which solutions might fulfill but do not have to. By using soft constraints one can discriminate between better and worse solutions. Every soft constraint has a weight associated with it and every solution can be assigned a score by summing the weights of the soft constraints that it fulfills. [!! Max-SAT?] For clausal optimization, negative weights are also allowed. This means that examples that fulfill these negatively weighted constraints actually get scored less than the ones that do not. One can obtain non-negative weights by negating the clauses that have negative weights, the resulting logical formula would not be a clause anymore.
+\begin{ex}
+Given multiple examples of correctly colored maps, the output of the clause learning system would consist of a set of clauses. One of the clauses would express the constraint: \cen{$false \leftarrow color(c_1, color_1) \land neighbor(c_1, c_2) \land color(c_2, color_1)$.}
+Because of Object Identity (see chapter~\ref{cha:bg}), variables with different names always denote different object.
+\end{ex}
+
+Learned constraints can be used to generate new solutions, check if an instance is valid or expand a partial instance into a solution.
+The clauses produced by the system are considered hard constraints if they cover all the provided examples.
+A user can, however, also provide a custom minimum support value, e.g. $80\%$, then all clauses are returned that cover at least $80\%$ of the provided examples.
+This can be used to find constraints that hold most of the time but not always and is also a way to deal with noise on the examples.
+
+Problems potentially have many solutions and not all solutions might be equally good.
+Soft constraints are constraints which solutions might fulfill but do not have to.
+By using soft constraints, one can discriminate between better and worse solutions.
+Every soft constraint has a weight associated with it and every solution can be assigned a score by summing the weights of the soft constraints that it fulfills.
+[!! Max-SAT?]
+
+Clausal optimization uses clause learning to find soft constraints in examples.
+It then automatically assign weights to them based on the preferences a user expresses over the examples.
+For clausal optimization, negative weights are also allowed.
+This means that examples that fulfill these negatively weighted constraints actually get scored less than the ones that do not.
+One can obtain non-negative weights by negating the clauses that have negative weights.
+The resulting logical formula would, however, not be a clause anymore.
+
+The output of the clausal optimization system consists of set of weighted clauses: \cen{$weight_1: clause_1$\\...\\$weight_n: clause_n$.}
+For a particular instance \sym{I} a variable $v_i$ can be introduced for every clause $c_i$.
+If $c_i$ is true for \sym{I}, then $v_i$ is $1$, otherwise it is $0$. The score of \sym{I} can then be calculated as:
+\begin{equation}
+\sum\limits^n w_i \cdot v_i
+\end{equation}
 
 [!! Why clauses?]
 
 \section{Input}
-The input to the clause learning system consists mainly of two parts: definitions and examples. When learning optimization criteria a third type of information is required: partial rankings over the given examples. Optionally a user can also provide logical background knowledge. Background knowledge can be used to impose additional constraints on valid examples, explain how to generate predicates or specify already known facts.
+The input to the clause learning system consists mainly of two parts: definitions and examples.
+When learning optimization criteria a third type of information is required: partial rankings over the given examples.
+Optionally a user can also provide logical background knowledge.
+Background knowledge can be used to impose additional constraints on valid examples, explain how to generate predicates or specify already known facts.
 
 \subsection{Definitions}
-The definitions part of the input consists of general information that describes the problem domain and the search space. This generic information consists mainly of typing information and predicate definitions.
+The definitions part of the input consists of general information that describes the problem domain and the search space.
+This generic information consists mainly of typing information and predicate definitions.
 
 \subsubsection{Typing}
-For the graph coloring problem possible types could be \textsc{Country} and \textsc{Color}. Every object in the problem domain has exactly one type. Types are declared as:
-\begin{align*}
-\textbf{type } Name
-\end{align*}
-Using these declared types, objects in the domain can be partitioned into disjoint subsets. Only using disjoint types limits the capability to correctly model more complicated problems. Therefore, types are also allowed to have a parent-type. If an object has type $t$, it belongs to type $t$ and any object that belongs to type $t$ also belongs to the parent-type $p$ of $t$. Type that have a parent-type are declared as:
-\begin{align*}
-\textbf{type } Name \textbf{ > } ParentType
-\end{align*}
-Typing information relates directly to the problem domain and is usually easy to provide for the user. It is valuable to the clause learning algorithm because it restricts the search space. Because of these two characteristics, it was decided to include typing information as an input.
+For the graph coloring problem possible types could be \textsc{Country} and \textsc{Color}.
+Every object in the problem domain has exactly one type.
+Types are declared as:
+\begin{flalign*}
+& \textbf{type } Name &
+\end{flalign*}
+Using these declared types, objects in the domain can be partitioned into disjoint subsets.
+Only using disjoint types limits the capability to correctly model more complicated problems.
+Therefore, types are also allowed to have a parent-type.
+If an object has type $t$, it belongs to type $t$ and any object that belongs to type $t$ also belongs to the parent-type $p$ of $t$.
+Type that have a parent-type are declared as:
+\begin{flalign*}
+& \textbf{type } Name \textbf{ > } ParentType &
+\end{flalign*}
+Typing information relates directly to the problem domain and is usually easy to provide for the user.
+It is valuable to the clause learning algorithm because it restricts the search space.
+Because of these two characteristics, it was decided to include typing information as an input.
 
 \subsubsection{Predicate definitions}
-Predicates describe relations between objects in a domain. In the definitions section a user defines the predicates that will be used to describe the relations that exist in the problem domain. A predicate definition contains information about the name of the predicate, the number of arguments (the arity) and the type of every argument. A standard predicate is declared as:
-\begin{align*}
-\textbf{pred } Name(Type_1, ..., Type_n)
-\end{align*}
-There are two variants of predicate definitions. The first one specifies a symmetric predicate.
-\begin{align*}
-\textbf{symm } Name(Type, ..., Type)
-\end{align*}
-Symmetric predicates can be used to describe predicates for which the order of the arguments does not matter, e.g. reciprocal friendships or membership of an object in an unordered set. This feature allows the user to express background knowledge he has about a predicate directly to the clause generation algorithm. Given this information, the system can avoid generating redundant clauses.
+Predicates describe relations between objects in a domain.
+In the definitions section a user defines the predicates that will be used to describe the relations that exist in the problem domain.
+A predicate definition contains information about the name of the predicate, the number of arguments (the arity) and the type of every argument.
+A standard predicate is declared as:
+\begin{flalign*}
+& \textbf{pred } Name(Type_1, ..., Type_n) &
+\end{flalign*}
+There are two variants of predicate definitions.
+The first one specifies a symmetric predicate.
+\begin{flalign*}
+& \textbf{symm } Name(Type, ..., Type) &
+\end{flalign*}
+Symmetric predicates can be used to describe predicates for which the order of the arguments does not matter, e.g. reciprocal friendships or membership of an object in an unordered set.
+This feature allows the user to express background knowledge he has about a predicate directly to the clause generation algorithm.
+Given this information, the system can avoid generating redundant clauses.
 
-The second variant allows the user to specify predicates that are not explicitly provided, but rather are generated according to logical background knowledge provided by the user. Such calculated predicates are expressed as:
-\begin{align*}
-\textbf{calc } Name(Type_1, ..., Type_n)
-\end{align*}
-Calculated predicates might be based on the values of other predicates in specific examples. In this case a user might want to generate clauses that contain the calculated predicate, but not all of the original predicates. This is the function of the search directive: 
-\begin{align*}
-\textbf{search } Predicate_1\  ...\  Predicate_m
-\end{align*}
-Only the specified predicates will be included in the clause learning algorithm. If no search directive is provided, all defined predicates are included.
+The second variant allows the user to specify predicates that are not explicitly provided, but rather are generated according to logical background knowledge provided by the user.
+Such calculated predicates are expressed as:
+\begin{flalign*}
+& \textbf{calc } Name(Type_1, ..., Type_n) &
+\end{flalign*}
+Calculated predicates might be based on the values of other predicates in specific examples.
+In this case a user might want to generate clauses that contain the calculated predicate, but not all of the original predicates.
+This is the function of the search directive: 
+\begin{flalign*}
+& \textbf{search } Predicate_1\  ...\  Predicate_m &
+\end{flalign*}
+Only the specified predicates will be included in the clause learning algorithm.
+If no search directive is provided, all defined predicates are included.
 
 \subsection{Examples}
-While definitions are generic properties of the problem domain, examples describe specific instances or models that the user perceives as valid solutions to his problem. Every example contains constant declarations that list the objects (constants) that are part of the model as well as their types. Examples also contain an exhaustive list of the relations that hold on these objects.
-\begin{align*}
-&\textbf{example } Name\  \{\\
-&\  \  \  \  \textbf{const } Type\  Object_1\  ...\  Object_k\\
-&\  \  \  \  Predicate(Object_1, ..., Object_n)\\
-&\}
-\end{align*}
+While definitions are generic properties of the problem domain, examples describe specific instances or models that the user perceives as valid solutions to his problem.
+Every example contains constant declarations that list the objects (constants) that are part of the model as well as their types.
+Examples also contain an exhaustive list of the relations that hold on these objects.
+\begin{flalign*}
+& \textbf{example }Name\  \{ & \\
+& \  \  \  \  \textbf{const } Type\  Object_1\  ...\  Object_k & \\
+& \  \  \  \  Predicate(Object_1, ..., Object_n) & \\
+& \} &
+\end{flalign*}
 [!! More details on format?]
 
 \subsection{Logical background knowledge}
-In many cases it can be useful to include background knowledge that the user already possesses. This knowledge can be used to provide additional constraints that a user is aware of, thereby restricting what clauses are considered valid. A user can also specify facts that he already knows and wants to exclude from the output. Furthermore, it can be used to automatically calculate predicates. Consider, for example, two predicates \textsc{crowded(Elevator)} and \textsc{in(Person, Elevator)}. The examples provided by the user could contain information about which elevator a person is in and the background knowledge could be used to specify that an elevator is crowded if there are more than 8 people in it.
+In many cases it can be useful to include background knowledge that the user already possesses.
+This knowledge can be used to provide additional constraints that a user is aware of, thereby restricting what clauses are considered valid.
+A user can also specify facts that he already knows and wants to exclude from the output.
+Furthermore, it can be used to automatically calculate predicates.
+Consider, for example, two predicates \textsc{crowded(Elevator)} and \textsc{in(Person, Elevator)}.
+The examples provided by the user could contain information about which elevator a person is in and the background knowledge could be used to specify that an elevator is crowded if there are more than 8 people in it.
 
 \subsection{Rankings}
-Rankings are provided by a user and they express which solutions he prefers. Given examples $e_1, ..., e_x$, rankings are declared as:
-\begin{align*}
+Rankings are provided by a user and they express which solutions he prefers.
+Given examples $e_1, ..., e_x$, rankings are declared as:
+\begin{flalign*}
 \textbf{pref } e_1 = ... = e_i > ... > e_j = ... = e_x
-\end{align*}
-This statement expresses that out of examples $1$ to $x$, examples $1$ to $i$ are considered the best and examples $j$ to $x$ the worst examples. The clausal optimization system will use these rankings to assign weights to soft constraints. Recall that a score can be calculated for a solution by summing the weights of the soft constraints that cover the solution. The weights of the constraints are chosen in such a manner that the rankings induced by the score approximate the rankings provided by the user. 
+\end{flalign*}
+This statement expresses that out of examples $1$ to $x$, examples $1$ to $i$ are considered the best and examples $j$ to $x$ the worst examples.
+The clausal optimization system will use these rankings to assign weights to soft constraints.
+Recall that a score can be calculated for a solution by summing the weights of the soft constraints that cover the solution.
+The weights of the constraints are chosen in such a manner that the rankings induced by the score approximate the rankings provided by the user.
 
-An alternative approach would be to use absolute scores for examples. For a human, however, it is often hard to provide absolute scores over potentially many examples. Rankings only require the user to consider few examples at a time and express his relative preferences over them. [!? Ref]
+
+An alternative approach would be to use absolute scores for examples.
+For a human, however, it is often hard to provide absolute scores over potentially many examples.
+Rankings only require the user to consider few examples at a time and express his relative preferences over them.
+[!? Ref]
 
 \section{Clausal Discovery}
-As stated previously, clausal discovery forms the core of the clause learning process. Algorithm~\ref{alg:cd} describes the clausal discovery process at a high level. The behavior of the algorithm is mainly defined by three functions: \textsc{covers(c, \sym{D})}, \textsc{entails(\sym{T}, c)} and \textsc{$\rho$(c)} - the refinement operator. 
+As stated previously, clausal discovery forms the core of the clause learning process.
+Algorithm~\ref{alg:cd} describes the clausal discovery process at a high level.
+The behavior of the algorithm is mainly defined by three functions: \textsc{covers(c, \sym{D})}, \textsc{entails(\sym{T}, c)} and \textsc{$\rho$(c)} - the refinement operator.
 
-It is the task of the refinement operator to generate (minimal) generalizations of a parent clause. The search space is thus 
 
-The functions to compute coverage and entailment are outsourced to a logical system. Therefore, their running time is slow compared to operations executed in the main program. In order to mitigate this effect, additional tests are used to avoid generating invalid or redundant clauses. Furthermore, operations that cannot be avoided are parallelized as much as possible.
+It is the task of the refinement operator to generate (minimal) generalizations of a parent clause.
+The search space is thus 
+
+The functions to compute coverage and entailment are outsourced to a logical system.
+Therefore, their running time is slow compared to operations executed in the main program.
+In order to mitigate this effect, additional tests are used to avoid generating invalid or redundant clauses.
+Furthermore, operations that cannot be avoided are parallelized as much as possible.
 
 \subsection{Coverage calculation}
-At the moment that a clause is added to the first-in-first-out working queue, the computation of the \textsc{covers} function is asynchronously dispatched. The clausal discovery algorithm proceeds in a breadth first fashion, processing first all clauses of length 0, then all clauses of length 1, etc. By the time that a clause is selected from the queue, the results from the \textsc{covers} have optimally already been calculated.
+At the moment that a clause is added to the first-in-first-out working queue, the computation of the \textsc{covers} function is asynchronously dispatched.
+The clausal discovery algorithm proceeds in a breadth first fashion, processing first all clauses of length 0, then all clauses of length 1, etc.
+By the time that a clause is selected from the queue, the results from the \textsc{covers} have optimally already been calculated.
 
 \subsection{Subset-check}
-When a clause is selected from the queue, a subset-check is executed. Any subset of the current clause that forms a valid clause on its own has already been generated. This follows from the fact that the refinement operator is complete and the clause learning algorithm progresses in a breadth first manner. If such a subset covers the same examples as this clause, it has either been accepted or denied as redundant. The clausal learning algorithm keeps track of these clauses. If this list contains a clause which is a subset of the current clause, the current clause can be safely discarded.
+When a clause is selected from the queue, a subset-check is executed.
+Any subset of the current clause that forms a valid clause on its own has already been generated.
+This follows from the fact that the refinement operator is complete and the clause learning algorithm progresses in a breadth first manner.
+If such a subset covers the same examples as this clause, it has either been accepted or denied as redundant.
+The clausal learning algorithm keeps track of these clauses.
+If this list contains a clause which is a subset of the current clause, the current clause can be safely discarded.
 
 \subsection{Coverage-check}
-The coverage test simply examines if the clause covers enough examples to pass the minimal threshold. If the clause covers at least the minimal required amount of examples it will be submitted the entailment-check and added to the result set if it passes. If it does not cover all examples, the refinement operator will applied to it to generate all possible child clauses. These are the added to the back of the working queue.
+The coverage test simply examines if the clause covers enough examples to pass the minimal threshold.
+If the clause covers at least the minimal required amount of examples it will be submitted the entailment-check and added to the result set if it passes.
+If it does not cover all examples, the refinement operator will applied to it to generate all possible child clauses.
+These are the added to the back of the working queue.
 
 \subsection{Refinement operator}
 [!! Rewrite]
-In clausal discovery one starts with the empty clause $\square$ and in every step one atom is added to either the head or the body. Given a clause \obj{c} the refinement operator $\rho$ returns a set $\rho(\obj{c})$ of child clauses whose length is $length(\obj{c}) + 1$. What atoms are added to the clause depends on the current clause and the predicates that are used in the search. The implementation on the refinement operator uses a specific order in which atoms are added to a clause to eliminate duplicate clauses. Given a maximal amount of variables, a list of possible atoms is generated and every clause is represented as a sorted list of indices referring to elements in the list. The remainder of this section will explain how to generate the list of atoms such that all possible clauses can at least be generated once.
+In clausal discovery one starts with the empty clause $\square$ and in every step one atom is added to either the head or the body.
+Given a clause \obj{c} the refinement operator $\rho$ returns a set $\rho(\obj{c})$ of child clauses whose length is $length(\obj{c}) + 1$.
+What atoms are added to the clause depends on the current clause and the predicates that are used in the search.
+The implementation on the refinement operator uses a specific order in which atoms are added to a clause to eliminate duplicate clauses.
+Given a maximal amount of variables, a list of possible atoms is generated and every clause is represented as a sorted list of indices referring to elements in the list.
+The remainder of this section will explain how to generate the list of atoms such that all possible clauses can at least be generated once.
 \\\\
-The number of arguments of a predicate is referred to as the predicates arity. A predicate $\obj{p}_3$ of arity 3 takes 3 arguments, e.g. $\obj{p}_3(x, y, x)$. One can observe that while the arity of the previous predicate was 3, the particular instance $\obj{p}_3(x, y, x)$ only features 2 different variables. Such instance will be considered as having a rank of 2: $rank(\obj{p}_3(x, y, x)) = 2$. Considering Object Identity, $\obj{p}_3(x, y, x)$ can be viewed as an blueprint of instances of predicate $\obj{p}_3$ that feature the first variable on the first and third place and the second, different, variable on the third place. This blueprint or instance prototype represents the function $f^{\obj{p}_3}_{121}(v_1, v_2) = \obj{p}_3(v_1, v_2, v_1)$.
+The number of arguments of a predicate is referred to as the predicates arity.
+A predicate $\obj{p}_3$ of arity 3 takes 3 arguments, e.g. $\obj{p}_3(x, y, x)$.
+One can observe that while the arity of the previous predicate was 3, the particular instance $\obj{p}_3(x, y, x)$ only features 2 different variables.
+Such instance will be considered as having a rank of 2: $rank(\obj{p}_3(x, y, x)) = 2$.
+Considering Object Identity, $\obj{p}_3(x, y, x)$ can be viewed as an blueprint of instances of predicate $\obj{p}_3$ that feature the first variable on the first and third place and the second, different, variable on the third place.
+This blueprint or instance prototype represents the function $f^{\obj{p}_3}_{121}(v_1, v_2) = \obj{p}_3(v_1, v_2, v_1)$.
 \\\\
-Given the predicate $\obj{p}_3$ with arity 3, one can construct instance prototypes of rank 1 ($f^{p_3}_{111}$), rank 2 ($f^{p_3}_{112}$, $f^{p_3}_{121}$, $f^{p_3}_{211}$, $f^{p_3}_{122}$, $f^{p_3}_{212}$, $f^{p_3}_{221}$) and rank 3 ($f^{p_3}_{123}$). The set $\sym{F}^r_{p_i}$ is then defined as the set of all possible instance prototypes $f^{p_i}_{x_1, ..., x_n}$ or $f^{p_i}_\mathbf{x}$ of rank $r$. For every prototype it holds that every number in $[1, r]$ occurs at least once in $\mathbf{x}$ and $max(\mathbf{x}) = r$. In clausal discovery the user provides a set \sym{P} of predicates that can occur in the generated clauses. Given a set \sym{P}, the set $\sym{F}^r$ is defined as $\sym{F}^r = \bigcup \{\sym{F}^r_{p_i} | p_i \in \sym{P}\}$. Such a set contains all instance prototypes of rank $r$. The reader may recall that these prototypes are actually functions that map variables to a predicate instance. Therefore, $\sym{F}^r$ can also be used as a function that takes $r$ variables and maps them to the set of predicate instances obtained by applying every function in $\sym{F}^r$ to those $r$ variables. For example consider a set $\sym{F}^2 = \{f^{p_2}_{12}, f^{p_2}_{21}\}$ then $\sym{F}^2(x, y) = \{p_2(x, y), p_2(y, x)\}$.
+Given the predicate $\obj{p}_3$ with arity 3, one can construct instance prototypes of rank 1 ($f^{p_3}_{111}$), rank 2 ($f^{p_3}_{112}$, $f^{p_3}_{121}$, $f^{p_3}_{211}$, $f^{p_3}_{122}$, $f^{p_3}_{212}$, $f^{p_3}_{221}$) and rank 3 ($f^{p_3}_{123}$).
+The set $\sym{F}^r_{p_i}$ is then defined as the set of all possible instance prototypes $f^{p_i}_{x_1, ..., x_n}$ or $f^{p_i}_\mathbf{x}$ of rank $r$.
+For every prototype it holds that every number in $[1, r]$ occurs at least once in $\mathbf{x}$ and $max(\mathbf{x}) = r$.
+In clausal discovery the user provides a set \sym{P} of predicates that can occur in the generated clauses.
+Given a set \sym{P}, the set $\sym{F}^r$ is defined as $\sym{F}^r = \bigcup \{\sym{F}^r_{p_i} | p_i \in \sym{P}\}$.
+Such a set contains all instance prototypes of rank $r$.
+The reader may recall that these prototypes are actually functions that map variables to a predicate instance.
+Therefore, $\sym{F}^r$ can also be used as a function that takes $r$ variables and maps them to the set of predicate instances obtained by applying every function in $\sym{F}^r$ to those $r$ variables.
+For example consider a set $\sym{F}^2 = \{f^{p_2}_{12}, f^{p_2}_{21}\}$ then $\sym{F}^2(x, y) = \{p_2(x, y), p_2(y, x)\}$.
 \\\\
 Suppose the maximal number of variables is 3 and the maximal arity of the given predicates is 2, then the atom list used for the clausal discovery algorithm is:
 \begin{align*}
@@ -112,11 +233,28 @@ Suppose the maximal number of variables is 3 and the maximal arity of the given 
 \end{align*}
 Any clause with 3 variables can be represented as an ordered sequence of atoms drawn from this list.
 \\\\
-While clauses can be expressed as ordered sequences of indices in the atom list, not all sequences are valid clauses. Different constraints limit the legal combination of atoms. The first constraint is that clauses must be connected, which means that given a clause, the next atom must feature at least one variable that already exists in the clause. Secondly variables are introduced in order, so after the introduction of $v_1$, the atom introducing $v_3$ cannot appear before the atom introducing $v_2$. An atom can of course introduce multiple variables. The third constraint is that atoms appearing in the head of the clause cannot introduce new variables. Lastly the user can provide typing information which is used to exclude inconsistent atoms. This can be done during the generation of the list by removing atoms which are inconsistent with the types of the predicate arguments (e.g. $f^{p_3}_{111}$ for $p_3(Type_1, Type_2, Type_1)$) and during the algorithm, if a newly added atom would be inconsistent with the types of the variables already introduced in the clause.
+While clauses can be expressed as ordered sequences of indices in the atom list, not all sequences are valid clauses.
+Different constraints limit the legal combination of atoms.
+The first constraint is that clauses must be connected, which means that given a clause, the next atom must feature at least one variable that already exists in the clause.
+Secondly variables are introduced in order, so after the introduction of $v_1$, the atom introducing $v_3$ cannot appear before the atom introducing $v_2$.
+An atom can of course introduce multiple variables.
+The third constraint is that atoms appearing in the head of the clause cannot introduce new variables.
+Lastly the user can provide typing information which is used to exclude inconsistent atoms.
+This can be done during the generation of the list by removing atoms which are inconsistent with the types of the predicate arguments (e.g. $f^{p_3}_{111}$ for $p_3(Type_1, Type_2, Type_1)$) and during the algorithm, if a newly added atom would be inconsistent with the types of the variables already introduced in the clause.
 
 \section{Logical system} [!! Why IDP?]
 \label{sec:logical_system}
-One of the key features of the clause learning system implemented for this thesis, is the use of a logical system to compute two core functions: coverage and entailment. The clausal discovery implementation makes use of a generic  interface - the LogicExecutor - to interact with a logical system. An implementation of this interface provides the interaction with a specific system. Currently, the clause learning implementation uses the IDP [!! Ref] knowledge base system, which was described shortly in section~\ref{sec:logical_constraint_solving}. IDP uses $FO(\cdotp)$, an extension of first order logic. This extension supports types, aggregates, inductive definitions and more, which provides the possibility to provide rich background knowledge. Unfortunately, the entailment functionality does not support all the features of this extension. [!! Ref, generation vs test] IDP uses three elements to describe problems and constraints. The first element is a vocabulary which contains type and predicate definitions. Secondly, theories consisting of $FO(\cdotp)$ statements are used to express constraints. The third element are structures which represent partial or total instances or models.
+One of the key features of the clause learning system implemented for this thesis, is the use of a logical system to compute two core functions: coverage and entailment.
+The clausal discovery implementation makes use of a generic  interface - the LogicExecutor - to interact with a logical system.
+An implementation of this interface provides the interaction with a specific system.
+Currently, the clause learning implementation uses the IDP [!! Ref] knowledge base system, which was described shortly in section~\ref{sec:logical_constraint_solving}.
+IDP uses $FO(\cdotp)$, an extension of first order logic.
+This extension supports types, aggregates, inductive definitions and more, which provides the possibility to provide rich background knowledge.
+Unfortunately, the entailment functionality does not support all the features of this extension.
+[!! Ref, generation vs test] IDP uses three elements to describe problems and constraints.
+The first element is a vocabulary which contains type and predicate definitions.
+Secondly, theories consisting of $FO(\cdotp)$ statements are used to express constraints.
+The third element are structures which represent partial or total instances or models.
 
 \begin{figure}
 
@@ -127,15 +265,44 @@ One of the key features of the clause learning system implemented for this thesi
 
 \end{figure}
 
-Figure~\ref{fig:conversion_to_logic} shows how to convert the different available information into the elements that IDP works with. The vocabulary is generated from typing information and predicate definitions, while examples are converted to structures. User provided background knowledge is already given in the form of a theory $\sym{B}_U$ and generated background knowledge - for symmetric predicates - is converted into a theory $\sym{B}_G$. In IDP these two theories are then merged into a background theory \sym{B}. Given the knowledge base, different types of inference can be run in IDP by defining procedures in the Lua scripting language.
+Figure~\ref{fig:conversion_to_logic} shows how to convert the different available information into the elements that IDP works with.
+The vocabulary is generated from typing information and predicate definitions, while examples are converted to structures.
+User provided background knowledge is already given in the form of a theory $\sym{B}_U$ and generated background knowledge - for symmetric predicates - is converted into a theory $\sym{B}_G$.
+In IDP these two theories are then merged into a background theory \sym{B}.
+Given the knowledge base, different types of inference can be run in IDP by defining procedures in the Lua scripting language.
 
 \subsection{Coverage}
-\textsc{covers(c, \sym{D})} calculates whether a clause $c$ covers the data \sym{D}. In order to compute this function, a knowledge base and a procedure have to be synthesized. Vocabulary, structures and background theory are generated as described above and the clause $c$ is converted to a logical theory $\sym{T}_c$. For every example $e_i$ a structure $\sym{S}_i$ is generated. The generated procedure in IDP attempts to expand the each structure $\sym{S}_i$ with respect to $\sym{B} \cup \sym{T}_c$. If such a model exists, $c$ is considered to cover $e_i$. In practice the coverage for every example is calculated and this vector is sent back to the clause learning algorithm.
+\textsc{covers(c, \sym{D})} calculates whether a clause $c$ covers the data \sym{D}.
+In order to compute this function, a knowledge base and a procedure have to be synthesized.
+Vocabulary, structures and background theory are generated as described above and the clause $c$ is converted to a logical theory $\sym{T}_c$.
+For every example $e_i$ a structure $\sym{S}_i$ is generated.
+The generated procedure in IDP attempts to expand the each structure $\sym{S}_i$ with respect to $\sym{B} \cup \sym{T}_c$.
+If such a model exists, $c$ is considered to cover $e_i$.
+In practice the coverage for every example is calculated and this vector is sent back to the clause learning algorithm.
 
 \subsection{Entailment}
-\textsc{entails(\sym{T}, c)} computes whether a theory \sym{T} entails the clause $c$. The theory \sym{T} represents the theory formed by all clauses that have been found to cover the data so far. It also contains the available background knowledge. IDP offers the capability to compute entailment between two theories. This logical entailment is independent of any structures and uses an inbuilt SAT solver. Aside from generating the vocabulary and background theories as usual, the theories $\sym{T}_R$ and $\sym{T}_c$ are calculated. These represent the theory of clauses in the result set and of the given clause, respectively. \sym{T} is then formed as $\sym{T} = \sym{B} \cup \sym{T}_R$ and using IDP it is calculated if \sym{T} entails $\sym{T}_c$. The (boolean) result is returned to the clause learning system. Using logical entailment identifies redundant clauses. Not only does it identify clauses that are reformulations of each other, it also removes clauses which are a combination of other clauses.
+\textsc{entails(\sym{T}, c)} computes whether a theory \sym{T} entails the clause $c$.
+The theory \sym{T} represents the theory formed by all clauses that have been found to cover the data so far.
+It also contains the available background knowledge.
+IDP offers the capability to compute entailment between two theories.
+This logical entailment is independent of any structures and uses an inbuilt SAT solver.
+Aside from generating the vocabulary and background theories as usual, the theories $\sym{T}_R$ and $\sym{T}_c$ are calculated.
+These represent the theory of clauses in the result set and of the given clause, respectively.
+\sym{T} is then formed as $\sym{T} = \sym{B} \cup \sym{T}_R$ and using IDP it is calculated if \sym{T} entails $\sym{T}_c$.
+The (boolean) result is returned to the clause learning system.
+Using logical entailment identifies redundant clauses.
+Not only does it identify clauses that are reformulations of each other, it also removes clauses which are a combination of other clauses.
 
 \section{Clausal Optimization}
-Clausal optimization takes two inputs: a set of (learned) clauses that each cover some but not all of the provided examples as well as a set of rankings provided by the user. Every ranking concerns a group of examples. The goal of clausal optimization is to discriminate between examples based on soft constraints that hold on the examples and approximate the given rankings optimally. To this end every example can be characterized as a set of boolean features. Each of those features correspond with one of the clauses and indicates whether the example is covered by that clause. Now, standard machine learning techniques can be used to learn weights for the features (clauses) based on the given rankings. In this thesis \svm{} was chosen to accomplish this task. [!! Why \svm{}?]
+Clausal optimization takes two inputs: a set of (learned) clauses that each cover some but not all of the provided examples as well as a set of rankings provided by the user.
+Every ranking concerns a group of examples.
+The goal of clausal optimization is to discriminate between examples based on soft constraints that hold on the examples and approximate the given rankings optimally.
+To this end every example can be characterized as a set of boolean features.
+Each of those features correspond with one of the clauses and indicates whether the example is covered by that clause.
+Now, standard machine learning techniques can be used to learn weights for the features (clauses) based on the given rankings.
+In this thesis \svm{} was chosen to accomplish this task.
+[!! Why \svm{}?]
 
-Weights are chosen optimally with respect to a cost parameter $c$, which determines the trade-off between disagreeing with a user provided ranking and a simpler model. Assigning a low cost to disagreeing with the training rankings establishes a bias towards simpler models which can avoid over-fitting the training. [!! SVM rank margin] A high cost should be assigned, however, when one is interested in a model that is more accurate with respect to the given examples and rankings.
+Weights are chosen optimally with respect to a cost parameter $c$, which determines the trade-off between disagreeing with a user provided ranking and a simpler model.
+Assigning a low cost to disagreeing with the training rankings establishes a bias towards simpler models which can avoid over-fitting the training.
+[!! SVM rank margin] A high cost should be assigned, however, when one is interested in a model that is more accurate with respect to the given examples and rankings.

@@ -2,22 +2,40 @@
 \chapter{Related Literature}
 \label{cha:rellit}
 
+In this chapter, different previous research will be explored.
+On the one hand, the state of the art will be described.
+On the other hand, research whose contributions this thesis builds on will be explained.
+
 \section{Constraint Learning}
-Learning constraints is a difficult problem. Unlike typical machine learning problems, there is usually little data available from which to learn the constraints. Different approaches have been taken to tackle this problem.
+Learning constraints is a difficult problem.
+Unlike typical machine learning problems, there is usually little data available from which to learn the constraints.
+%While constraint learning is interesting in an automated setting, the goal of some approaches, including this thesis, is also to interact with a human user. This introduces additional difficulties. Human users often lack the skill to 
+Different approaches have been taken to tackle this problem.
 
-\subsection{Learning from queries}
+\subsection{State of the art}
+\paragraph{Learning from queries}
 [Info more information needed !] [Ref Quote Note ?]
-In order to alleviate the problem of having little data, systems can choose to use queries and user input to guide the search. [Rewrite "Note mentions" !] Conacq and Quacq [Ref Add refs !] follow this approach. [Info Does conacq use queries? It uses version space.. ?]
+In order to alleviate the problem of having little data, systems can choose to use queries and user input to guide the search.
+[Rewrite "Note mentions" !] Conacq and Quacq [Ref Add refs !] follow this approach. 
+Info Does conacq use queries? It uses version space.. ?]
 
-\subsection{Global constraints and structure}
-An effective approach is used by Model Seeker \cite{Beldiceanu:ModelSeeker}. It uses generators that structure variables in different ways and then tests what global constraints hold in these structures. For this purpose it uses a large global constraint catalog. This approach has proven promising and reasonably fast.
+\paragraph{Global constraints and structure}
+An effective approach is used by Model Seeker \cite{Beldiceanu:ModelSeeker}.
+It uses generators that structure variables in different ways and then tests what global constraints hold in these structures.
+For this purpose it uses a large global constraint catalog.
+This approach has proven promising and reasonably fast.
 
 \subsection{ILP for constraint Learning}
 [Info more text needed !] [Info Introduce CPS etc ?]
 One approach that uses parallels between ILP and constraint learning is \cite{Lallouet:LearningCP}.
 
+The approach in this thesis is based on techniques from Inductive Logic Programming (ILP).
+Learning systems in this domain often face similar challenges.
+ILP attempts to find structure in examples and describe this structure using logical formulas.
+
 \section{Clausal Discovery}
-Claudien, a clausal discovery engine introduced in \cite{DeRaedt:ClausalDiscovery}, attempts to learn a definite clause theory from examples. Alg. \ref{alg:cd} illustrates how the algorithm works on a high level. 
+Claudien, a clausal discovery engine introduced in \cite{DeRaedt:ClausalDiscovery}, attempts to learn a definite clause theory from examples.
+Alg. \ref{alg:cd} illustrates how the algorithm works on a high level. 
 
 \begin{algorithm}
 	\caption{The clausal discovery algorithm}
@@ -42,15 +60,35 @@ Claudien, a clausal discovery engine introduced in \cite{DeRaedt:ClausalDiscover
 	\end{algorithmic}
 \end{algorithm}
 
-The idea is to start from an empty clause ($\square$). Clauses are generalized by adding an atom to either the head or the body of the clause in every step, this is the responsibility of the ideal and complete refinement operator $\rho$. If a clause \obj{c} covers all the examples in \sym{D} and it is not logically entailed by the theory found so far then \obj{c} is added to the result set \sym{T}. A clause \obj{c} is considered to cover an example \sym{I} iff \sym{I} is a model of \obj{c}: $\sym{I} \models \obj{c}$. The clause \obj{c} is not refined because any clause $\obj{c_i} \in \rho^*(c)$ is a generalization of \obj{c} and thus logically entailed by \obj{c}.
+The idea is to start from an empty clause ($\square$).
+Clauses are generalized by adding an atom to either the head or the body of the clause in every step, this is the responsibility of the ideal and complete refinement operator $\rho$.
+If a clause \obj{c} covers all the examples in \sym{D} and it is not logically entailed by the theory found so far then \obj{c} is added to the result set \sym{T}.
+A clause \obj{c} is considered to cover an example \sym{I} iff \sym{I} is a model of \obj{c}: $\sym{I} \models \obj{c}$.
+The clause \obj{c} is not refined because any clause $\obj{c_i} \in \rho^*(c)$ is a generalization of \obj{c} and thus logically entailed by \obj{c}.
 
 [Add Bias, (explain why not dlab?) ?]
 
 \subsection{Refinement operator}
-The refinement operator plays a central role in clausal discovery, but also in different ILP problems. General insights about refinement operators have been obtained from \cite{DeRaedt:LRLearning} and are described in chapter \ref{cha:bg}. In \cite{DeRaedt:CondensedRepresentations} different strategies are discussed that can be used to improve refinement operators, amongst others the canonical form for clauses.
+The refinement operator plays a central role in clausal discovery, but also in different ILP problems.
+General insights about refinement operators have been obtained from \cite{DeRaedt:LRLearning} and are described in chapter \ref{cha:bg}.
+In \cite{DeRaedt:CondensedRepresentations} different strategies are discussed that can be used to improve refinement operators, amongst others the canonical form for clauses.
 
 \section{Logical Constraint Solving}
 \label{sec:logical_constraint_solving}
-There are multiple constraint solvers (...) [Ref Eclipse, Minizinc ?] which use different constraint languages. However it seems interesting to employ solvers that can work directly on the logical representation generated by the clausal discovery algorithm. One of these systems is IDP [Ref IDP !]. The IDP system uses an extended form of first order logic, including aggregates and definitions. This allows users to supply expressive domain\,/\,background knowledge. IDP supports multiple types of inferences, it can find new models for a theory as well as expand partial models. Compared to other logical solvers IDP is a good choice as it is being actively developed and supported. Performance wise it has proven to be amongst the state of the art in multiple answer set competitions [Ref competition !].
+There are multiple constraint solvers (...) [Ref Eclipse, Minizinc ?] which use different constraint languages.
+However, it seems interesting to employ solvers that can work directly on the logical representation generated by the clausal discovery algorithm.
+One of these systems is IDP [Ref IDP !].
+The IDP system uses an extended form of first order logic, including aggregates and definitions.
+This allows users to supply expressive domain\,/\,background knowledge.
+IDP supports multiple types of inferences, it can find new models for a theory as well as expand partial models.
+Compared to other logical solvers IDP is a good choice as it is being actively developed and supported.
+Performance wise it has proven to be amongst the state of the art in multiple answer set competitions [Ref competition !].
 \\\\
-The main difference between a logical solver like IDP and traditional constraint solvers is that the latter class of solvers supports global constraints, programming constructs like loops and support for (real) numbers. Global constraints allow constraint solvers to speed up their search and are very compact. Since the logical constraint generation in this thesis does not focus on global constraints they are not crucial. They can be emulated using background knowledge passed to the logical solver. Compactness and loops are above all useful for programmers, but since in this case the constraints are generated automatically these features are less important. At this moment IDP only supports natural numbers. This is its biggest disadvantage. There is however, a large class of problems that do not require rational numbers.
+The main difference between a logical solver like IDP and traditional constraint solvers is that the latter class of solvers supports global constraints, programming constructs like loops and support for (real) numbers.
+Global constraints allow constraint solvers to speed up their search and are very compact.
+Since the logical constraint generation in this thesis does not focus on global constraints they are not crucial.
+They can be emulated using background knowledge passed to the logical solver.
+Compactness and loops are above all useful for programmers, but since in this case the constraints are generated automatically these features are less important.
+At this moment IDP only supports natural numbers.
+This is its biggest disadvantage.
+There is however, a large class of problems that do not require rational numbers.

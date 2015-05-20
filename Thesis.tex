@@ -23,6 +23,7 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{etoolbox}
+\usepackage{changepage}
 
 \graphicspath{{Graphics/}, {Graphics/Graphs/}}
 
@@ -42,6 +43,9 @@
 		#1
 	\end{center}
 }
+
+\newenvironment{indent}{\begin{adjustwidth}{2cm}{}}{\end{adjustwidth}}
+
 
 % Finally the hyperref package is used for pdf files.
 % This can be commented out for printed versions.

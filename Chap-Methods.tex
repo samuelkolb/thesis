@@ -85,17 +85,17 @@ This generic information consists mainly of typing information and predicate def
 For the graph coloring problem possible types could be \textsc{Country} and \textsc{Color}.
 Every object in the problem domain has exactly one type.
 Types are declared as:
-\begin{flalign}
+\begin{demo}
 \textbf{type } Name
-\end{flalign}
+\end{demo}
 Using these declared types, objects in the domain can be partitioned into disjoint subsets.
 Only using disjoint types limits the capability to correctly model more complicated problems.
 Therefore, types are also allowed to have a parent-type.
 If an object has type $t$, it belongs to type $t$ and any object that belongs to type $t$ also belongs to the parent-type $p$ of $t$.
 Type that have a parent-type are declared as:
-\begin{flalign}
+\begin{demo}
 \textbf{type } Name \textbf{ > } ParentType
-\end{flalign}
+\end{demo}
 Typing information relates directly to the problem domain and is usually easy to provide for the user.
 It is valuable to the clause learning algorithm because it restricts the search space.
 Because of these two characteristics, it was decided to include typing information as an input.
@@ -105,29 +105,29 @@ Predicates describe relations between objects in a domain.
 In the definitions section a user defines the predicates that will be used to describe the relations that exist in the problem domain.
 A predicate definition contains information about the name of the predicate, the number of arguments (the arity) and the type of every argument.
 A standard predicate is declared as:
-\begin{flalign}
+\begin{demo}
 \textbf{pred } Name(Type_1, ..., Type_n)
-\end{flalign}
+\end{demo}
 There are two variants of predicate definitions.
 The first one specifies a symmetric predicate.
-\begin{flalign}
+\begin{demo}
 \textbf{symm } Name(Type, ..., Type)
-\end{flalign}
+\end{demo}
 Symmetric predicates can be used to describe predicates for which the order of the arguments does not matter, e.g. reciprocal friendships or membership of an object in an unordered set.
 This feature allows the user to express background knowledge he has about a predicate directly to the clause generation algorithm.
 Given this information, the system can avoid generating redundant clauses.
 
 The second variant allows the user to specify predicates that are not explicitly provided, but rather are generated according to logical background knowledge provided by the user.
 Such calculated predicates are expressed as:
-\begin{flalign}
+\begin{demo}
 \textbf{calc } Name(Type_1, ..., Type_n)
-\end{flalign}
+\end{demo}
 Calculated predicates might be based on the values of other predicates in specific examples.
 In this case a user might want to generate clauses that contain the calculated predicate, but not all of the original predicates.
 This is the function of the search directive: 
-\begin{flalign}
+\begin{demo}
 \textbf{search } Predicate_1\  ...\  Predicate_m
-\end{flalign}
+\end{demo}
 Only the specified predicates will be included in the clause learning algorithm.
 If no search directive is provided, all defined predicates are included.
 
@@ -135,12 +135,12 @@ If no search directive is provided, all defined predicates are included.
 While definitions are generic properties of the problem domain, examples describe specific instances or models that the user perceives as valid solutions to his problem.
 Every example contains constant declarations that list the objects (constants) that are part of the model as well as their types.
 Examples also contain an exhaustive list of the relations that hold on these objects.
-\begin{flalign}
+\begin{demo}
 &\textbf{example } Name\  \{\\
 &\  \  \  \  \textbf{const } Type\  Object_1\  ...\  Object_k\\
 &\  \  \  \  Predicate(Object_1, ..., Object_n)\\
 &\}
-\end{flalign}
+\end{demo}
 [!! More details on format?]
 
 \subsection{Logical background knowledge}
@@ -154,9 +154,9 @@ The examples provided by the user could contain information about which elevator
 \subsection{Rankings}
 Rankings are provided by a user and they express which solutions he prefers.
 Given examples $e_1, ..., e_x$, rankings are declared as:
-\begin{flalign}
+\begin{demo}
 \textbf{pref } e_1 = ... = e_i > ... > e_j = ... = e_x
-\end{flalign}
+\end{demo}
 This statement expresses that out of examples $1$ to $x$, examples $1$ to $i$ are considered the best and examples $j$ to $x$ the worst examples.
 The clausal optimization system will use these rankings to assign weights to soft constraints.
 Recall that a score can be calculated for a solution by summing the weights of the soft constraints that cover the solution.

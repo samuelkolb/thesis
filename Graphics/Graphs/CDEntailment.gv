@@ -1,0 +1,11 @@
+digraph workflow {
+
+	cd [label="Clausal Discovery", shape="box"]
+	ls [label="Logical System", shape="box"]
+
+	cd -> ls [label="entails(T, c)"]
+	ls -> cd [label="yes / no"]
+
+	rankdir="LR"
+	ranksep = 1
+}

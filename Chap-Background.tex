@@ -5,6 +5,7 @@
 In this chapter the most important concepts and terms are explained. It is assumed that the reader is familiar with the basics of logic and constraint programming.
 
 \section{Clausal logic}
+\label{sec:clausal_logic}
 In this thesis constraints are represented as logical clauses. A logical clause consists of a head and a body. In the clause\cen{$H_1, ..., H_n \leftarrow B_1, ..., B_m$,} the atoms $H_1, ..., H_n$ form the head of the clause and $B_1, ..., B_m$ the body. 
 
 Atoms represent facts, that is they are either true or false. Trivially, the logical constants $true$ and $false$ are atoms. Furthermore, an atom can be formed using a predicate symbol and a set of terms, e.g. $friends(Jack, x)$. The predicate symbol is the name of the predicate. Predicates denote relations between terms, which either exist or not. Terms are expressions representing logical objects, either constants (such as $Jack$) or variables (such as $x$). The arity of a predicate is the number of terms it is applied to, e.g. the arity of the previous $friends$ predicate is $2$.

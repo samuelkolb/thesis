@@ -282,17 +282,26 @@ Assuming a complete refinement operator, any subset of $c$ that forms a valid cl
 Any clause has associated with it a set of examples covered by the clause~($c$).
 If a subset clause~$c_s$ of~$c$ covers the same examples as~$c$ and $c_s \in \sym{C}$, then $c$ can be safely discarded.
 
+\begin{example}
+	Assume~\sym{C} is the set of clauses that have passed the coverage test so far. Consider clauses:
+	\cen{$c_1 = \{\lnot p_1(x)\} \notin \sym{C}$\\
+	$c_2 = \{\lnot p_2(x)\} \in \sym{C}$\\
+	and $c = \{\lnot p_1(x), \lnot p_2(x)\}$.}
+	Assume that $c_2$ covers the set of examples $\sym{E}_2$ and $c$ covers examples \sym{E}.
+	Since $c_2 \subset c$, it always holds that $\sym{E}_2 \subseteq \sym{E}$.
+	If $\sym{E}_2 = \sym{E}$, then the clause~$c$ is redundant because $c_2 \subset c$ is more specific than $c$ and covers the same examples.
+	However, if $\sym{E}_2 \subset \sym{E}$, then $c$ covers more examples than~$c_2$ and should also be added to \sym{C}.
+\end{example}
+
 \subsection{Coverage-test}
 For a clause $c$ to be added to the result set, it must cover a certain number examples.
-When looking for hard constraints all examples must be covered.
-Alternatively a minimum support threshold decides how many examples a clause has to cover.
-[!! TODO]
-The coverage test simply examines if the clause covers enough examples to pass the minimal threshold.
-If the clause covers at least the minimal required amount of examples it will be submitted to the entailment-test and added to the result set if it passes.
-If it does not cover all examples, the refinement operator will applied to it to generate all possible child clauses.
-These are added to the back of the working queue.
+When looking for hard constraints, all examples must be covered.
+Alternatively, a minimum support threshold decides how many examples a clause has to cover.
+If the clause covers at least the minimal required amount of examples, it will be submitted to the entailment-test.
+If it does not cover enough examples, the refinement operator will be applied to it.
 
 \subsection{Entailment-test}
+
 
 \subsection{Refinement operator}
 [!! Rewrite]

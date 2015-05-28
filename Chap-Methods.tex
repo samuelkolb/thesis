@@ -82,65 +82,102 @@ The definitions part of the input consists of general information that describes
 This generic information consists mainly of typing information and predicate definitions.
 
 \subsubsection{Typing}
-For the graph coloring problem possible types could be \textsc{Country} and \textsc{Color}.
 Every object in the problem domain has exactly one type.
 Types are declared as:
-\begin{flalign*}
+\begin{shiftedflalign*}
 & \textbf{type } Name &
-\end{flalign*}
+\end{shiftedflalign*}
 Using these declared types, objects in the domain can be partitioned into disjoint subsets.
 Only using disjoint types limits the capability to correctly model more complicated problems.
 Therefore, types are also allowed to have a parent-type.
 If an object has type $t$, it belongs to type $t$ and any object that belongs to type $t$ also belongs to the parent-type $p$ of $t$.
 Type that have a parent-type are declared as:
-\begin{flalign*}
+\begin{shiftedflalign*}
 & \textbf{type } Name \textbf{ > } ParentType &
-\end{flalign*}
+\end{shiftedflalign*}
 Typing information relates directly to the problem domain and is usually easy to provide for the user.
 It is valuable to the clause learning algorithm because it restricts the search space.
 Because of these two characteristics, it was decided to include typing information as an input.
 
+\begin{ex}
+	\label{ex:map_color_types}
+	The type declarations are then then easily formulated:
+	\begin{shiftedflalign*}
+		& \textbf{type } Country & \\
+		& \textbf{type } Color &
+	\end{shiftedflalign*}
+\end{ex}
 \subsubsection{Predicate definitions}
 Predicates describe relations between objects in a domain.
 In the definitions section a user defines the predicates that will be used to describe the relations that exist in the problem domain.
 A predicate definition contains information about the name of the predicate, the number of arguments (the arity) and the type of every argument.
 A standard predicate is declared as:
-\begin{flalign*}
+\begin{shiftedflalign*}
 & \textbf{pred } Name(Type_1, ..., Type_n) &
-\end{flalign*}
+\end{shiftedflalign*}
 There are two variants of predicate definitions.
 The first one specifies a symmetric predicate.
-\begin{flalign*}
+\begin{shiftedflalign*}
 & \textbf{symm } Name(Type, ..., Type) &
-\end{flalign*}
+\end{shiftedflalign*}
 Symmetric predicates can be used to describe predicates for which the order of the arguments does not matter, e.g. reciprocal friendships or membership of an object in an unordered set.
+Since the positions of arguments of a symmetric predicate are irrelevant, all arguments must be of the same type.
 This feature allows the user to express background knowledge he has about a predicate directly to the clause generation algorithm.
 Given this information, the system can avoid generating redundant clauses.
 
 The second variant allows the user to specify predicates that are not explicitly provided, but rather are generated according to logical background knowledge provided by the user.
 Such calculated predicates are expressed as:
-\begin{flalign*}
+\begin{shiftedflalign*}
 & \textbf{calc } Name(Type_1, ..., Type_n) &
-\end{flalign*}
+\end{shiftedflalign*}
 Calculated predicates might be based on the values of other predicates in specific examples.
 In this case a user might want to generate clauses that contain the calculated predicate, but not all of the original predicates.
 This is the function of the search directive: 
-\begin{flalign*}
+\begin{shiftedflalign*}
 & \textbf{search } Predicate_1\  ...\  Predicate_m &
-\end{flalign*}
+\end{shiftedflalign*}
 Only the specified predicates will be included in the clause learning algorithm.
 If no search directive is provided, all defined predicates are included.
+
+\begin{ex}
+	\label{ex:map_color_predicates}
+	In the map coloring problem, there are primarily two relations.
+	The \textsc{color} relation specifies the color of a country and the (symmetric) \textsc{neighbor} relation that specifies that two countries are neighbors.
+	Considering the types in example~\ref{ex:map_color_types}, the following predicate definitions can be used to express these relations:
+	\begin{shiftedflalign*}
+		& \textbf{pred } color(Country, Color) & \\
+		& \textbf{symm } neighbor(Country, Country) &
+	\end{shiftedflalign*}
+\end{ex}
 
 \subsection{Examples}
 While definitions are generic properties of the problem domain, examples describe specific instances or models that the user perceives as valid solutions to his problem.
 Every example contains constant declarations that list the objects (constants) that are part of the model as well as their types.
 Examples also contain an exhaustive list of the relations that hold on these objects.
-\begin{flalign*}
+\begin{shiftedflalign*}
 & \textbf{example }Name\  \{ & \\
-& \  \  \  \  \textbf{const } Type\  Object_1\  ...\  Object_k & \\
-& \  \  \  \  Predicate(Object_1, ..., Object_n) & \\
+& \tabspace \textbf{const } Type\  Object_1\  ...\  Object_k & \\
+& \tabspace Predicate(Object_1, ..., Object_n) & \\
 & \} &
-\end{flalign*}
+\end{shiftedflalign*}
+
+\begin{ex}
+	To illustrate, consider the map coloring problem with the definitions given in example~\ref{ex:map_color_types} and~\ref{ex:map_color_predicates}.
+	Consider the countries Belgium, the Netherlands and Luxembourg. Given the fact that Belgium shares a border with the Netherlands and Luxembourg, one example could be:
+	\begin{shiftedflalign*}
+		& \textbf{example }benelux\  \{ & \\
+		& \tabspace \textbf{const } Country\  Belgium\  Luxembourg\  Netherlands & \\
+		& \tabspace \textbf{const } Color\  Red\  Blue & \\\\
+		& \tabspace neighbor(Belgium, Luxembourg) & \\
+		& \tabspace neighbor(Belgium, Netherlands) & \\\\
+		& \tabspace color(Belgium, Red) & \\
+		& \tabspace color(Luxembourg, Blue) & \\
+		& \tabspace color(Netherlands, Blue) & \\
+		& \} &
+	\end{shiftedflalign*}
+	Currently symmetric predicates have to be fully specified, the implementation could, however, easily be changed to automate this.
+
+\end{ex}
 [!! More details on format?]
 
 \subsection{Logical background knowledge}
@@ -154,9 +191,9 @@ The examples provided by the user could contain information about which elevator
 \subsection{Rankings}
 Rankings are provided by a user and they express which solutions he prefers.
 Given examples $e_1, ..., e_x$, rankings are declared as:
-\begin{flalign*}
-\textbf{pref } e_1 = ... = e_i > ... > e_j = ... = e_x
-\end{flalign*}
+\begin{shiftedflalign*}
+& \textbf{pref } e_1 = ... = e_i > ... > e_j = ... = e_x &
+\end{shiftedflalign*}
 This statement expresses that out of examples $1$ to $x$, examples $1$ to $i$ are considered the best and examples $j$ to $x$ the worst examples.
 The clausal optimization system will use these rankings to assign weights to soft constraints.
 Recall that a score can be calculated for a solution by summing the weights of the soft constraints that cover the solution.
@@ -197,9 +234,9 @@ If this list contains a clause which is a subset of the current clause, the curr
 
 \subsection{Coverage-check}
 The coverage test simply examines if the clause covers enough examples to pass the minimal threshold.
-If the clause covers at least the minimal required amount of examples it will be submitted the entailment-check and added to the result set if it passes.
+If the clause covers at least the minimal required amount of examples it will be submitted to the entailment-check and added to the result set if it passes.
 If it does not cover all examples, the refinement operator will applied to it to generate all possible child clauses.
-These are the added to the back of the working queue.
+These are added to the back of the working queue.
 
 \subsection{Refinement operator}
 [!! Rewrite]
@@ -285,7 +322,7 @@ In practice the coverage for every example is calculated and this vector is sent
 The theory \sym{T} represents the theory formed by all clauses that have been found to cover the data so far.
 It also contains the available background knowledge.
 IDP offers the capability to compute entailment between two theories.
-This logical entailment is independent of any structures and uses an inbuilt SAT solver.
+This logical entailment is independent of any structures and uses an builtin SAT solver.
 Aside from generating the vocabulary and background theories as usual, the theories $\sym{T}_R$ and $\sym{T}_c$ are calculated.
 These represent the theory of clauses in the result set and of the given clause, respectively.
 \sym{T} is then formed as $\sym{T} = \sym{B} \cup \sym{T}_R$ and using IDP it is calculated if \sym{T} entails $\sym{T}_c$.

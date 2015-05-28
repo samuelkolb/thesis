@@ -47,6 +47,22 @@
 
 \newenvironment{demo}{\begin{adjustwidth}{2cm}{}}{\end{adjustwidth}}
 
+\makeatletter
+\newenvironment{shiftedflalign}{%
+    \start@align\tw@\st@rredfalse\m@ne%
+    \hskip\parindent
+}{%
+    \endalign
+}
+\newenvironment{shiftedflalign*}{%
+    \start@align\tw@\st@rredtrue\m@ne
+    \hskip\parindent
+}{%
+    \endalign
+}
+\makeatother
+
+\newcommand{\tabspace}{\  \  \  \  }
 
 % Finally the hyperref package is used for pdf files.
 % This can be commented out for printed versions.

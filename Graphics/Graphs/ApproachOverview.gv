@@ -1,24 +1,28 @@
 digraph workflow {
 
-	ex [label="Examples", shape="box"]
-	pr [label="Rankings", shape="box"]
-	cd [label="Clausal Discovery", shape="box"]
+	bg [label="Background Knowledge", shape="box"]
 	ls [label="Logical System", shape="box"]
+
+	ex [label="Examples", shape="box"]
+	cd [label="Clausal Discovery", shape="box"]
 	hc [label="Constraints", shape="box"]
+
+	pr [label="Rankings", shape="box"]
 	sr [label="SVM-rank", shape="box"]
 	sc [label="Weighted Soft Constraints", shape="box"]
 
+	bg -> ls
+	cd -> hc
 	ex -> cd
 	pr -> sr
-	cd -> ls
 	ls -> cd
-	cd -> hc
+	cd -> ls
 	cd -> sr
 	sr -> sc
 
 	rankdir="LR"
 	ranksep = 1
-	{rank=same ex pr}
-	{rank=same ls cd sr}
+	{rank=same bg ex pr}
+	{rank=same ls cd sr} 
 	{rank=same hc sc}
 }

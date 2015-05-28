@@ -39,10 +39,10 @@ These rules can therefore be seen as \textit{hard} constraints, constraints whic
 Considering, for example, the map coloring problem, then all colored maps are potential solutions.
 However, only maps in which countries never have the same color as their neighbors are actual solutions.
 
-\begin{ex}
+\begin{example}
 Given multiple examples of correctly colored maps, the output of the clause learning system would consist of a set of clauses. One of the clauses would express the constraint: \cen{$false \leftarrow color(c_1, color_1) \land neighbor(c_1, c_2) \land color(c_2, color_1)$.}
 Because of Object Identity (see chapter~\ref{cha:bg}), variables with different names always denote different object.
-\end{ex}
+\end{example}
 
 Learned constraints can be used to generate new solutions, check if an instance is valid or expand a partial instance into a solution.
 The clauses produced by the system are considered hard constraints if they cover all the provided examples.
@@ -98,7 +98,7 @@ Typing information relates directly to the problem domain and is usually easy to
 It is valuable to the clause learning algorithm because it restricts the search space.
 Because of these two characteristics, it was decided to include typing information as an input.
 
-\begin{ex}
+\begin{example}
 	\label{ex:map_color_types}
 	The map coloring problem has been described earlier.
 	There are two types of objects that are important: countries and colors.
@@ -107,7 +107,7 @@ Because of these two characteristics, it was decided to include typing informati
 		& \textbf{type } Country & \\
 		& \textbf{type } Color &
 	\end{shiftedflalign*}
-\end{ex}
+\end{example}
 \subsubsection{Predicate definitions}
 Predicates describe relations between objects in a domain.
 In the definitions section a user defines the predicates that will be used to describe the relations that exist in the problem domain.
@@ -144,7 +144,7 @@ This is the function of the search directive:
 Only the specified predicates will be included in the clause learning algorithm.
 If no search directive is provided, all defined predicates are included.
 
-\begin{ex}
+\begin{example}
 	\label{ex:map_color_predicates}
 	In the map coloring problem, there are primarily two relations.
 	The \textsc{color} relation specifies the color of a country and the (symmetric) \textsc{neighbor} relation that specifies that two countries are neighbors.
@@ -153,7 +153,7 @@ If no search directive is provided, all defined predicates are included.
 		& \textbf{pred } color(Country, Color) & \\
 		& \textbf{symm } neighbor(Country, Country) &
 	\end{shiftedflalign*}
-\end{ex}
+\end{example}
 
 \subsection{Examples}
 While definitions are generic properties of the problem domain, examples describe specific instances or models that the user perceives as valid solutions to his problem.
@@ -166,7 +166,7 @@ Examples also contain an exhaustive list of the relations that hold on these obj
 & \} &
 \end{shiftedflalign*}
 
-\begin{ex}
+\begin{example}
 	To illustrate, consider the map coloring problem with the definitions given in example~\ref{ex:map_color_types} and~\ref{ex:map_color_predicates}.
 	Consider the countries Belgium, the Netherlands and Luxembourg. Given the fact that Belgium shares a border with the Netherlands and Luxembourg, one example could be:
 	\begin{shiftedflalign*}
@@ -182,7 +182,7 @@ Examples also contain an exhaustive list of the relations that hold on these obj
 	\end{shiftedflalign*}
 	Currently symmetric predicates have to be fully specified, the implementation could, however, easily be changed to automate this.
 
-\end{ex}
+\end{example}
 [!! More details on format?]
 
 \subsection{Logical background knowledge}
@@ -244,7 +244,7 @@ These tests can, however, be parallelized to a certain degree, as there is a gap
 	\caption{Entailment}
 	\centering
 		\includegraphics[width=0.7\textwidth]{CDEntailment.pdf}
-	\label{fig:cd_coverage}
+	\label{fig:cd_entailment}
 
 \end{figure}
 

@@ -17,28 +17,28 @@ Clauses are in fact a special form of logical implications in which all variable
 A clause is functor-free iff all the terms occurring in it are variables.
 \end{definition}
 Functor-free clauses do not contain constants and are independent of any . Such clauses are generic clauses, in the sense that they are not associated with a specific domain.
-\begin{ex}
+\begin{example}
 \label{ex:functor_free}
 Consider two domains $\sym{D}_1 = \{MyCat, MyDog\}$ and $\sym{D}_2 = \{John, Suzy\}$ and two clauses \cen{$c_1 = friends(y, x) \leftarrow friends(x, y)$\\
 $c_2 = friends(MyDog, x) \leftarrow friends(MyCat, x)$.}
 Clause~$c_1$ expresses that friendship is symmetric. It is a functor-free clause and thus independent of the domain. Clause~$c_2$ expresses that all friends of $MyCat$ are also friends of $MyDog$. It is not functor-free and can only be used in the context of $\sym{D}_1$. 
-\end{ex}
+\end{example}
 
 \begin{definition}
 A clause is range-restricted iff there is no variable in the head of the clause which does not also appear in the body of the clause.
 \end{definition}
 
-\begin{ex}
+\begin{example}
 Clause~$c_1$ from example~\ref{ex:functor_free} is range-restricted, because the variables occuring in the head ($x$ and~$y$) also occur in the body. On the other hand, the clause \cen{$friends(x, x) \leftarrow true$} is not range-restricted, since the variable~$x$ only occurs in the head.
-\end{ex}
+\end{example}
 
 \begin{definition}
 A clause is connected iff for any two non-empty subsets of terms that occur in the clause, there must be at least one variable which occurs in both subsets.
 \end{definition}
 
-\begin{ex}
+\begin{example}
 Consider the clauses \cen{$c_1 = \{friends(x, y), friends(y, z)\}$\\$c_2 = \{friends(x, y), friends(a, b)\}$.} In clause~$c_1$ the two terms in the body of the clause are linked by variable $y$. Therefore, clause~$c_1$ is connected. The two terms occuring in the body of $c_2$, however, do not share a common variable and thus $c_2$ is not connected.
-\end{ex}
+\end{example}
 
 [!! Explain interpretation?]
 

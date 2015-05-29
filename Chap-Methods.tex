@@ -301,7 +301,21 @@ If the clause covers at least the minimal required amount of examples, it will b
 If it does not cover enough examples, the refinement operator will be applied to it.
 
 \subsection{Entailment-test}
-
+The entailment tests filters out redundant clauses to obtain a minimal theory.
+A clause $c$ is only added to the result set \sym{R} if it is not logically entailed by the clauses that have been added to the result set earlier.
+By pruning newer clauses, the algorithm favors short clauses over long clauses.
+Clauses are also pruned if they are entailed by the generated or provided background knowledge.
+When learning soft constraints, the examples covered by a clause have to be considered.
+Only the subset $\sym{R}_c \subset \sym{R}$ of clauses that cover the same examples as $c$ are allowed to prune $c$.
+If $c$ is entailed by clauses that cover different examples, then it is still relevant.
+\begin{example}
+	Consider clauses: \cen{
+		$c_1 = p_2(x) \leftarrow p_1(x)$ which covers example $e_1, e_2$ \\
+		$c_2 = p_3(x) \leftarrow p_2(x)$ which covers example $e_3$ \\
+		and $c = p_3(x) \leftarrow p_1(x)$ which covers example $e_2$.
+	}
+	Although clause~$c$ is entailed by clauses $c_1$ and~$c_2$, it covers a different example. Therefore, it should be added to the result set. Clause~$c$ could, for example, be a useful constraint for discriminating between $e_1$ and~$e_2$.
+\end{example}
 
 \subsection{Refinement operator}
 [!! Rewrite]

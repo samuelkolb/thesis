@@ -14,6 +14,7 @@ Clauses are in fact a special form of logical implications in which all variable
 
 [!! thoery => CNF] Several concepts concerning clauses will be important in the context of this thesis:
 \begin{definition}
+\label{def:funtor_free}
 A clause is functor-free iff all the terms occurring in it are variables.
 \end{definition}
 Functor-free clauses do not contain constants and are independent of any . Such clauses are generic clauses, in the sense that they are not associated with a specific domain.
@@ -25,6 +26,7 @@ Clause~$c_1$ expresses that friendship is symmetric. It is a functor-free clause
 \end{example}
 
 \begin{definition}
+\label{def:range_restricted}
 A clause is range-restricted iff there is no variable in the head of the clause which does not also appear in the body of the clause.
 \end{definition}
 
@@ -33,6 +35,7 @@ Clause~$c_1$ from example~\ref{ex:functor_free} is range-restricted, because the
 \end{example}
 
 \begin{definition}
+\label{def:connected}
 A clause is connected iff for any two non-empty subsets of terms that occur in the clause, there must be at least one variable which occurs in both subsets.
 \end{definition}
 

@@ -309,12 +309,37 @@ When learning soft constraints, the examples covered by a clause have to be cons
 Only the subset $\sym{R}_c \subset \sym{R}$ of clauses that cover the same examples as $c$ are allowed to prune $c$.
 If $c$ is entailed by clauses that cover different examples, then it is still relevant.
 \begin{example}
-	Consider clauses: \cen{
-		$c_1 = p_2(x) \leftarrow p_1(x)$ which covers example $e_1, e_2$ \\
-		$c_2 = p_3(x) \leftarrow p_2(x)$ which covers example $e_3$ \\
-		and $c = p_3(x) \leftarrow p_1(x)$ which covers example $e_2$.
-	}
-	Although clause~$c$ is entailed by clauses $c_1$ and~$c_2$, it covers a different example. Therefore, it should be added to the result set. Clause~$c$ could, for example, be a useful constraint for discriminating between $e_1$ and~$e_2$.
+	Consider three examples $e_1, e_2$ and~$e_3$ and clauses:\\
+
+	\begin{tabular}{rl|llll}
+		& Clause & Case 1 & Case 2 & Case 3 & Case 4 \\
+		\midrule
+		$c_1$ & $p_2(x) \leftarrow p_1(x)$ & $e_1$ & $e_1$ & $e_1, e_2$ & $e_1, e_2, e_3$\\
+		$c_2$ & $p_3(x) \leftarrow p_2(x)$ & $e_1$ & $e_2$ & $e_1, e_3$ & $e_1$ \\
+		$c$ & $p_3(x) \leftarrow p_1(x)$ & $e_1$ & $e_1$ & $e_1$ & $e_1$
+	\end{tabular}
+	\\\\
+	where every case shows the examples covered by each clause.
+	Clauses $c_1$ and~$c_2$ logically entail clause~$c$.
+
+	\begin{description}
+		\item[Case 1]
+			All clauses cover the same examples and $c$ will not be added to the result set because it is redundant.
+		\item[Case 2]
+			Clause~$c_2$ covers a different example than~$c$.
+			Therefore, it cannot be used to prune~$c$ and~$c$.
+		\item[Case 3]
+			Here, clauses $c_1$ and~$c_2$ both cover a superset of the examples covered by~$c$.
+			While clause~$c$ is redundant, it can be used to discriminate $e_1$ from the other examples.
+			For example, in the clausal optimization setting, such clauses are useful.
+			In order to preserve such clauses, $\sym{R}_c$ does not include soft constraints that cover a superset of the examples that~$c$ covers.
+		\item[Case 4]
+			This case is related to case~3.
+			However, clause~$c_1$ covers all examples.
+			Therefore, it is considered to be a hard constraint, like the background knowledge.
+			Including these constraints in $\sym{R}_c$ yields a more compact result set at the risk of excluding some clauses if the clauses only covers all examples by chance.
+	\end{description}
+
 \end{example}
 
 \subsection{Refinement operator}

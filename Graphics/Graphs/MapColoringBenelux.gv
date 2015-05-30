@@ -1,0 +1,15 @@
+graph color {
+
+	ne [label="Netherlands", shape="box", style="filled", fontcolor="white", fillcolor="black"]
+	be [label="Belgium", shape="box"]
+	lux [label="Luxembourg", shape="box", style="filled", fontcolor="white", fillcolor="black"]
+	in [style="invis"]
+
+	ne -- be -- lux
+	ne -- in -- lux [style="invis"]
+	rankdir="LR"
+	ranksep = 1
+
+	{rank=same ne be}
+	{rank=same lux in}
+}

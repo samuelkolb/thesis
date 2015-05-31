@@ -371,8 +371,10 @@ The standard model consists of $4$ weighted constraints:
 \subsection{Accuracy}
 
 Generally, the experiments in this section follow one of two approaches.
-In the first approach the available examples are split into two parts: the training and the test set.
-The second approach uses the same examples as training and test set.
+\begin{description}
+	\item[Approach 1] The available examples are split into two parts: the training and the test set.
+	\item[Approach 2] All examples are used both as training and test set.
+\end{description}
 Both approaches then follow the same process, which is visualized in figure~\ref{fig:co_test_setup}.
 
 First, all pairwise rankings over the examples in the training set are generated using the model constraints and a fraction of these are selected.
@@ -409,14 +411,14 @@ The score is calculated as $1 - \mathit{KD}$.
 \begin{experiment}
 	In order to answer this question, this experiment primarily measures the influence of the amount of inverted rankings in the second approach.
 	The housing example was run for varying fractions of rankings and varying fractions of noise.
-	Figure~\ref{fig:nosplits_noise_noise} shows the effect of increasing noise on the score for several fractions of rankings.
-	On figure~\ref{fig:nosplits_noise_rankings} the effect of increasing the amount of rankings can be seen, when the noise level is fixed.
+	Figure~\ref{fig:nosplit_noise_noise} shows the effect of increasing noise on the score for several fractions of rankings.
+	On figure~\ref{fig:nosplit_noise_rankings} the effect of increasing the amount of rankings can be seen, when the noise level is fixed.
 
 	\begin{figure}
 
 		\caption{Score for increasing noise}
 		\centering
-			\includegraphics[width=1\textwidth]{nosplit_noise_noise}
+			\includegraphics[width=.8\textwidth]{nosplit_noise_noise}
 		\label{fig:nosplit_noise_noise}
 
 	\end{figure}
@@ -425,33 +427,62 @@ The score is calculated as $1 - \mathit{KD}$.
 
 		\caption{Effect of increasing fraction of rankings}
 		\centering
-			\includegraphics[width=1\textwidth]{nosplit_noise_rankings}
+			\includegraphics[width=.8\textwidth]{nosplit_noise_rankings}
 		\label{fig:nosplit_noise_rankings}
 
 	\end{figure}
 
 \end{experiment}
 
-% - A Influence noise
+\begin{experiment}
+	"Splits"
+\end{experiment}
+
 % - C Formulation of rankings (a > b > c vs. a > b, b > c)
 
 \# Q : Influence parameters
-% - P Tradeoff
 
-% \begin{experiment}
+The experiments for this question explore the influence of several factors.
+Unless mentioned otherwise, the experiments will use the following setup as baseline:
+Approach~1, where the fraction of examples in the training set is chosen as $0.4$ and the fraction of rankings is also set to $0.4$.
+
+% - P other kernel
+
+\begin{experiment}
 	
+	Clausal optimization uses a cost factor which represents the cost of disagreeing with a provided ranking in favor of a simpler model (see section~\ref{sec:clausal_opt_approach}).
+	This parameter can help avoid overfitting.
+	The standard setting in the clausal optimization is $0.2$.
+	In this experiment the influence of the cost factor has been measured for different noise levels.
+	Figure~\ref{fig:c_factors} shows the influence of the cost factor on the score for fixed noise levels.
 
-% 	\begin{table}[!htp]
-% 		\begin{tabularx}{\textwidth}{XXX}
-% 			\textbf{Hard constraints}	& \textbf{Mean}	& \textbf{StdDev} \\
-% 			\toprule
-% 			Yes & 		0.770 & 0.082 \\
-% 			No & 0.734 & 0.068
-% 		\end{tabularx}
-% 		\label{tbl:exp_speed_symm}
-% 		\caption{Use of hard constraints for pruning}
-% 	\end{table}
-% \end{experiment}
+	\begin{figure}
+
+		\caption{Influence of cost factor}
+		\centering
+			\includegraphics[width=.8\textwidth]{c_factors}
+		\label{fig:c_factors}
+
+	\end{figure}
+
+\end{experiment}
+
+\begin{experiment}
+	
+	In the clause learning implementation the choice was made to allow hard constraints to prune soft constraints (see section~\ref{sec:clausal_discovery_approach}).
+	This simplfies the model as fewer clauses are learned at the expense of pruning some clauses with discriminative power if the hard constraints just coincidently cover all the given examples.
+	This experiment compares the standard implementation with an alternative implementation that does not allow hard constraints to prune for increasing noise levels.
+
+	\begin{figure}
+
+		\caption{Pruning with and without hard constraint}
+		\centering
+			\includegraphics[width=.8\textwidth]{hard_constraints}
+		\label{fig:hard_constraints}
+
+	\end{figure}
+
+\end{experiment}
 
 
 \# Q : Expressivity

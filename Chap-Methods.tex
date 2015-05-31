@@ -214,6 +214,7 @@ For a human, however, it is often hard to provide absolute scores over potential
 Rankings only require the user to consider few examples at a time and express his relative preferences over them.
 
 \section{Clausal Discovery}
+\label{sec:clausal_discovery_approach}
 As stated previously, clausal discovery forms the core of the clause learning process.
 Algorithm~\ref{alg:cd} in section~\ref{sec:claudien} describes the clausal discovery process at a high level.
 The behavior of the algorithm is mainly defined by three functions: \textsc{covers(c, \sym{D})}, \textsc{entails(\sym{T}, c)} and \textsc{$\rho$(c)} - the refinement operator.
@@ -438,6 +439,7 @@ Using logical entailment identifies redundant clauses.
 Not only does it identify clauses that are reformulations of each other, it also removes clauses which are a combination of other clauses.
 
 \section{Clausal Optimization}
+\label{sec:clausal_opt_approach}
 Clausal optimization takes two inputs: a set of (learned) clauses that each cover some, but not all of the provided examples as well as a set of rankings provided by the user.
 Every ranking concerns a group of examples.
 The goal of clausal optimization is to discriminate between examples based on soft constraints that hold on the examples and approximate the given rankings optimally.

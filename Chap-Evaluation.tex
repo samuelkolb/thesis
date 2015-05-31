@@ -2,21 +2,6 @@
 \chapter{Evaluation}
 \label{cha:evaluation}
 
-% \begin{table}[!htp]
-% 	\begin{tabularx}{\textwidth}{r|llllllX}
-% 	    \toprule
-% 	    Circles & 7 & 8 & 9 & 10 & 11 & 12 & 13  \\
-% 	    \midrule
-% 	     30 seconds & 0.976 & 0.962 & 0.948 & 0.905 & 0.891 & 0.859 & 0.852\\
-% 		 60 seconds & 0.976 & 0.977 & 0.944 & 0.957 & 0.908 & 0.902 & 0.915\\
-% 		 90 seconds & 0.978 & 0.951 & 0.971 & 0.952 & 0.886 & 0.937 & 0.901\\
-% 		120 seconds & 0.978 & 0.953 & 0.968 & 0.928 & 0.916 & 0.913 & 0.898\\
-% 	    \bottomrule
-% 	\end{tabularx}
-% 	\label{tbl:lin-best}
-% 	\caption{Best relative scores of linear method}
-% \end{table}
-
 Several experiments have been run in order to assess how well the implementation accomplishes the clause learning and clausal optimization tasks.
 Moreover, the influence of different factors internal and external to the algorithm is evaluated.
 The clause learning and clausal optimization workflows will be examined separately, in that order.
@@ -191,7 +176,7 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 			Elevator 		& 40.453 			& 0.319 \\
 			Co-housing 		& 207.768			& 0.330
 		\end{tabularx}
-		\label{tbl:exp_speed_standard}
+		\label{tbl:exp_speed_no_range}
 		\caption{Running times for standard examples without range restriction}
 	\end{table}
 
@@ -209,8 +194,8 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 			Elevator 		& 6.157 			& 0.114 \\
 			Co-housing 		& 103.633			& 0.131
 		\end{tabularx}
-		\label{tbl:exp_speed_standard}
-		\caption{Running times for standard examples without range restriction}
+		\label{tbl:exp_speed_no_connect}
+		\caption{Running times for standard examples without connectivity}
 	\end{table}
 
 \end{experiment}
@@ -259,7 +244,7 @@ Contrary to syntactic restrictions these do, in principle, not affect the outcom
 			Elevator 		& 3.678 			& 0.094 \\
 			Co-housing 		& 30.145			& 0.159
 		\end{tabularx}
-		\label{tbl:exp_speed_standard}
+		\label{tbl:exp_speed_no_subset}
 		\caption{Running times for standard examples without subset test}
 	\end{table}
 \end{experiment}
@@ -280,8 +265,8 @@ Contrary to syntactic restrictions these do, in principle, not affect the outcom
 			Elevator 		& 3.559 			& 0.076 \\
 			Co-housing 		& 55.402			& 0.298
 		\end{tabularx}
-		\label{tbl:exp_speed_standard}
-		\caption{Running times for standard examples without subset test}
+		\label{tbl:exp_speed_no_representative}
+		\caption{Running times for standard examples without representative test}
 	\end{table}
 
 \end{experiment}
@@ -402,13 +387,14 @@ The score is calculated as $1 - \mathit{KD}$.
 % - A On same examples
 % - A Ranging size examples / preferences
 
-\# Q : Noise resistance
+\paragraph{Discussion}
+"Discuss"
 
 \begin{question}
 	What is the influence of noise on the learned optimization criteria?
 \end{question}
 
-\begin{experiment}
+\begin{experiment}[\textsc{Influence of noise}]
 	In order to answer this question, this experiment primarily measures the influence of the amount of inverted rankings in the second approach.
 	The housing example was run for varying fractions of rankings and varying fractions of noise.
 	Figure~\ref{fig:nosplit_noise_noise} shows the effect of increasing noise on the score for several fractions of rankings.
@@ -434,13 +420,22 @@ The score is calculated as $1 - \mathit{KD}$.
 
 \end{experiment}
 
-\begin{experiment}
-	"Splits"
+\begin{experiment}[\textsc{Noise in approach 1}]
+	
+	The influence of noise is similar for approach~1.
+	Figure~\ref{fig:hard_constraints} shows how the standard implementation (with hard constraints for pruning) performs for increasing noise levels.
+
 \end{experiment}
 
 % - C Formulation of rankings (a > b > c vs. a > b, b > c)
 
-\# Q : Influence parameters
+\paragraph{Discussion}
+"Discuss"
+
+
+\begin{question}
+	What is the effect of internal parameters or influences?
+\end{question}
 
 The experiments for this question explore the influence of several factors.
 Unless mentioned otherwise, the experiments will use the following setup as baseline:
@@ -472,6 +467,7 @@ Approach~1, where the fraction of examples in the training set is chosen as $0.4
 	In the clause learning implementation the choice was made to allow hard constraints to prune soft constraints (see section~\ref{sec:clausal_discovery_approach}).
 	This simplfies the model as fewer clauses are learned at the expense of pruning some clauses with discriminative power if the hard constraints just coincidently cover all the given examples.
 	This experiment compares the standard implementation with an alternative implementation that does not allow hard constraints to prune for increasing noise levels.
+	The results can be seen in figure~\ref{fig:hard_constraints}.
 
 	\begin{figure}
 
@@ -484,8 +480,10 @@ Approach~1, where the fraction of examples in the training set is chosen as $0.4
 
 \end{experiment}
 
+\paragraph{Discussion}
+"Discuss"
 
-\# Q : Expressivity
+\# "Q : Expressivity"
 % - A On same examples
 % - N Different underlying models
 

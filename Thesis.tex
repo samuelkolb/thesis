@@ -35,11 +35,14 @@
 \newcommand{\obj}[1]{\ensuremath{#1}}
 
 \newtheorem{definition}{Definition}[chapter]
+\newtheorem{question}{Question}
 \AfterEndEnvironment{definition}{\noindent\ignorespaces}
 
 \theoremstyle{definition}
 \newtheorem{example}{Example}[chapter]
-\AfterEndEnvironment{ex}{\noindent\ignorespaces}
+\newtheorem{observation}{Observation}[chapter]
+\newtheorem{experiment}{Experiment}[question]
+%\AfterEndEnvironment{example}{\noindent\ignorespaces}
 
 \newcommand{\svm}{SVM$^{rank}$}
 \newcommand{\cen}[1]{

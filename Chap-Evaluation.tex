@@ -135,12 +135,15 @@ Background knowledge is used to calculate what is considered as cheap. It also l
 
 \subsection{Speed}
 
+Unless explicitly stated, all problems are run $8$ consecutive times in order to eliminate external influences.
+The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core i7 with 4 cores and hyper threading, 16GB RAM}.
+
 \begin{question}
 	How fast is the clause learning system?
 \end{question}
 
 \begin{experiment}
-	In order to gain an overview over the running times and provide a benchmark for tests on various influences, the standard examples are each run 8 times.
+	In order to gain an overview over the running times and provide a benchmark for tests on various influences, the standard examples are each run using the standard clause learning process.
 	
 	\begin{table}[!htp]
 		\begin{tabularx}{\textwidth}{XXX}
@@ -174,19 +177,37 @@ Background knowledge is used to calculate what is considered as cheap. It also l
 	How do the syntactic restrictions influence the running time?
 \end{question}
 
-\begin{experiment}[Influence range restriction]
+\begin{experiment}[\textsc{Range restriction}]
 	The clause learning algorithm normally only explores range restricted clauses.
-	While this measure positively influences the efficiency of the algorithm, it trades off some expressivity.
-	In this experiment the standard problems are run ($8$ times), while allowing lifting the constraint that clauses must be range restricted.
+	While this measure positively influences the efficiency of the algorithm, it trades off expressiveness.
+	In this experiment the standard problems are run, while allowing lifting the constraint that clauses must be range restricted.
 
 	\begin{table}[!htp]
 		\begin{tabularx}{\textwidth}{XXX}
 			\textbf{Name}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
 			\toprule
-			Map coloring 	& 1.558				& 0.117 \\
-			Sudoku 			& 5.239				& 0.140 \\
-			Elevator 		& 3.678 			& 0.094 \\
-			Co-housing 		& 30.145			& 0.159
+			Map coloring 	& 4.629				& 0.199 \\
+			Sudoku 			& 16.118			& 0.154 \\
+			Elevator 		& 40.453 			& 0.319 \\
+			Co-housing 		& 207.768			& 0.330
+		\end{tabularx}
+		\label{tbl:exp_speed_standard}
+		\caption{Running times for standard examples without range restriction}
+	\end{table}
+
+\end{experiment}
+
+\begin{experiment}[\textsc{Connected clauses}]
+	"Write"
+
+	\begin{table}[!htp]
+		\begin{tabularx}{\textwidth}{XXX}
+			\textbf{Name}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
+			\toprule
+			Map coloring 	& 1.589				& 0.110 \\
+			Sudoku 			& 7.068				& 0.150 \\
+			Elevator 		& 6.157 			& 0.114 \\
+			Co-housing 		& 103.633			& 0.131
 		\end{tabularx}
 		\label{tbl:exp_speed_standard}
 		\caption{Running times for standard examples without range restriction}
@@ -198,13 +219,13 @@ Background knowledge is used to calculate what is considered as cheap. It also l
 "Discuss"
 
 \begin{question}
-	What is the influences of efficiency measures on the running time? "Reformulate"
+	What is the influence of the efficiency measures on the running time?
 \end{question}
 
 There are mainly two measures incorporated in the clause learning algorithm that aim to reduce the running time.
 Contrary to syntactic restrictions these do, in principle, not affect the outcome of the algorithm.
 
-\begin{experiment}
+\begin{experiment}[\textsc{Symmetric predicates}]
 	The first design choice evaluated is the option to provide symmetric predicates.
 	The map coloring example contains a symmetric predicate $\mathit{neighbor}$.
 	By replacing this symmetric predicate with a standard predicate, the influence on the running time can be measured.
@@ -224,7 +245,7 @@ Contrary to syntactic restrictions these do, in principle, not affect the outcom
 	In the non-symmetric version an additional constraint is learned to express the symmetry of the neighbor relation: \cen{$\mathit{neighbor}(c_2, c_1) \leftarrow \mathit{neighbor}(c_1, c_2)$.}
 \end{experiment}
 
-\begin{experiment}
+\begin{experiment}[\textsc{Subset test}]
 	As mentioned in chapter~\ref{cha:meth}, a subset test is used to forestall some entailment tests.
 	In this experiment, the running times without subset test is measured to evaluate the effect of this test.
 	To this end, the standard problems are run without the subset test.
@@ -243,7 +264,27 @@ Contrary to syntactic restrictions these do, in principle, not affect the outcom
 	\end{table}
 \end{experiment}
 
-% - C Influence representative check
+\begin{experiment}[\textsc{Representative test}]
+	The same constraint can often be represented by multiple clauses.
+	In order to avoid generating different clauses but equivalent, the refinement operator defines an order of clauses.
+	If a clause cannot be rewritten as a different clause that occurs earlier in that order, the clause is called representative.
+	This measure leads to a reduction of generated clauses.
+	In this experiment the standard problems are run without this test.
+
+	\begin{table}[!htp]
+		\begin{tabularx}{\textwidth}{XXX}
+			\textbf{Name}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
+			\toprule
+			Map coloring 	& 2.389				& 0.130 \\
+			Sudoku 			& 8.995				& 0.125 \\
+			Elevator 		& 3.559 			& 0.076 \\
+			Co-housing 		& 55.402			& 0.298
+		\end{tabularx}
+		\label{tbl:exp_speed_standard}
+		\caption{Running times for standard examples without subset test}
+	\end{table}
+
+\end{experiment}
 
 \paragraph{Discussion}
 "Discuss"
@@ -270,52 +311,73 @@ Different factors will be explored that influence the results of the clausal opt
 
 \paragraph{Housing}
 The primary example for clausal optimization revolves around housing.
-There are four areas ($A_1, A_2, A_3$ and $A_4$) which have certain characteristics such as whether the area has a low crime rate and is cheap.
+There are three areas ($A_1$, $A_2$ and $A_3$) which have certain characteristics such as whether the area has a low crime rate and is cheap to live in.
 In this example the user is trying to decide 1) where to live, 2) where to work and 3) which school to select.
-Any area can be chosen for living.
-The areas to work in are restricted by the job offers that have been received and only some areas have a school.
-"Redo!"
-\\\\
-\noindent
-\begin{tabularx}{\textwidth}{r|*4{>{\centering\arraybackslash}X}}
-    \textbf{Category} & \textbf{Area 1} & \textbf{Area 2} & \textbf{Area 3} & \textbf{Area 4}  \\
-    \midrule
-    Low crime & x & x & & x \\
-    Cheap & x & & x & \\
-    \midrule
-    Job offer & x & x & & \\
-    School location & & x & x & x \\ 
-\end{tabularx}
-\\\\
-The different possible choices form $24$ distinct examples, whereby $x, y$ and $z$ denote the selected living, work and school areas, respectively. Every example looks like:
-\\\\
-\begin{minipage}{0.5\textwidth}
-	\begin{verbatim*}
-		const Area A1 A2
-		const Area A3 A4
+Any area can be chosen for living and all areas have a school.
+The areas to work in are restricted by the job offers that have been received.
 
-		low_crime(A1)
-		low_crime(A2)
-		low_crime(A4)
-	\end{verbatim*}
-\end{minipage}
-\begin{minipage}{0.5\textwidth}
-	\begin{verbatim*}
-		cheap(A1)
-		cheap(A3)
+\begin{table}[!htp]
+	\begin{tabularx}{\textwidth}{l|r||*3{>{\centering\arraybackslash}X}}
+	    & \textbf{Category} & \textbf{Area 1} & \textbf{Area 2} & \textbf{Area 3} \\
+	    \midrule
+	    \textbf{Properties} & Low crime & x & x & \\
+	    & Cheap & x & & x \\
+	    \midrule
+	    \textbf{Possible} & House & x & x & x \\
+	    \textbf{locations} & Job offer & x & x & \\
+	    & School & x & x & x 
+	\end{tabularx}
+	\label{tbl:setup_housing}
+	\caption{Characteristics and restrictions}
+\end{table}
 
-		live_in(x)
-		work_in(z)
-		school_in(y)
-	\end{verbatim*}
-\end{minipage}
+The different possible choices form $18$ distinct examples.
+Using variables $x, y$ and~$z$ to denote the selected living, work and school areas, respectively, a template example can be formulated as:
+
+\begin{figure}[!htp]
+	\begin{minipage}{0.5\textwidth}
+		\begin{verbatim*}
+			const Area A1 A2
+			const Area A3 A4
+
+			low_crime(A1)
+			low_crime(A2)
+			low_crime(A4)
+		\end{verbatim*}
+	\end{minipage}
+	\begin{minipage}{0.5\textwidth}
+		\begin{verbatim*}
+			cheap(A1)
+			cheap(A3)
+
+			live_in(x)
+			work_in(z)
+			school_in(y)
+		\end{verbatim*}
+	\end{minipage}
+	\label{fig:setup_housing_example_template}
+	\caption{Housing example template}
+\end{figure}
+
+In order to emulate real user preferences, a model is used used to generate pair wise rankings over the examples.
+The standard model consists of $4$ weighted constraints:
+\begin{shiftedflalign*}
+	& \text{ }0.50 : \mathit{low\_crime}(a) \leftarrow \mathit{live\_in}(a) & \\
+	& \text{ }0.25 : \mathit{school\_in}(a) \leftarrow \mathit{work\_in}(a) & \\
+	& \text{ }1.00 : \mathit{low\_crime}(a) \leftarrow \mathit{school\_in}(a) & \\
+	& \text{-}1.00 : \mathit{false} \leftarrow \mathit{live\_in}(a) \land \mathit{cheap}(a) &
+\end{shiftedflalign*}
 
 \subsection{Accuracy}
 
-- Setups% 
+- Setups% ------
+
+\# Q : Expressivity
+% - P On same examples
+% - N Different underlying models
 
 \# Q : How accurate
-% - P Ranging size examples / preferences 
+% - P Ranging size examples / preferences
 
 \# Q : Noise resistance
 % - P Influence noise
@@ -324,7 +386,3 @@ The different possible choices form $24$ distinct examples, whereby $x, y$ and $
 \# Q : Influence parameters
 % - P Tradeoff
 % - P W/wo hard constraints
-
-\# Q : Expressivity
-% - P On same examples
-% - N Different underlying models

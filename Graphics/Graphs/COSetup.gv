@@ -1,0 +1,36 @@
+digraph setup {
+
+	node [fontsize="20"]
+
+	test [label="Test set", shape="box"]
+	train [label="Training\nset", shape="box"]
+ 
+	gen1 [label="Generate\nall pairwise\nrankings", shape="box"]
+	gen2 [label="Generate\nall pairwise\nrankings", shape="box"]
+
+	filter [label="Take subset\nof rankings", shape="box"]
+
+	noise [label="Invert subset\nof rankings", shape="box"]
+
+	learn [label="Learn soft\nconstraints", shape="box"]
+
+	predict [label="Predict\nrankings\ntest set", shape="box"]
+
+	compare [label="Compare ", shape="box"]
+
+	train -> gen1 [label=""]
+	test -> gen2
+
+	gen1 -> filter -> noise -> learn -> predict
+
+	test -> predict
+
+	gen2 -> compare
+	predict -> compare
+
+	rankdir="LR"
+	ranksep = 0.3
+	{rank=same test train}
+	{rank=same gen1 gen2} 
+	{rank=same predict} 
+}

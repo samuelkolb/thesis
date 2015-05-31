@@ -370,19 +370,91 @@ The standard model consists of $4$ weighted constraints:
 
 \subsection{Accuracy}
 
-- Setups% ------
+Generally, the experiments in this section follow one of two approaches.
+In the first approach the available examples are split into two parts: the training and the test set.
+The second approach uses the same examples as training and test set.
+Both approaches then follow the same process, which is visualized in figure~\ref{fig:co_test_setup}.
 
-\# Q : Expressivity
-% - P On same examples
-% - N Different underlying models
+First, all pairwise rankings over the examples in the training set are generated using the model constraints and a fraction of these are selected.
+A fraction of these remaining rankings are then inverted to simulate noise.
+The clausal optimization process is used to generate soft constraints which in turn are used generate pairwise ratings over the test set.
+These pairwise rankings are compared to the pairwise rankings generated over the test set by the model constraints.
+By counting the number of rankings that disagree and dividing this by the total number of rankings, one obtains the Kendall tau distance $\mathit{KD}$.
+The score is calculated as $1 - \mathit{KD}$.
 
-\# Q : How accurate
-% - P Ranging size examples / preferences
+\begin{figure}
+
+	\caption{Clausal optimization testing setup}
+	\centering
+		\includegraphics[width=1\textwidth]{COSetup.pdf}
+	\label{fig:co_test_setup}
+
+\end{figure}
+
+
+\begin{question}
+	How accurately can soft constraints learned through clausal optimization approximate the underlying model?
+\end{question}
+
+
+% - A On same examples
+% - A Ranging size examples / preferences
 
 \# Q : Noise resistance
-% - P Influence noise
+
+\begin{question}
+	What is the influence of noise on the learned optimization criteria?
+\end{question}
+
+\begin{experiment}
+	In order to answer this question, this experiment primarily measures the influence of the amount of inverted rankings in the second approach.
+	The housing example was run for varying fractions of rankings and varying fractions of noise.
+	Figure~\ref{fig:nosplits_noise_noise} shows the effect of increasing noise on the score for several fractions of rankings.
+	On figure~\ref{fig:nosplits_noise_rankings} the effect of increasing the amount of rankings can be seen, when the noise level is fixed.
+
+	\begin{figure}
+
+		\caption{Score for increasing noise}
+		\centering
+			\includegraphics[width=1\textwidth]{nosplit_noise_noise}
+		\label{fig:nosplit_noise_noise}
+
+	\end{figure}
+
+	\begin{figure}
+
+		\caption{Effect of increasing fraction of rankings}
+		\centering
+			\includegraphics[width=1\textwidth]{nosplit_noise_rankings}
+		\label{fig:nosplit_noise_rankings}
+
+	\end{figure}
+
+\end{experiment}
+
+% - A Influence noise
 % - C Formulation of rankings (a > b > c vs. a > b, b > c)
 
 \# Q : Influence parameters
 % - P Tradeoff
-% - P W/wo hard constraints
+
+% \begin{experiment}
+	
+
+% 	\begin{table}[!htp]
+% 		\begin{tabularx}{\textwidth}{XXX}
+% 			\textbf{Hard constraints}	& \textbf{Mean}	& \textbf{StdDev} \\
+% 			\toprule
+% 			Yes & 		0.770 & 0.082 \\
+% 			No & 0.734 & 0.068
+% 		\end{tabularx}
+% 		\label{tbl:exp_speed_symm}
+% 		\caption{Use of hard constraints for pruning}
+% 	\end{table}
+% \end{experiment}
+
+
+\# Q : Expressivity
+% - A On same examples
+% - N Different underlying models
+

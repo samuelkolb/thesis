@@ -10,9 +10,9 @@ The clause learning and clausal optimization workflows will be examined separate
 
 This section attempts to evaluate how well the clause learning system accomplishes the first goal of this thesis.
 There are different aspects to be considered.
-Firstly, the accuracy of the learned clauses will be examined, as well as the influence of several parameters on the accuracy.
-This gives a measure of how well a learned theory approximates the underlying model.
-Secondly, it will be evaluated how efficiently this task is accomplished.
+Firstly, the accuracy of the learned clauses will be examined.
+The influence of the parameters - number of variables and terms per clause - on the accuracy are studied in order to get a better understanding of the clause learning algorithm.
+Secondly, the efficiency with which this task is accomplished will be evaluated.
 Since clausal discovery can take a long time to find a theory on larger examples, it will be important to understand the influence of several factors on the running speed.
 In the last part, the differences between learned clauses and constraints given by a user will be examined.
 
@@ -74,7 +74,18 @@ The use of specific, disjoint types instead of one common (numeric) type for row
 It prevents the use of the same variable for, for example, a row and a column.
 
 \paragraph{Elevator}
-"ELEVATOR"
+The elevator problem is a simple problem with two types: $\mathit{Person}$ and $\mathit{Elevator}$.
+There are three predicates.
+The first predicate it $\mathit{inside}/2$ expressing what elevator a person is in.
+Background knowledge states that every person must be in exactly one elevator.
+Secondly, the $\mathit{crowded}/1$ predicate defines that an elevator is crowded.
+This predicate is calculated using background knowledge, and an elevator is crowded if there are three people in it.
+The last predicate $\mathit{panic}/1$ expresses that a person is in panic.
+There is one constraint: if an elevator is crowded then it is possible that all the people in elevator panic.
+
+There are three examples, two of them contain a crowded elevator and of these two, there is one example where the people in that elevator panicked.
+Therefore, the constraint that a person panicks when inside a crowded elevator holds for \emph{two} out of three examples.
+The threshhold on this problem is chosen as $0.5$.
 
 \paragraph{Co-housing}
 The co-housing problem is a somewhat more complex problem.
@@ -116,46 +127,23 @@ There are $5$~examples that each adhere to $4$~constraints:
 	Do learned theories model the real constraints of a problem?
 \end{question}
 
-\begin{experiment}
+\begin{experiment}[\textsc{Finding constraints}]
 	\label{exp:cd_acc_map_constraints}
-	The standard map coloring problem produces the following constraints:
+	For all problems, the learned clausal theory contains the underlying constraints.
+	Only for the co-housing example there is a constraint, number~3, which is not present explicitly but rather as a combination of other constraints.
+	These theories also contain clauses describing other structural constraints.
+	For example, the map coloring problem produces the following clauses:
 	\begin{shiftedflalign*}
-		\mathit{false} &\leftarrow \mathit{neighbor}(x, x)& \\
-		\mathit{false} &\leftarrow \mathit{color}(x, color1) \land \mathit{color}(x, color2)& \\
-		\mathit{false} &\leftarrow \mathit{color}(x, color1) \land \mathit{neighbor}(x, y)  \land \mathit{color}(y, color1)&
+		\mathit{false} &\leftarrow \mathit{neighbor}(x, x) & \\
+		\mathit{false} &\leftarrow \mathit{color}(x, color_1) \land \mathit{color}(x, color_2)& \\
+		\mathit{false} &\leftarrow \mathit{color}(x, color) \land \mathit{neighbor}(x, y)  \land \mathit{color}(y, color)&
 	\end{shiftedflalign*}
+	The first constraint describes that no country is its own neighbor and the second constraint expresses that no country has two colors.
+	Finally, the third constraints states that no neighboring colors have the same color.
+
 	Recall that variables with different names denote different objects.
-	Thus, for example, in the second clause, $\mathit{color1} \neq \mathit{color2}$.
+	Thus, for example, in the second clause, $\mathit{color_1} \neq \mathit{color_2}$.
 
-	If the number of variables and terms per clause is increased to $4$, additional constraints are learned such as:
-	\begin{shiftedflalign*}
-		\mathit{false} &\leftarrow \mathit{color}(x, color1) \land \mathit{color}(y, color1)  \land \mathit{color}(z, color1)&
-	\end{shiftedflalign*}
-\end{experiment}
-
-\begin{experiment}
-	The correctness of the learned theories can be measured by using the logical solver to test the theories on unseen examples.
-	Theories are inaccurate if they contain too little constraints or too many constraints.
-	In the first case the theory will falsely cover negative examples (false positive), while in the second case it will not cover some positive examples (false negative).
-	For the map coloring problem, the three constraints shown in experiment~\ref{exp:cd_acc_map_constraints} can be verified and for the sudoku problem, solved $9 \times 9$ sudokus can serve as positive examples and negative examples when manipulated (switch two numbers such that the resulting sudoku is wrong).
-
-	"ELEVATOR ANNNNNNND COHOUSING"
-	=> Find constraints
-
-	\begin{table}[!htp]
-		\begin{tabularx}{\textwidth}{XXX}
-			\textbf{Name}	& \textbf{False positives}	& \textbf{False negatives} \\
-			\toprule
-			Map coloring 	& No				& No \\
-			Sudoku 			& No				& No
-		\end{tabularx}
-		\label{tbl:accuracy_standard}
-		\caption{Accuracy standard examples}
-	\end{table}
-
-	The two problems produce correct theories for the standard parameters (number of clauses and terms).
-	As demonstrated in experiment~\ref{exp:cd_acc_map_constraints}, if these are increased, overfitting can occur.
-	The influence of these parameters is discussed in question~\ref{q:cd_acc_influence}.
 \end{experiment}
 
 \paragraph{Discussion}
@@ -167,9 +155,25 @@ There are $5$~examples that each adhere to $4$~constraints:
 	\label{q:cd_acc_influence}
 \end{question}
 
-\begin{experiment}
+\begin{observation}[\textsc{Over-fitting}]
+	Theories are inaccurate if they contain too little constraints or too many constraints.
+	In the first case the theory will falsely cover negative examples (false positive), while in the second case it will not cover some positive examples (false negative).
+	The latter case describes over-fitting, where constraints fit the training data precisely at the expense of excluding unseen positive examples.
+	For clause learning, this phenomenon usually occurs when the number of variables or terms gets too high compared to the size and number of examples.
+
+	To illustrate this, consider clause learning for the map coloring problem where the number of variables and terms is increased to~$4$.
+	Several additional constraints describing details of the provided examples are learned, such as: 
+	\begin{shiftedflalign*}
+		\mathit{false} &\leftarrow \mathit{color}(x, color_1) \land \mathit{color}(y, color_1)  \land \mathit{color}(z, color_1)&
+	\end{shiftedflalign*}
+ 
+\end{observation}
+
+\begin{experiment}[\textsc{Parameters}]
 	\label{exp:cd_acc_influence_par}
-	The influence of the number of variables and terms is illustrated on the sudoku and map coloring problem.
+	The correctness of the learned theories can be measured by using the logical solver to test the theories on unseen examples.
+	By using positive and negative test examples, false positives and false negatives can be detected.
+	This approach is used to measure influence of the number of variables and terms for the map coloring and sudoku problems.
 
 	\begin{table}[!htp]
 		\begin{tabularx}{\textwidth}{lcc|XX}
@@ -210,6 +214,7 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 
 \begin{experiment}
 	In order to gain an overview over the running times and provide a benchmark for tests on various influences, the standard examples are each run using the standard clause learning process.
+	These values are used to calculate normalized scores for other experiments.
 	
 	\begin{table}[!htp]
 		\begin{tabularx}{\textwidth}{XXX}
@@ -238,7 +243,7 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 	In this experiment the running time for these settings is calculated.
 
 	\begin{table}[!htp]
-		\begin{tabularx}{\textwidth}{lcc|XX}
+		\begin{tabularx}{\textwidth}{lcc|XXX}
 			\textbf{Name} & \textbf{Variables} & \textbf{Terms}	& \textbf{Mean (s)} & \textbf{StdDev (s)} \\
 			\toprule
 			Map coloring 	& 2 & 3 & 0.690		& 0.023	\\
@@ -258,11 +263,12 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 
 \end{experiment}
 
-\begin{experiment}
+\begin{experiment}[\textsc{Examples}]
 	Adding more examples takes a toll on the efficiency of the algorithm.
 	This experiment measures the increase of the running time that occurs when examples are added.
 	The sudoku problem is run in two settings: $4$ variables and terms and $6$ variables and terms.
-	Each setting has three rounds, in each round a $9 \times 9$ solved sudoku example is added to the standard example.
+	Each setting has three rounds, in each round an additional $9 \times 9$ solved sudoku example is added.
+	Initially the dataset only contains the standard ($4 \times 4$) example.
 
 	\begin{table}[!htp]
 		\begin{tabularx}{\textwidth}{c|XX|XX}
@@ -288,16 +294,16 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 \begin{experiment}[\textsc{Range restriction}]
 	The clause learning algorithm normally only explores range restricted clauses.
 	While this measure positively influences the efficiency of the algorithm, it trades off expressiveness.
-	In this experiment the standard problems are run, while allowing lifting the constraint that clauses must be range restricted.
+	In this experiment the standard problems are run, while lifting the constraint that clauses must be range restricted.
 
 	\begin{table}[!htp]
-		\begin{tabularx}{\textwidth}{XXX}
-			\textbf{Name}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
+		\begin{tabularx}{\textwidth}{XXXX}
+			\textbf{Name} 	& \textbf{Normalized}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
 			\toprule
-			Map coloring 	& 4.629				& 0.199 \\
-			Sudoku 			& 16.118			& 0.154 \\
-			Elevator 		& 40.453 			& 0.319 \\
-			Co-housing 		& 207.768			& 0.330
+			Map coloring 	& 2.928					& 4.629				& 0.199 \\
+			Sudoku 			& 3.367					& 16.118			& 0.154 \\
+			Elevator 		& 12.713				& 40.453 			& 0.319 \\
+			Co-housing 		& 8.021					& 207.768			& 0.330
 		\end{tabularx}
 		\label{tbl:exp_speed_no_range}
 		\caption{Running times for standard examples without range restriction}
@@ -306,16 +312,18 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 \end{experiment}
 
 \begin{experiment}[\textsc{Connected clauses}]
-	"Write"
+	Clauses are constructed such that they are connected.
+	This is another restriction that decreases the size of the search space.
+	The following table shows running times while allowing disconnected clauses.
 
 	\begin{table}[!htp]
-		\begin{tabularx}{\textwidth}{XXX}
-			\textbf{Name}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
+		\begin{tabularx}{\textwidth}{XXXX}
+			\textbf{Name}	& \textbf{Normalized}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
 			\toprule
-			Map coloring 	& 1.589				& 0.110 \\
-			Sudoku 			& 7.068				& 0.150 \\
-			Elevator 		& 6.157 			& 0.114 \\
-			Co-housing 		& 103.633			& 0.131
+			Map coloring 	& 1.005					& 1.589				& 0.110 \\
+			Sudoku 			& 1.476					& 7.068				& 0.150 \\
+			Elevator 		& 1.935					& 6.157 			& 0.114 \\
+			Co-housing 		& 4.001					& 103.633			& 0.131
 		\end{tabularx}
 		\label{tbl:exp_speed_no_connect}
 		\caption{Running times for standard examples without connectivity}
@@ -342,8 +350,8 @@ Contrary to syntactic restrictions these do, in principle, not affect the outcom
 		\begin{tabularx}{\textwidth}{XXX}
 			\textbf{Name}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
 			\toprule
-			Standard & 1.581 & 0.117 \\
-			Non-symmetric & 2.541 & 0.128 \\
+			Standard 		& 1.581 			& 0.117 \\
+			Non-symmetric 	& 2.541 			& 0.128 \\
 		\end{tabularx}
 		\label{tbl:exp_speed_symm}
 		\caption{Running times symmetric vs. non-symmetric map coloring}
@@ -359,13 +367,13 @@ Contrary to syntactic restrictions these do, in principle, not affect the outcom
 	To this end, the standard problems are run without the subset test.
 
 	\begin{table}[!htp]
-		\begin{tabularx}{\textwidth}{XXX}
-			\textbf{Name}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
+		\begin{tabularx}{\textwidth}{XXXX}
+			\textbf{Name}	& \textbf{Normalized}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
 			\toprule
-			Map coloring 	& 1.558				& 0.117 \\
-			Sudoku 			& 5.239				& 0.140 \\
-			Elevator 		& 3.678 			& 0.094 \\
-			Co-housing 		& 30.145			& 0.159
+			Map coloring 	& 0.985					& 1.558				& 0.117 \\
+			Sudoku 			& 1.094					& 5.239				& 0.140 \\
+			Elevator 		& 1.156					& 3.678 			& 0.094 \\
+			Co-housing 		& 1.164					& 30.145			& 0.159
 		\end{tabularx}
 		\label{tbl:exp_speed_no_subset}
 		\caption{Running times for standard examples without subset test}
@@ -380,13 +388,13 @@ Contrary to syntactic restrictions these do, in principle, not affect the outcom
 	In this experiment the standard problems are run without this test.
 
 	\begin{table}[!htp]
-		\begin{tabularx}{\textwidth}{XXX}
-			\textbf{Name}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
+		\begin{tabularx}{\textwidth}{XXXX}
+			\textbf{Name}	& \textbf{Normalized}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
 			\toprule
-			Map coloring 	& 2.389				& 0.130 \\
-			Sudoku 			& 8.995				& 0.125 \\
-			Elevator 		& 3.559 			& 0.076 \\
-			Co-housing 		& 55.402			& 0.298
+			Map coloring 	& 1.511					& 2.389				& 0.130 \\
+			Sudoku 			& 1.879					& 8.995				& 0.125 \\
+			Elevator 		& 1.118					& 3.559 			& 0.076 \\
+			Co-housing 		& 2.139					& 55.402			& 0.298
 		\end{tabularx}
 		\label{tbl:exp_speed_no_representative}
 		\caption{Running times for standard examples without representative test}
@@ -396,6 +404,7 @@ Contrary to syntactic restrictions these do, in principle, not affect the outcom
 
 \paragraph{Discussion}
 "Discuss"
+Subset > more background knowledge > faster
 
 \subsection{Compared to human}
 
@@ -405,7 +414,7 @@ This section will briefly examine how learned clauses compare to human programme
 	What is the relation between machine learned and user provided clauses?
 \end{question}
 
-\begin{experiment}
+\begin{observation}[\textsc{Map coloring example}]
 \label{exp:cd_user_show}
 	The map coloring problem is simple but can be used to compare the machine learned to human learned constraints.
 	For the map coloring problem a theory is provided on the website of the IDP system.
@@ -416,23 +425,54 @@ This section will briefly examine how learned clauses compare to human programme
 		color(x) \neq color(y) \leftarrow neighbor(x,y) \lor neighbor(y,x).
 	\end{shiftedflalign*}
 
-\end{experiment}
-
+\end{observation}
 
 \begin{experiment}[\textsc{Speed}]
-	This experiment measures the running time of a learned theory versus a human programmed theory.
-	"Rewrite"
-	The example used is map coloring, and a human implementation for this problem has been obtained from the IDP examples site [!! "footnote"].
-	The human made theory uses a function to assign colors instead of a predicate, aside from this the types and predicates are the same as in the standard map coloring example.
+	This experiment measures the running time of learned theories versus human programmed theories.
+	It does so by solving a new problem using the learned and existing theory using IDP.
+	The human theories have been taken from the IDP website.
+	For three different cases model expansion is run and the \emph{CPU time} is measured in IDP\footnote{Measured using LUAs inbuilt $os.clock()$}.
+
+	The first case is map coloring.
+	In the human made theory a function is used to assign colors instead of a predicate.
+	Aside from this, the types and predicates are the same as in the standard map coloring example.
 	There are two changes that have to be made for generated theory to work on the same examples as the human theory.
-	Since the solver is now used to generate solutions, an extra clause has to be added to assure that every color is assigned a color:
+	Since the solver is now used to generate solutions, an extra formula has to be added to assure that every country is assigned a color:
 	\cen{$\forall \mathit{country}\  \exists \mathit{color} : \mathit{color}(\mathit{country}, \mathit{color}).$}
 	Additionally, since the clause learning problem makes use of a symmetric predicate, $\mathit{neighbor}(x, y)$ is replaced by $\mathit{neighbor}(x, y) \lor \mathit{neighbor(y,x)}$.
+	The example used is a Leighton graph with $450$ nodes and $9803$ edges\footnote{\url{http://map.gsia.cmu.edu/COLOR/instances/le450_5c.col}}, which is converted to an IDP structure.
 
-	The example used is a Leighton graph with $450$ nodes and $9803$ edges\footnote{\url{http://map.gsia.cmu.edu/COLOR/instances/le450_5c.col}}.
-	This graph is converted into an IDP structure and the CPU time\footnote{Measured by LUAs inbuilt $os.clock()$} of running model-expansion to find the colors for both the human and learned theory is measured.
+	The second case is sudoku.
+	The human theory for this example is quite different - and more concise - than the learned theory.
+	Therefore, the example sudoku\footnote{\url{http://www.menneske.no/sudoku/eng/showpuzzle.html?number=6913714}} has been translated into two structures, one for each theory.
+	Again, the addition of an extra formula is necessary to enforce a value for each cell in the learned theory: 
+	\cen{$\forall \mathit{cell}\  \exists \mathit{value} : \mathit{value}(\mathit{cell}, \mathit{value}).$}
 
-	"Sudoku explanation"
+	The third case is a variant on sudoku, to correct for a potential performance benefit.
+	In the human theory blocks are automatically calculated based on the row and column while they are direct input for the learned theory.
+	The corrected learned theory also calculates the blocks using an adapted version of the responsible formula.
+
+	% \begin{figure}
+	% 	\centering
+	% 	\begin{tabular}{|ccc|ccc|ccc|}
+	% 		\hline
+	% 		  & 9 &   & 7 & &  	&   &   &   \\
+	% 		4 &   &   &   & &  	& 3 &   & 1 \\
+	% 		  &   &   & 4 & &  	& 5 &   &   \\
+	% 		\hline
+	% 		  &   &   & 9 & &  	&   & 7 & 8 \\
+	% 		  &   &   &   & &  	&   &   &   \\
+	% 		  & 8 & 6 &   & & 3	& 2 &   &   \\
+	% 		\hline
+	% 		  &   & 4 &   & & 6	&   &   &   \\
+	% 		  &   & 8 &   & &  	& 1 & 2 & 6 \\
+	% 		  & 1 &   &   & & 5	&   &   &   \\
+	% 		\hline
+	% 	\end{tabular}
+	% 	\label{fig:sudoku_example}
+	% 	\caption{"Impossible"-difficulty sudoku}
+	% \end{figure}
+
 
 	\begin{table}[!htp]
 		\begin{tabularx}{\textwidth}{lr|XX}
@@ -446,23 +486,18 @@ This section will briefly examine how learned clauses compare to human programme
 			& Corrected & $0.310$ & $0.012$
 		\end{tabularx}
 		\label{tbl:speed_human_machine}
-		\caption{Running times human vs.~learned theory}
+		\caption{CPU times human vs.~learned theory}
 	\end{table}
 
 \end{experiment}
 
 \paragraph{Discussion}
 "Discuss"
-
  - P Damaging vs. errors
-
  - P No redundant clauses (user modelling knows what he wants)
-
-
  - P More expressiveness
-
- Expert users can make better use of the logical solver to solve problems faster.
- However, running time is usually not the primary concern when using logical constraint solvers.
+Expert users can make better use of the logical solver to solve problems faster.
+However, running time is usually not the primary concern when using logical constraint solvers.
 
 
 \section{Optimization}
@@ -564,8 +599,11 @@ Experiments are usually run $8$ times in a row, mainly to account for the random
 
 \begin{experiment}[\textsc{Accuracy approach 1}]
 
-		"Some explanation?"
-		\begin{figure}
+	To asses the accuracy of the optimization criteria obtained by the clausal optimization process, scores for the housing example are calculated using approach~1.
+	Figure~\ref{fig:accuracy_splits_rankings} shows the scores for increasing fractions of rankings for different - constant - fractions of examples in the training set.
+	In figure~\ref{fig:accuracy_splits_training} the fractions of rankings are kept constant while the size of the training set is increased.
+
+	\begin{figure}
 
 		\caption{Effect of increasing fraction of rankings}
 		\centering
@@ -587,7 +625,9 @@ Experiments are usually run $8$ times in a row, mainly to account for the random
 
 \begin{experiment}[\textsc{Accuracy approach 2}]
 
-		"Write" 
+		In approach~2 all examples are known, only the amount of rankings over the examples is limited.
+		This allows the clause learning system to identify clauses on all examples and measure the quality of the weight assignment to soft constraints.
+
 		\begin{table}[!htp]
 		\begin{tabularx}{\textwidth}{XXX}
 			\textbf{Fraction rankings}	& \textbf{Mean score}	& \textbf{StdDev} \\
@@ -598,11 +638,15 @@ Experiments are usually run $8$ times in a row, mainly to account for the random
 		\end{tabularx}
 		\label{tbl:exp_acc_approach2}
 		\caption{Accuracy obtained using approach~2}
+
+		Table~\ref{tbl:exp_acc_approach2} shows scores for small fractions of (noiseless) examples.
+		For larger fractions the score approaches $1.0$.
 	\end{table}
 
 \end{experiment}
 
-\begin{experiment}[\textsc{Compare top score}]
+\begin{experiment}[\textsc{Compare optimal solution}]
+	An alternative approach is to compare optimal solutions of the underlying and generated model.
 	By solving the standard constraints, an optimal solution can be calculated:
 	\begin{verbatim}
 		live_in(A3), work_in(A1), school_in(A1)
@@ -710,9 +754,9 @@ Approach~1, where the fraction of examples in the training set is chosen as $0.4
 
 \end{experiment}
 
-\begin{experiment}[\textsc{Other kernel}]
-	"Think about"
-\end{experiment}
+% \begin{experiment}[\textsc{Other kernel}]
+% 	"Think about"
+% \end{experiment}
 
 \begin{experiment}
 	

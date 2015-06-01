@@ -34,7 +34,7 @@ The first example (figure~\ref{fig:setup_mapcolor_benelux}) features two colors,
   \includegraphics[height=3.5cm]{MapColoringBenelux.pdf}
   \caption{Map coloring example 1}
   \label{fig:setup_mapcolor_benelux}
-\end{minipage}%
+\end{minipage}
 \begin{minipage}{.5\textwidth}
   \centering
   \includegraphics[height=3.5cm]{MapColoringBenede.pdf}
@@ -74,6 +74,7 @@ The use of specific, disjoint types instead of one common (numeric) type for row
 It prevents the use of the same variable for, for example, a row and a column.
 
 \paragraph{Elevator}
+"ELEVATOR"
 
 \paragraph{Co-housing}
 The co-housing problem is a somewhat more complex problem.
@@ -98,7 +99,9 @@ Two friends (persons) are looking at different situations (areas) to live and wo
 	\end{verbatim*}
 \end{minipage}
 
-Background knowledge is used to calculate what is considered as cheap. It also limits the amount of people to $2$ and expresses that every area has only one cost. There are $5$~examples that each adhere to $4$~constraints:
+Background knowledge is used to calculate what is considered as cheap.
+It also limits the amount of people to $2$ and expresses that every area has only one cost.
+There are $5$~examples that each adhere to $4$~constraints:
 
 \begin{enumerate}
 	\item If the two persons do not live in the same area, they work in the same area.
@@ -109,14 +112,92 @@ Background knowledge is used to calculate what is considered as cheap. It also l
 
 \subsection{Accuracy}
 
-\# Q : Does the learned theory express the model
-% - P Observation (Additional [-> IDP?] | Essential | Damaging)
-% - N Test examples
+\begin{question}
+	Do learned theories model the real constraints of a problem?
+\end{question}
 
-\# Q : Influence parameters
-% - C Influence number terms / variables
-% - N Dependent of size / number of examples
-% - C Influence range restriction
+\begin{experiment}
+	\label{exp:cd_acc_map_constraints}
+	The standard map coloring problem produces the following constraints:
+	\begin{shiftedflalign*}
+		\mathit{false} &\leftarrow \mathit{neighbor}(x, x)& \\
+		\mathit{false} &\leftarrow \mathit{color}(x, color1) \land \mathit{color}(x, color2)& \\
+		\mathit{false} &\leftarrow \mathit{color}(x, color1) \land \mathit{neighbor}(x, y)  \land \mathit{color}(y, color1)&
+	\end{shiftedflalign*}
+	Recall that variables with different names denote different objects.
+	Thus, for example, in the second clause, $\mathit{color1} \neq \mathit{color2}$.
+
+	If the number of variables and terms per clause is increased to $4$, additional constraints are learned such as:
+	\begin{shiftedflalign*}
+		\mathit{false} &\leftarrow \mathit{color}(x, color1) \land \mathit{color}(y, color1)  \land \mathit{color}(z, color1)&
+	\end{shiftedflalign*}
+\end{experiment}
+
+\begin{experiment}
+	The correctness of the learned theories can be measured by using the logical solver to test the theories on unseen examples.
+	Theories are inaccurate if they contain too little constraints or too many constraints.
+	In the first case the theory will falsely cover negative examples (false positive), while in the second case it will not cover some positive examples (false negative).
+	For the map coloring problem, the three constraints shown in experiment~\ref{exp:cd_acc_map_constraints} can be verified and for the sudoku problem, solved $9 \times 9$ sudokus can serve as positive examples and negative examples when manipulated (switch two numbers such that the resulting sudoku is wrong).
+
+	"ELEVATOR ANNNNNNND COHOUSING"
+	=> Find constraints
+
+	\begin{table}[!htp]
+		\begin{tabularx}{\textwidth}{XXX}
+			\textbf{Name}	& \textbf{False positives}	& \textbf{False negatives} \\
+			\toprule
+			Map coloring 	& No				& No \\
+			Sudoku 			& No				& No
+		\end{tabularx}
+		\label{tbl:accuracy_standard}
+		\caption{Accuracy standard examples}
+	\end{table}
+
+	The two problems produce correct theories for the standard parameters (number of clauses and terms).
+	As demonstrated in experiment~\ref{exp:cd_acc_map_constraints}, if these are increased, overfitting can occur.
+	The influence of these parameters is discussed in question~\ref{q:cd_acc_influence}.
+\end{experiment}
+
+\paragraph{Discussion}
+"Discuss"
+
+
+\begin{question}
+	What is the influence of the parameters on the accuracy?
+	\label{q:cd_acc_influence}
+\end{question}
+
+\begin{experiment}
+	\label{exp:cd_acc_influence_par}
+	The influence of the number of variables and terms is illustrated on the sudoku and map coloring problem.
+
+	\begin{table}[!htp]
+		\begin{tabularx}{\textwidth}{lcc|XX}
+			\textbf{Name} & \textbf{Variables} & \textbf{Terms}	& \textbf{False positives} & \textbf{False negatives} \\
+			\toprule
+			Map coloring & 2 & 3 & x &   \\
+			& 3 & 3 &   &   \\
+			& 4 & 3 &   & x \\
+			\midrule
+			Sudoku & 3 & 3 & x	&   \\
+			& 4 & 4 &   	&   \\
+			& 6 & 4 &   	&   \\
+			& 4 & 6 &   	&   \\
+			& 5 & 5 &   	&   \\
+			& 6 & 6 &   	& x
+		\end{tabularx}
+		\label{tbl:cd_acc_influence}
+		\caption{Influence of number of variables and terms}
+	\end{table}
+
+\end{experiment}
+
+\paragraph{Discussion}
+	Overfitting can be avoided by adding more or larger examples.
+	For the sudoku problem, adding one $9 \times 9$ example solves overfitting with $6$ variables and $6$ terms.
+"Discuss"
+Influence range restriction?
+
 
 \subsection{Speed}
 
@@ -145,18 +226,60 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 
 \end{experiment}
 
-% - N Compared with others?
-
 \paragraph{Discussion}
 "Discuss"
 
 \begin{question}
-	What is the influence of the various parameters and input data?
+	What is the influence of the parameters and input data on the running time?
 \end{question}
 
-% - C Influence number terms / variables
-% - N Influence number examples
-% - N Influence arity
+\begin{experiment}[\textsc{Parameters}]
+	Experiment~\ref{exp:cd_acc_influence_par} showed the influence of the parameters on the accuracy of the algorithm.
+	In this experiment the running time for these settings is calculated.
+
+	\begin{table}[!htp]
+		\begin{tabularx}{\textwidth}{lcc|XX}
+			\textbf{Name} & \textbf{Variables} & \textbf{Terms}	& \textbf{Mean (s)} & \textbf{StdDev (s)} \\
+			\toprule
+			Map coloring 	& 2 & 3 & 0.690		& 0.023	\\
+							& 3 & 3 & 1.511		& 0.053	\\
+							& 4 & 3 & 2.223		& 0.072	\\
+			\midrule	
+			Sudoku 			& 3 & 3 & 1.258		& 0.023	\\
+							& 4 & 4 & 4.768		& 0.058	\\
+							& 6 & 4 & 6.269		& 0.050	\\
+							& 4 & 6 & 4.746		& 0.047	\\
+							& 5 & 5 & 25.995	& 0.168	\\
+							& 6 & 6 & 49.163	& 0.267
+		\end{tabularx}
+		\label{tbl:cd_speed_influence}
+		\caption{Influence of number of variables and terms}
+	\end{table}
+
+\end{experiment}
+
+\begin{experiment}
+	Adding more examples takes a toll on the efficiency of the algorithm.
+	This experiment measures the increase of the running time that occurs when examples are added.
+	The sudoku problem is run in two settings: $4$ variables and terms and $6$ variables and terms.
+	Each setting has three rounds, in each round a $9 \times 9$ solved sudoku example is added to the standard example.
+
+	\begin{table}[!htp]
+		\begin{tabularx}{\textwidth}{c|XX|XX}
+			\textbf{$9 \times 9$ sudokus} & \textbf{Terms}	& \textbf{Mean (s)} & \textbf{StdDev (s)} \\
+			\toprule
+			0 & 4.768 & 0.058	& 49.163	& 0.267	\\
+			1 & 5.862 & 0.060	& 63.801	& 0.769	\\
+			2 & 7.026 & 0.112	& 80.489	& 0.287	\\
+			3 & 7.967 & 0.087	& 99.640	& 0.488	\\
+		\end{tabularx}
+		\label{tbl:cd_speed_examples}
+		\caption{Influence of number of variables and terms}
+	\end{table}
+\end{experiment}
+
+\paragraph{Discussion}
+"Discuss"
 
 \begin{question}
 	How do the syntactic restrictions influence the running time?
@@ -276,16 +399,71 @@ Contrary to syntactic restrictions these do, in principle, not affect the outcom
 
 \subsection{Compared to human}
 
+This section will briefly examine how learned clauses compare to human programmed theories.
+
 \begin{question}
 	What is the relation between machine learned and user provided clauses?
 \end{question}
 
-% - P Damaging vs. errors
-% - P No redundant clauses
-% - P More expressiveness
+\begin{experiment}
+\label{exp:cd_user_show}
+	The map coloring problem is simple but can be used to compare the machine learned to human learned constraints.
+	For the map coloring problem a theory is provided on the website of the IDP system.
+	This examples uses similar types and predicates, with the exception of using a \emph{function} instead of a predicate for the color.
+	Types and predicates have been renamed in order to correspond with the names used in the standard example.  
+
+	\begin{shiftedflalign*}
+		color(x) \neq color(y) \leftarrow neighbor(x,y) \lor neighbor(y,x).
+	\end{shiftedflalign*}
+
+\end{experiment}
+
+
+\begin{experiment}[\textsc{Speed}]
+	This experiment measures the running time of a learned theory versus a human programmed theory.
+	"Rewrite"
+	The example used is map coloring, and a human implementation for this problem has been obtained from the IDP examples site [!! "footnote"].
+	The human made theory uses a function to assign colors instead of a predicate, aside from this the types and predicates are the same as in the standard map coloring example.
+	There are two changes that have to be made for generated theory to work on the same examples as the human theory.
+	Since the solver is now used to generate solutions, an extra clause has to be added to assure that every color is assigned a color:
+	\cen{$\forall \mathit{country}\  \exists \mathit{color} : \mathit{color}(\mathit{country}, \mathit{color}).$}
+	Additionally, since the clause learning problem makes use of a symmetric predicate, $\mathit{neighbor}(x, y)$ is replaced by $\mathit{neighbor}(x, y) \lor \mathit{neighbor(y,x)}$.
+
+	The example used is a Leighton graph with $450$ nodes and $9803$ edges\footnote{\url{http://map.gsia.cmu.edu/COLOR/instances/le450_5c.col}}.
+	This graph is converted into an IDP structure and the CPU time\footnote{Measured by LUAs inbuilt $os.clock()$} of running model-expansion to find the colors for both the human and learned theory is measured.
+
+	"Sudoku explanation"
+
+	\begin{table}[!htp]
+		\begin{tabularx}{\textwidth}{lr|XX}
+			\textbf{Name} & \textbf{Theory} & \textbf{Mean (s)} & \textbf{StdDev (s)} \\
+			\toprule
+			Map coloring & Human & $0.968$ & $0.023$ \\
+			& Learned & $0.403$ & $0.015$ \\
+			\midrule
+			Sudoku & Human & $1.453$ & $0.018$ \\ 
+			& Learned & $0.156$ & $0.008$ \\
+			& Corrected & $0.310$ & $0.012$
+		\end{tabularx}
+		\label{tbl:speed_human_machine}
+		\caption{Running times human vs.~learned theory}
+	\end{table}
+
+\end{experiment}
 
 \paragraph{Discussion}
 "Discuss"
+
+ - P Damaging vs. errors
+
+ - P No redundant clauses (user modelling knows what he wants)
+
+
+ - P More expressiveness
+
+ Expert users can make better use of the logical solver to solve problems faster.
+ However, running time is usually not the primary concern when using logical constraint solvers.
+
 
 \section{Optimization}
 This section examines how well the second goal of the thesis, the learning of optimization criteria, has been accomplished.
@@ -378,14 +556,89 @@ The score is calculated as $1 - \mathit{KD}$.
 
 \end{figure}
 
+Experiments are usually run $8$ times in a row, mainly to account for the randomness in selecting examples, rankings and noise.
 
 \begin{question}
 	How accurately can soft constraints learned through clausal optimization approximate the underlying model?
 \end{question}
 
+\begin{experiment}[\textsc{Accuracy approach 1}]
 
-% - A On same examples
-% - A Ranging size examples / preferences
+		"Some explanation?"
+		\begin{figure}
+
+		\caption{Effect of increasing fraction of rankings}
+		\centering
+			\includegraphics[width=.8\textwidth]{accuracy_splits_rankings}
+		\label{fig:accuracy_splits_rankings}
+
+	\end{figure}
+
+	\begin{figure}
+
+		\caption{Effect of increasing training set fraction}
+		\centering
+			\includegraphics[width=.8\textwidth]{accuracy_splits_training}
+		\label{fig:accuracy_splits_training}
+
+	\end{figure}
+
+\end{experiment}
+
+\begin{experiment}[\textsc{Accuracy approach 2}]
+
+		"Write" 
+		\begin{table}[!htp]
+		\begin{tabularx}{\textwidth}{XXX}
+			\textbf{Fraction rankings}	& \textbf{Mean score}	& \textbf{StdDev} \\
+			\toprule
+			0.1 	& 0.855		& 0.050 \\
+			0.2 	& 0.930		& 0.046 \\
+			0.3 	& 0.980 	& 0.014 \\
+		\end{tabularx}
+		\label{tbl:exp_acc_approach2}
+		\caption{Accuracy obtained using approach~2}
+	\end{table}
+
+\end{experiment}
+
+\begin{experiment}[\textsc{Compare top score}]
+	By solving the standard constraints, an optimal solution can be calculated:
+	\begin{verbatim}
+		live_in(A3), work_in(A1), school_in(A1)
+	\end{verbatim}
+	This solution fulfills constraints two and three and thus receives a score of $1.25$.
+	Running clausal discovery with a training set and ranking fraction of $0.4$ resuls in a set of soft constraints.
+	Solving for these constraints returns the optimal solution according to those constraints.
+	\begin{verbatim}
+		live_in(A3), work_in(A2), school_in(A2)
+	\end{verbatim}
+	The standard model can then be used to assign a score to this example and in this case the score is also $1.25$.
+\end{experiment}
+
+\begin{experiment}[\textsc{Underlying model}]
+	The underlying model does not have to be generated using constraints.
+	In fact, little assumptions can be made about the real preferences a user has.
+	While clausal theories are theoretically very expressive, some important restrictions have been placed on it.
+	By using a model that features disconnected clauses, the accuracy of the clausal optimization system can be tested for models it cannot exactly learn.
+	Figure~\ref{fig:co_acc_model} shows the scores obtained on the alternative model consisting of:
+
+	\begin{shiftedflalign*}
+		& \text{ }0.50 : \mathit{false} \leftarrow \mathit{live\_in}(a_1) \land \textit{school\_in}(a_2) & \\
+		& \text{ }0.50 : \mathit{false} \leftarrow \mathit{live\_in}(a_1) \land \textit{work\_in}(a_2) &
+	\end{shiftedflalign*}
+
+	\begin{figure}
+
+		\caption{Comparison with disconnected clauses}
+		\centering
+			\includegraphics[width=.8\textwidth]{model}
+		\label{fig:co_acc_model}
+
+	\end{figure}
+
+
+\end{experiment}
 
 \paragraph{Discussion}
 "Discuss"
@@ -427,11 +680,8 @@ The score is calculated as $1 - \mathit{KD}$.
 
 \end{experiment}
 
-% - C Formulation of rankings (a > b > c vs. a > b, b > c)
-
 \paragraph{Discussion}
 "Discuss"
-
 
 \begin{question}
 	What is the effect of internal parameters or influences?
@@ -440,8 +690,6 @@ The score is calculated as $1 - \mathit{KD}$.
 The experiments for this question explore the influence of several factors.
 Unless mentioned otherwise, the experiments will use the following setup as baseline:
 Approach~1, where the fraction of examples in the training set is chosen as $0.4$ and the fraction of rankings is also set to $0.4$.
-
-% - P other kernel
 
 \begin{experiment}
 	
@@ -460,6 +708,10 @@ Approach~1, where the fraction of examples in the training set is chosen as $0.4
 
 	\end{figure}
 
+\end{experiment}
+
+\begin{experiment}[\textsc{Other kernel}]
+	"Think about"
 \end{experiment}
 
 \begin{experiment}
@@ -482,8 +734,3 @@ Approach~1, where the fraction of examples in the training set is chosen as $0.4
 
 \paragraph{Discussion}
 "Discuss"
-
-\# "Q : Expressivity"
-% - A On same examples
-% - N Different underlying models
-

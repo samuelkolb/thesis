@@ -96,7 +96,6 @@ Two friends (persons) are looking at different situations (areas) to live and wo
 		type Area
 		type Person
 		type Cost > nat
-
 		calc cheap(Cost)
 	\end{verbatim*}
 \end{minipage}
@@ -105,10 +104,10 @@ Two friends (persons) are looking at different situations (areas) to live and wo
 		pred live(Person, Area)
 		pred work(Person, Area)
 		pred car(Person)
-
 		pred cost(Area, Cost)
 	\end{verbatim*}
 \end{minipage}
+\\\\
 
 Background knowledge is used to calculate what is considered as cheap.
 It also limits the amount of people to $2$ and expresses that every area has only one cost.
@@ -127,10 +126,10 @@ There are $5$~examples that each adhere to $4$~constraints:
 	Do learned theories model the real constraints of a problem?
 \end{question}
 
-\begin{experiment}[\textsc{Finding constraints}]
+\begin{observation}[\textsc{Finding constraints}]
 	\label{exp:cd_acc_map_constraints}
-	For all problems, the learned clausal theory contains the underlying constraints.
-	Only for the co-housing example there is a constraint, number~3, which is not present explicitly but rather as a combination of other constraints.
+	For all problems, the learned clausal theory contains all the underlying constraints.
+	Only for the co-housing example there is a constraint, number~3, which is not represented explicitly but rather as a combination of other constraints.
 	These theories also contain clauses describing other structural constraints.
 	For example, the map coloring problem produces the following clauses:
 	\begin{shiftedflalign*}
@@ -139,16 +138,20 @@ There are $5$~examples that each adhere to $4$~constraints:
 		\mathit{false} &\leftarrow \mathit{color}(x, color) \land \mathit{neighbor}(x, y)  \land \mathit{color}(y, color)&
 	\end{shiftedflalign*}
 	The first constraint describes that no country is its own neighbor and the second constraint expresses that no country has two colors.
-	Finally, the third constraints states that no neighboring colors have the same color.
+	Finally, the third constraints states that no neighboring countries have the same color.
 
 	Recall that variables with different names denote different objects.
 	Thus, for example, in the second clause, $\mathit{color_1} \neq \mathit{color_2}$.
 
-\end{experiment}
+\end{observation}
 
 \paragraph{Discussion}
-"Discuss"
+The clause learning is able to find the essential constraints, both for hard constraints as for soft constraints.
+It does so even in settings when there are multiple independent constraints over relatively few predicates.
+In such cases the pruning inside the algorithm can prevent explicit representations of some constraints.
 
+Aside from the essential constraints it contains constraints that model other implicit constraints.
+Such additional constraints can often be useful for constraint solving.
 
 \begin{question}
 	What is the influence of the parameters on the accuracy?
@@ -157,38 +160,32 @@ There are $5$~examples that each adhere to $4$~constraints:
 
 \begin{observation}[\textsc{Over-fitting}]
 	Theories are inaccurate if they contain too little constraints or too many constraints.
-	In the first case the theory will falsely cover negative examples (false positive), while in the second case it will not cover some positive examples (false negative).
-	The latter case describes over-fitting, where constraints fit the training data precisely at the expense of excluding unseen positive examples.
+	In the first case the theory will falsely cover negative examples (false positive), while in the second case it will not cover examples that are solutions to the problem(false negative).
+	The latter case describes over-fitting, where constraints fit the training data too precisely, at the expense of excluding unseen positive examples.
 	For clause learning, this phenomenon usually occurs when the number of variables or terms gets too high compared to the size and number of examples.
 
-	To illustrate this, consider clause learning for the map coloring problem where the number of variables and terms is increased to~$4$.
+	To illustrate this, consider clause learning for the map coloring problem, where the number of variables and terms is increased to~$4$.
 	Several additional constraints describing details of the provided examples are learned, such as: 
 	\begin{shiftedflalign*}
 		\mathit{false} &\leftarrow \mathit{color}(x, color_1) \land \mathit{color}(y, color_1)  \land \mathit{color}(z, color_1)&
 	\end{shiftedflalign*}
- 
+ 	Which expresses that there are no three countries that have the same color.
 \end{observation}
 
 \begin{experiment}[\textsc{Parameters}]
 	\label{exp:cd_acc_influence_par}
-	The correctness of the learned theories can be measured by using the logical solver to test the theories on unseen examples.
+	The correctness of the learned theories can be measured by using a logical solver to test the theories on unseen examples.
 	By using positive and negative test examples, false positives and false negatives can be detected.
 	This approach is used to measure influence of the number of variables and terms for the map coloring and sudoku problems.
+	(\emph{Variables} $\times$ \emph{Terms})
 
 	\begin{table}[!htp]
-		\begin{tabularx}{\textwidth}{lcc|XX}
-			\textbf{Name} & \textbf{Variables} & \textbf{Terms}	& \textbf{False positives} & \textbf{False negatives} \\
+		\begin{tabularx}{\textwidth}{l|ll}
+			 & \textbf{Map coloring}		& \textbf{Sudoku} \\
 			\toprule
-			Map coloring & 2 & 3 & x &   \\
-			& 3 & 3 &   &   \\
-			& 4 & 3 &   & x \\
-			\midrule
-			Sudoku & 3 & 3 & x	&   \\
-			& 4 & 4 &   	&   \\
-			& 6 & 4 &   	&   \\
-			& 4 & 6 &   	&   \\
-			& 5 & 5 &   	&   \\
-			& 6 & 6 &   	& x
+			False negative 	& $2 \times 3$				& $3 \times 3$ \\
+			Correct 		& $3 \times 3$				& $4 \times 4$, $5 \times 5$, $6 \times 4$, $4 \times 6$ \\
+			False positive 	& $4 \times 3$				& $6 \times 6$	\\
 		\end{tabularx}
 		\label{tbl:cd_acc_influence}
 		\caption{Influence of number of variables and terms}
@@ -197,12 +194,21 @@ There are $5$~examples that each adhere to $4$~constraints:
 \end{experiment}
 
 \paragraph{Discussion}
-	Overfitting can be avoided by adding more or larger examples.
-	For the sudoku problem, adding one $9 \times 9$ example solves overfitting with $6$ variables and $6$ terms.
-"Discuss"
-Influence range restriction?
+	Choosing the right parameters is critical.
+	It can be helpful to use testing examples to verify the choice of parameters.
+	The number of variables and terms can be increased until negative examples are no longer covered.
+	Sometimes it is hard to generate positive or negative examples but easy to verify an example.
+	In such a scenario the learned theory can be used to generate new examples.
+	If an invalid example is generated, the theory is not specific enough.
 
+	Over-fitting can sometimes be solved manually by removing clauses from the theory.
+	Generally, adding more or larger examples will alleviate the problem.
+	For the sudoku problem, adding one $9 \times 9$ solved sudoku as example solves over-fitting for $6$ variables and $6$ terms.
 
+	Table~\ref{tbl:cd_acc_influence} also shows that the dependence between the number of variables and the number of terms.
+	Every new term must contain at least one variable from another term.
+	This limits the additional clauses that can additionally be explored when only increasing the number of variables.
+	On the other hand, the number of variables also limit the effect of an increase in the number of terms, since every term can only be added once to either the head or body.
 \subsection{Speed}
 
 Unless explicitly stated, all problems are run $8$ consecutive times in order to eliminate external influences.
@@ -232,7 +238,10 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 \end{experiment}
 
 \paragraph{Discussion}
-"Discuss"
+Table~\ref{tbl:exp_speed_standard} shows that smaller examples can be run rather efficiently.
+Several efficient tests and parallelization of the algorithm make this possible, although the performance of the implementation was not the main focus and improvements are possible in many ways.
+Since the search space is exponential, however, running times can increase fast.
+The current implementation tries to eliminate redundant clauses as soon as possible but only clauses that cover enough examples can be used for pruning.
 
 \begin{question}
 	What is the influence of the parameters and input data on the running time?
@@ -243,19 +252,19 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 	In this experiment the running time for these settings is calculated.
 
 	\begin{table}[!htp]
-		\begin{tabularx}{\textwidth}{lcc|XXX}
-			\textbf{Name} & \textbf{Variables} & \textbf{Terms}	& \textbf{Mean (s)} & \textbf{StdDev (s)} \\
+		\begin{tabularx}{\textwidth}{lc|XX}
+			\textbf{Name}	& \textbf{Parameters}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
 			\toprule
-			Map coloring 	& 2 & 3 & 0.690		& 0.023	\\
-							& 3 & 3 & 1.511		& 0.053	\\
-							& 4 & 3 & 2.223		& 0.072	\\
+			Map coloring 	& $2 \times 3$ 			& 0.690				& 0.023	\\
+							& $3 \times 3$ 			& 1.511				& 0.053	\\
+							& $4 \times 3$ 			& 2.223				& 0.072	\\
 			\midrule	
-			Sudoku 			& 3 & 3 & 1.258		& 0.023	\\
-							& 4 & 4 & 4.768		& 0.058	\\
-							& 6 & 4 & 6.269		& 0.050	\\
-							& 4 & 6 & 4.746		& 0.047	\\
-							& 5 & 5 & 25.995	& 0.168	\\
-							& 6 & 6 & 49.163	& 0.267
+			Sudoku 			& $3 \times 3$ 			& 1.258				& 0.023	\\
+							& $4 \times 4$ 			& 4.768				& 0.058	\\
+							& $6 \times 4$ 			& 6.269				& 0.050	\\
+							& $4 \times 6$ 			& 4.746				& 0.047	\\
+							& $5 \times 5$ 			& 25.995			& 0.168	\\
+							& $6 \times 6$ 			& 49.163			& 0.267
 		\end{tabularx}
 		\label{tbl:cd_speed_influence}
 		\caption{Influence of number of variables and terms}
@@ -264,15 +273,16 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 \end{experiment}
 
 \begin{experiment}[\textsc{Examples}]
-	Adding more examples takes a toll on the efficiency of the algorithm.
+	Adding additional examples takes a toll on the efficiency of the algorithm.
 	This experiment measures the increase of the running time that occurs when examples are added.
-	The sudoku problem is run in two settings: $4$ variables and terms and $6$ variables and terms.
+	The sudoku problem is run in two settings: $4$~variables and terms and $6$~variables and terms.
 	Each setting has three rounds, in each round an additional $9 \times 9$ solved sudoku example is added.
 	Initially the dataset only contains the standard ($4 \times 4$) example.
 
 	\begin{table}[!htp]
 		\begin{tabularx}{\textwidth}{c|XX|XX}
-			\textbf{$9 \times 9$ sudokus} & \textbf{Terms}	& \textbf{Mean (s)} & \textbf{StdDev (s)} \\
+											& \multicolumn{2}{c}{4 Variables / Terms} & \multicolumn{2}{c}{6 Variables / Terms} \\
+			\textbf{$9 \times 9$ sudokus}	& \textbf{Mean (s)} & \textbf{StdDev (s)} & \textbf{Mean (s)} & \textbf{StdDev (s)} \\
 			\toprule
 			0 & 4.768 & 0.058	& 49.163	& 0.267	\\
 			1 & 5.862 & 0.060	& 63.801	& 0.769	\\
@@ -285,7 +295,15 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 \end{experiment}
 
 \paragraph{Discussion}
-"Discuss"
+Increasing the number of variables and terms per clause increases the running time, as can be seen in table~\ref{tbl:cd_speed_influence}.
+Especially the combination of higher variables \emph{and} terms can steeply increase the running time.
+By restricting the arity of the predicates that are used, the number of necessary variables can usually be reduced.
+Allowing more variables increases the number of possible clauses in each step, while allowing more terms adds additional iterations at the end.
+
+Adding more examples can decrease the number of clauses, but mainly increases the running time of every coverage test.
+Contrary to increasing the parameters, additional examples do not increase the running time exponentially.
+Table~\ref{tbl:cd_speed_examples} shows that the running time increases by a constant factor, independent of the variables and terms.
+The effect of adding examples is thus fairly predictable and the efficiency of testing multiple examples can likely be increased.
 
 \begin{question}
 	How do the syntactic restrictions influence the running time?
@@ -332,7 +350,17 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 \end{experiment}
 
 \paragraph{Discussion}
-"Discuss"
+While both restrictions increase the efficiency of the clause learning system, the impact of the connectivity restriction seems much more limited.
+Lifting range restriction adds more expressiveness, such as the possibility to state facts ($Head \leftarrow true$).
+However, it greatly increases the running time, which might prove problematic for larger problems.
+
+Given the acceptable running times for this class of problems, a future improvement could be to ease some restrictions.
+Since the lifting the connectivity restriction only moderately impacts the efficient, this constraint would be a reasonable candidate, performance wise.
+An important consideration, however, is that lifting this restriction increases the impact of the number of variables in a clause.
+
+The learned theories have so far proven expressive enough.
+Ultimately, additional expressiveness increases the search space and thus the running time.
+Therefore, it would be best to either let the user exert some control on this trade-off in a transparent matter or automatically control parameters and restrictions.
 
 \begin{question}
 	What is the influence of the efficiency measures on the running time?
@@ -403,8 +431,17 @@ Contrary to syntactic restrictions these do, in principle, not affect the outcom
 \end{experiment}
 
 \paragraph{Discussion}
-"Discuss"
-Subset > more background knowledge > faster
+Experiment~\ref{tbl:exp_speed_symm} shows that including common background knowledge directly into the clause learning algorithm offers a significant speedup.
+Not only is the execution of the algorithm faster, it allows the user to model a problem faster.
+Examples are preprocessed and symmetric predicates are generated.
+Furthermore, the user hands off the task of formulating the corresponding logical background knowledge.
+It would be interesting to explore if other similar notions of background knowledge can be implemented.
+
+The subset and representative tests both accomplish their goal: reducing the running time.
+The additional effort for executing these tests is compensated by the reduction of generated clauses and entailment tests.
+For the subset test only moderate improvements are booked but the advantage of these two tests is that they independent of examples or background knowledge.
+For more complex problems these will likely provide even greater improvements.
+The subset test depends on the amount of clauses that have been accepted or denied while the refinement test operates completely autonomously.
 
 \subsection{Compared to human}
 
@@ -416,7 +453,7 @@ This section will briefly examine how learned clauses compare to human programme
 
 \begin{observation}[\textsc{Map coloring example}]
 \label{exp:cd_user_show}
-	The map coloring problem is simple but can be used to compare the machine learned to human learned constraints.
+	The map coloring problem is simple but can be used to compare the learned clauses to human provided constraints.
 	For the map coloring problem a theory is provided on the website of the IDP system.
 	This examples uses similar types and predicates, with the exception of using a \emph{function} instead of a predicate for the color.
 	Types and predicates have been renamed in order to correspond with the names used in the standard example.  
@@ -445,7 +482,7 @@ This section will briefly examine how learned clauses compare to human programme
 	The second case is sudoku.
 	The human theory for this example is quite different - and more concise - than the learned theory.
 	Therefore, the example sudoku\footnote{\url{http://www.menneske.no/sudoku/eng/showpuzzle.html?number=6913714}} has been translated into two structures, one for each theory.
-	Again, the addition of an extra formula is necessary to enforce a value for each cell in the learned theory: 
+	Again, the addition of an extra formula to the learned theory is necessary to enforce that a value is assigned to each cell: 
 	\cen{$\forall \mathit{cell}\  \exists \mathit{value} : \mathit{value}(\mathit{cell}, \mathit{value}).$}
 
 	The third case is a variant on sudoku, to correct for a potential performance benefit.
@@ -492,13 +529,22 @@ This section will briefly examine how learned clauses compare to human programme
 \end{experiment}
 
 \paragraph{Discussion}
-"Discuss"
- - P Damaging vs. errors
- - P No redundant clauses (user modelling knows what he wants)
- - P More expressiveness
-Expert users can make better use of the logical solver to solve problems faster.
-However, running time is usually not the primary concern when using logical constraint solvers.
+Human theories are usually more concise and use more expressive formulas.
+While a human will focus on essential constraints that describe a problem, generated constraints describe any regularities that can be found.
+As mentioned previously, additional constraints can be helpful for a solver as they can eliminate parts of the search space.
+However, some constraints can also result from over-fitting which will be exclude valid solutions.
 
+Contrary to a human, generated theories will never make errors, the generated clauses will always hold on the given examples.
+If a generated theory is too specific, a human modeling a problem might spot and remove the responsible clauses.
+Too specific theories are not useful, but, as long as a theory can be expressed, this problem can usually be solved using additional computation time.
+
+Expert users can make better use of a logical solver to solve problems faster.
+Although solving time is usually not the primary concern when using logical constraint solvers, table~\ref{tbl:speed_human_machine} shows that the learned theory can compete with and even outperform a human solution.
+
+The language supported by, for example, IDP is much more expressive than clausal theories.
+Supporting the learning of more expressive formulas is an interesting research question.
+Nevertheless, it is not the main aim of the clause learning system to replace experts.
+The clause learning system is intended as a tool for modeling, discovering structures and working autonomously in an automated setting.
 
 \section{Optimization}
 This section examines how well the second goal of the thesis, the learning of optimization criteria, has been accomplished.
@@ -513,6 +559,7 @@ There are three areas ($A_1$, $A_2$ and $A_3$) which have certain characteristic
 In this example the user is trying to decide 1) where to live, 2) where to work and 3) which school to select.
 Any area can be chosen for living and all areas have a school.
 The areas to work in are restricted by the job offers that have been received.
+Table~\ref{tbl:setup_housing} gives an overview of the housing scenario.
 
 \begin{table}[!htp]
 	\begin{tabularx}{\textwidth}{l|r||*3{>{\centering\arraybackslash}X}}
@@ -530,7 +577,8 @@ The areas to work in are restricted by the job offers that have been received.
 \end{table}
 
 The different possible choices form $18$ distinct examples.
-Using variables $x, y$ and~$z$ to denote the selected living, work and school areas, respectively, a template example can be formulated as:
+Using variables $x, y$ and~$z$ to denote the selected living, work and school areas, respectively, a template example can be formulated.
+This template is shown in figure~\ref{fig:setup_housing_example_template}.
 
 \begin{figure}[!htp]
 	\begin{minipage}{0.5\textwidth}
@@ -570,7 +618,7 @@ The standard model consists of $4$ weighted constraints:
 
 Generally, the experiments in this section follow one of two approaches.
 \begin{description}
-	\item[Approach 1] The available examples are split into two parts: the training and the test set.
+	\item[Approach 1] The available examples are split into a training and a test set.
 	\item[Approach 2] All examples are used both as training and test set.
 \end{description}
 Both approaches then follow the same process, which is visualized in figure~\ref{fig:co_test_setup}.
@@ -624,7 +672,7 @@ Experiments are usually run $8$ times in a row, mainly to account for the random
 \end{experiment}
 
 \begin{experiment}[\textsc{Accuracy approach 2}]
-
+\label{exp:exp_acc_approach2}
 		In approach~2 all examples are known, only the amount of rankings over the examples is limited.
 		This allows the clause learning system to identify clauses on all examples and measure the quality of the weight assignment to soft constraints.
 
@@ -646,6 +694,7 @@ Experiments are usually run $8$ times in a row, mainly to account for the random
 \end{experiment}
 
 \begin{experiment}[\textsc{Compare optimal solution}]
+\label{exp:co_acc_optimal_solution}
 	An alternative approach is to compare optimal solutions of the underlying and generated model.
 	By solving the standard constraints, an optimal solution can be calculated:
 	\begin{verbatim}
@@ -685,7 +734,20 @@ Experiments are usually run $8$ times in a row, mainly to account for the random
 \end{experiment}
 
 \paragraph{Discussion}
-"Discuss"
+Figure~\ref{fig:accuracy_splits_rankings} shows that given a set of examples, the accuracy improves, as expected, when more rankings are provided.
+The size of the training set, however, limits the accuracy that can be reached.
+Larger training sets significantly improve the score, as can be seen in figure~\ref{fig:accuracy_splits_training}.
+The training set influences the constraints that are learned, while the rankings only influence the weights.
+Experiment~\ref{exp:exp_acc_approach2} shows that by using all examples, even small fractions of examples are enough to obtain high scores.
+This is especially important for use cases where many examples are available and the task is to learn a total ordering based on a few examples.
+The experiments show that the assigned weights accurately model the underlying constraints.
+
+Even for small training sets, the system is able to correctly rank most of the examples, but is limited by the clauses that can be learned on those examples.
+Using 0.4 fraction of the available examples and a 0.4 fraction of the rankings over the examples, scores over 0.75 can be obtained.
+The accuracy of the clausal optimization system is further demonstrated in experiment~\ref{exp:co_acc_optimal_solution}, which uses the same fraction of examples and rankings.
+The experiment shows that, while there is still an error on the approximation of the total order, the learned model is good enough to generate optimal solutions.
+
+When a different model is used with constraints that are not directly expressible, the implementation is still able to achieve a high accuracy, as shown in figure~\ref{fig:co_acc_model}.
 
 \begin{question}
 	What is the influence of noise on the learned optimization criteria?
@@ -717,15 +779,16 @@ Experiments are usually run $8$ times in a row, mainly to account for the random
 
 \end{experiment}
 
-\begin{experiment}[\textsc{Noise in approach 1}]
-	
-	The influence of noise is similar for approach~1.
-	Figure~\ref{fig:hard_constraints} shows how the standard implementation (with hard constraints for pruning) performs for increasing noise levels.
-
-\end{experiment}
-
 \paragraph{Discussion}
-"Discuss"
+Noise on the rankings influences the accuracy, however figure~\ref{fig:nosplit_noise_noise} shows that the algorithm can deal with significant noise before the accuracy decreases sharply.
+If the fraction of provided is 0.4 the algorithm achieves a score around 0.8 despite the fact that 30\% of the ratings are inverted. 
+Even if the fraction of inverted rankings stays the same, adding more rankings makes the algorithm more robust.
+This effect is shown in figure~\ref{fig:nosplit_noise_rankings}.
+For use cases where noise is expected, adding more data should improve the outcome.
+
+Figure~\ref{fig:co_acc_model} shows how the score evolves for a training set and ranking fraction of 0.4.  
+When a training set is used, the algorithm is less capable of maintaining a high score when there is noise on the rankings.
+However, the score does not drop steeply and for 20\% noise, the algorithm can still achieve scores around 0.7.
 
 \begin{question}
 	What is the effect of internal parameters or influences?
@@ -777,4 +840,12 @@ Approach~1, where the fraction of examples in the training set is chosen as $0.4
 \end{experiment}
 
 \paragraph{Discussion}
-"Discuss"
+Changing the cost parameter does not consistently affect the score in a significant way.
+For low costs the scores fluctuate more, while a high cost generally result in a slightly lower score.
+A cost factor of 0.1 might be better than the now standard 0.2, but more experiments should be run in order to find a good cost setting.
+This parameter is also problem dependent and, therefore, it could be useful to let the user influence the parameter.
+Another option would be to use a small test set from the provided rankings and try to automatically determine an optimal value.
+
+The current implementation using hard constraints for pruning slightly outperforms the scores achieved without pruning.
+Using the hard constraint for pruning results in a more compact theory, apparently without sacrificing performance.
+It makes the choice for the clause learning parameters more important, though, because over-fitting will introduce false hard constraints.

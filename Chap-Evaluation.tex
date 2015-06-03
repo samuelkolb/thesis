@@ -798,7 +798,7 @@ The experiments for this question explore the influence of several factors.
 Unless mentioned otherwise, the experiments will use the following setup as baseline:
 Approach~1, where the fraction of examples in the training set is chosen as $0.4$ and the fraction of rankings is also set to $0.4$.
 
-\begin{experiment}
+\begin{experiment}[\textsc{Cost factor}]
 	
 	Clausal optimization uses a cost factor which represents the cost of disagreeing with a provided ranking in favor of a simpler model (see section~\ref{sec:clausal_opt_approach}).
 	This parameter can help avoid overfitting.
@@ -821,7 +821,7 @@ Approach~1, where the fraction of examples in the training set is chosen as $0.4
 % 	"Think about"
 % \end{experiment}
 
-\begin{experiment}
+\begin{experiment}[\textsc{Prune using hard constraints}]
 	
 	In the clause learning implementation the choice was made to allow hard constraints to prune soft constraints (see section~\ref{sec:clausal_discovery_approach}).
 	This simplfies the model as fewer clauses are learned at the expense of pruning some clauses with discriminative power if the hard constraints just coincidently cover all the given examples.
@@ -839,6 +839,23 @@ Approach~1, where the fraction of examples in the training set is chosen as $0.4
 
 \end{experiment}
 
+\begin{experiment}[\textsc{Minimal examples covered}]
+	\label{exp:threshold}
+	The soft constraints that are used for optimization are usually found using a threshold $t = 1$.
+	Although there is only a small amount of examples in this case, the small threshold could lead to the discovery of constraints that over-fit the data.
+	This experiment measures the score for multiple thresholds, the result are shown in table~\ref{tbl:thresholds}.
+
+	\begin{table}[!htp]
+		\begin{tabularx}{\textwidth}{l|XXXX}
+			& $t = 1$ & $t = 2$ & $t = 3$ & $t = 4$ \\
+			\toprule
+			\textbf{Mean} & 0.823 ($\pm$ 0.073) & 0.740 ($\pm$ 0.078) & 0.788 ($\pm$ 0.074) & 0.735 ($\pm$ 0.063)
+		\end{tabularx}
+		\label{tbl:thresholds}
+		\caption{Scores for different thresholds}
+	\end{table}
+\end{experiment}
+
 \paragraph{Discussion}
 Changing the cost parameter does not consistently affect the score in a significant way.
 For low costs the scores fluctuate more, while a high cost generally result in a slightly lower score.
@@ -849,3 +866,8 @@ Another option would be to use a small test set from the provided rankings and t
 The current implementation using hard constraints for pruning slightly outperforms the scores achieved without pruning.
 Using the hard constraint for pruning results in a more compact theory, apparently without sacrificing performance.
 It makes the choice for the clause learning parameters more important, though, because over-fitting will introduce false hard constraints.
+
+Experiment~\ref{exp:threshold} shows that for problems such as the housing problem, a small threshold allows the clausal optimization algorithm to better model the underlying preferences.
+If over-fitting would occur through the smaller threshold, it would be likely to decrease the score as the learned model is compared on unseen testing examples.
+In problems with more examples a larger threshold might still be necessary to avoid over-fitting.
+Equally, if a more compact model is desired, the threshold should be increased.

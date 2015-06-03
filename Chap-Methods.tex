@@ -65,6 +65,7 @@ The output of the clausal optimization system consists of set of weighted clause
 For a particular instance \sym{I}, a variable $v_i$ can be introduced for every clause $c_i$.
 If $c_i$ is true for \sym{I}, then $v_i$ is $1$, otherwise it is $0$. The score of \sym{I} can then be calculated as:
 \begin{equation}
+\label{eq:weights_sum}
 \sum\limits^n w_i \cdot v_i
 \end{equation}
 
@@ -199,6 +200,7 @@ The format of the background knowledge is thus dependent on the logical system t
 
 \subsection{Rankings}
 Rankings are provided by a user and they express which solutions he prefers.
+They are only used for clausal optimization and will be ignored during the clause learning step.
 Given examples $e_1, ..., e_x$, rankings are declared as:
 \begin{shiftedflalign*}
 & \textbf{pref } e_1 = ... = e_i > ... > e_j = ... = e_x &
@@ -563,15 +565,48 @@ Not only does it identify clauses that are reformulations of each other, it also
 
 \section{Clausal Optimization}
 \label{sec:clausal_opt_approach}
-Clausal optimization takes two inputs: a set of (learned) clauses that each cover some, but not all of the provided examples as well as a set of rankings provided by the user.
-Every ranking concerns a group of examples.
-The goal of clausal optimization is to discriminate between examples based on soft constraints that hold on the examples and approximate the given rankings optimally.
-To this end every example can be characterized as a set of boolean features.
-Each of those features correspond with one of the clauses and indicates whether the example is covered by that clause.
-Now, standard machine learning techniques can be used to learn weights for the features (clauses) based on the given rankings.
-In this thesis \svm{} was chosen to accomplish this task.
-[!! Why \svm{}?]
+Clausal optimization needs two inputs: a set of (learned) clauses that each cover some, but not all of the provided examples as well as a set of rankings provided by the user.
+Every ranking concerns a subset of the available examples.
+The goal of clausal optimization is to discriminate between examples, based on soft constraints that hold on the examples, and approximate the given rankings optimally.
 
+\paragraph{Soft constraints}
+The soft constraints which are to be used as optimization criteria are learned using clause learning with a minimum threshold of 1 example.
+Soft constraints with a low support can be interesting, for example, to distinguish between good (bad) solutions and the best (worst) solutions.
+Since such constraints might also be due to over-fitting, the threshold could be increased if many examples are available.
+Hard constraints are not used for ranking as they hold for all examples.
+
+\paragraph{Learn to rank}
+Examples are characterized by the soft constraints (clauses) which cover them.
+Therefore, every example can be translated into a vector of boolean features.
+Each feature $f_i$ corresponds with one of the clauses and is \emph{1} if the clause covers the example and \emph{0} otherwise.
+Now existing machine learning software can be used to learn a linear function $\sum_i w_i \cdot f_i$ over these features, based on the given rankings.
+For an unseen example, the feature vector is computed by calculating what clauses cover the new example.
+That linear function can then be used to calculate a score for that example.
+
+\begin{example}
+	Consider examples~$e_1, e_2, e_3$, rankings $e_1 > e_2, e_2 > e_3$ and clauses $c_1, c_2, c_3$.
+	If the clauses cover examples according to table~\ref{tbl:cover_examples}, then the function $(1 \cdot c_1) + (0\cdot c_2) + (-2\cdot c_3)$ perfectly models the given rankings.
+	An example $e_4$ that is covered by~$c_1$ and~$c_2$, is then assigned a score of $1$.
+	This score has no value in the absolute sense, it can only be used to compare it to other examples ranked by the same function.
+
+	\begin{table}[!htp]
+	\label{tbl:cover_examples}
+	\begin{tabularx}{\textwidth}{c|ccc|X}
+		\textbf{Clauses}	&$c_1$  	& $c_2$ 	& $c_3$ 	& \textbf{Feature vector}\\
+		\toprule
+		$e_1$ 				& Covers 	&  			&  			& 1, 0, 0\\
+		$e_2$ 				& 			& Covers	&  			& 0, 1, 0\\
+		$e_3$ 				& Covers 	& Covers 	& Covers 	& 1, 1, 1\\
+	\end{tabularx}
+	\caption{Clause coverage}
+	\end{table}
+
+\end{example}
+
+In this thesis \svm{} was chosen to accomplish this task.
+[!! "Why \svm{}?"]
+
+\paragraph{Cost}
 Weights are chosen optimally with respect to a cost parameter $c$, which determines the trade-off between disagreeing with a user provided ranking and a simpler model.
 Assigning a low cost to disagreeing with the training rankings establishes a bias towards simpler models which can avoid over-fitting the training.
-A high cost should be assigned, however, when one is interested in a model that is more accurate with respect to the given examples and rankings. [!! SVM rank margin]
+A high cost should be assigned, however, when one is interested in a model that is more accurate with respect to the given examples and rankings.

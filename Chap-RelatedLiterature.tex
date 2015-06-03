@@ -3,8 +3,9 @@
 \label{cha:rellit}
 
 In this chapter, different previous research will be explored.
-On the one hand, the state of the art will be described.
-On the other hand, research whose contributions this thesis builds on will be explained.
+For constraint learning different alternative approaches are introduced that attempt to solve a related problem and form the state of the art.
+Previous research on clause learning is presented, which this thesis builds on.
+The later sections introduce research that has led to software that is being used in this implementation created for this research.
 
 \section{Constraint Learning}
 Learning constraints is a difficult problem.
@@ -12,33 +13,42 @@ Unlike typical machine learning problems, there is usually little data available
 %While constraint learning is interesting in an automated setting, the goal of some approaches, including this thesis, is also to interact with a human user. This introduces additional difficulties. Human users often lack the skill to 
 Different approaches have been taken to tackle this problem.
 
-\subsection{Exisiting approaches}
+\subsection{Existing approaches}
+Constraint learning is a broadly defined task.
+There are different approaches that, passively or actively, learn constraints in different forms.
+Three approaches show different, promising ways of approaching the constraint learning problem.
+
 \paragraph{Learning from queries}
-[Info more information needed !] [Ref Quote Note ?]
-In order to alleviate the problem of having little data, systems can choose to use queries and user input to guide the search.
-[Rewrite "Note mentions" !] Conacq and Quacq [Ref Add refs !] follow this approach. 
-Info Does conacq use queries? It uses version space.. ?]
+In order to alleviate the problem of having little data, systems can choose to interactively query the user for knowledge.
+Conacq2 \cite{bessiere2007query} and QuAck \cite{bessiere2013constraint} use these queries to guide their search.
+Queries consist of an assignment of values to the given variables which are then approved or disproved by the user.
+QuAck is also able to learn from partial assignments, where values are assigned to only some variables. 
 
 \paragraph{Global constraints and structure}
 In constraint programming, one often distinguishes between \textit{local} and \textit{global} constraints.
-Local constraints are describe ``simple'' relationships between variables such as $x_1 \neq x_2$.
+Local constraints are describe ``simple'' relationships between variables, such as $x_1 \neq x_2$.
 These constraints can usually not be decomposed.
 On the other hand, global constraints describe sets of constraints such as $\mathit{alldifferent}(x_1, x_2, x_3)$.
 This global constraint corresponds with a set of local constraints: $x_1 \neq x_2, x_1 \neq x_3, x_2 \neq x_3$.
 Besides reducing the number of constraints to model a problem, these global constraints can often be used by a solver to find solutions more efficiently.
 
 Model Seeker \cite{Beldiceanu:ModelSeeker} is an effective approach to constraint learning, which uses global constraints.
-It uses generators that structure variables in different ways by arranging them in tensors.
-Using a catalog of global constraints, it then tests what global constraints hold in these structures.
-This generate-and-test approach has produced good results and works fast.
+It uses generators that structure variables in different ways, which corresponds to arranging them in a matrix.
+For every such structure, the variables are then partitioned into equally structured subsets.
+Using a catalog of global constraints, the system finds global constraints that hold on these subsets.
 
 \paragraph{ILP for constraint Learning}
-[Info more text needed !] [Info Introduce CPS etc ?]
-One approach that uses parallels between ILP and constraint learning is \cite{Lallouet:LearningCP}.
+Within machine learning, inductive logic programming (ILP) is a research area concerned with learning logical descriptions.
+Since relational logic can be used to express constraints ILP techniques can be used to learn such constraints.
+Most of the constraint learning and ILP research is done independently, but a recent approach has attempted to use ILP techniques for constraint learning.
 
-The approach in this thesis is based on techniques from Inductive Logic Programming (ILP).
-Learning systems in this domain often face similar challenges.
-ILP attempts to find structure in examples and describe this structure using logical formulas.
+In \cite{Lallouet:LearningCP} a system is proposed to learn constraint in the form of first order logic formulas.
+Instead of a top-down or bottom-up approach, bidirectional search is used to explore the search space.
+While both positive and negative examples can be used, the system primarily uses negative examples for learning.
+\\\\
+This thesis also pursues the use of ILP techniques for constraint learning.
+Clausal discovery is used to learn a theory of relational clauses, mainly from positive examples.
+The search space is explored in a bottom-up manner.
 
 \subsection{Clausal Discovery \& Claudien}
 \label{sec:claudien}
@@ -74,35 +84,90 @@ If a clause \obj{c} covers all the examples in \sym{D} and it is not logically e
 A clause \obj{c} is considered to cover an example \sym{I} iff \sym{I} is a model of \obj{c}: $\sym{I} \models \obj{c}$.
 The clause \obj{c} is not refined because any clause $\obj{c_i} \in \rho^*(c)$ is a generalization of \obj{c} and thus logically entailed by \obj{c}.
 
-[Add Bias, (explain why not dlab?) ?]
-
-\subsection{Refinement operator}
+\paragraph{Refinement operator}
 The refinement operator plays a central role in clausal discovery, but also in different ILP problems.
 General insights about refinement operators have been obtained from \cite{DeRaedt:LRLearning} and are described in chapter \ref{cha:bg}.
+
 In \cite{DeRaedt:CondensedRepresentations} different strategies are discussed that can be used to improve refinement operators, amongst others the canonical form for clauses.
+Clauses are often not unique and a constraint can usually be written in different ways.
+In order to avoid generating such redundant clauses, a canonical form can be used.
+This form dictates that clauses must be structured in a certain way and clauses that do not follow this structure can be discarded.
+
+\begin{example}
+A possible rule concerning the structure of clauses containing predicates $p_1/1$ and $p_2/1$ could be, that $p_1/1$ must always occur before $p_2/1$ in the head and body.
+Consider the clauses:
+\cen{
+	$c_1 = \mathit{false} \leftarrow p_1(x) \land p_2(x)$ \\
+	$c_2 = \mathit{false} \leftarrow p_2(x) \land p_1(x)$.
+}
+If the refinement operator is complete, it can decide autonomously that $c_2$ is redundant, knowing that $c_1$ will be generated at some point.
+\end{example}
+
+By building clauses with respect to an ordering of the atoms occurring in it, the generation of redundant clauses can often be prevented.
+
+\paragraph{Bias}
+Claudien uses the $\sym{D}LAB$ bias specification language.
+Such a bias consists of a pattern that specifies how clauses are built and which atoms can be added to a clause by the refinement operator.
+Defining this bias is an important task and can be non trivial to a user.
+Therefore, $\sym{D}LAB$ is not used in this thesis.
 
 \section{Logical Constraint Solving}
 \label{sec:logical_constraint_solving}
-There are multiple constraint solvers such as Eclipse and Minizinc [!! Ref Eclipse, Minizinc ?], which use different constraint languages.
-Since in this thesis constraints are expressed as logical clauses, it is useful to use a solver which can work directly with first order logic.
-This will allow logical background knowledge to be used.
+Given a set of constraints, constraint solvers are used to generate solutions.
+Multiple constraint solvers are available, such as Eclipse \cite{apt2006constraint} and MiniZinc \cite{nethercote2007minizinc}.
+Different constraint solvers use different constraint languages, which define the format in which constraints must be supplied to the program.
+In this thesis the constraints are expressed as logical clauses, while these can be translated, it is useful to choose a solver that can work directly with first order logic formulas.
+This will also allow general logical background knowledge to be used.
 
 \subsection{IDP}
-IDP [!! Ref IDP !] is a knowledge base system which supports an extension of first order logic called FO(.).
+IDP \cite{de2013prototype}, \cite{wittocx2008idp} is a knowledge base system which supports an extension of first order logic called $FO(.)$.
 This extension includes aggregates, inductive definitions, and other powerful tools for specifying rich background knowledge.
-Given a logical theory, IDP is able to perform multiple tasks which are important in this context.
-It can check if a model is consistent with the theory, generate a model for a theory as well as expand a partial model.
-Because IDP uses SAT solving technology, it is also able to offer the ability to calculate entailment between logical theories.
-It is worth noting thath, currently, not all features of FO(.) can be used in entailment.
-Performance wise IDP has proven to be amongst the state of the art in multiple answer set competitions [Ref competition !].
-Since the system is being actively developed and supported, it is a good choice for a logical solver to be used in this research.
+Given a logical theory, IDP is able to perform multiple tasks -inferences - which are important in this context.
+It can check if a model is consistent with a theory (model checking), generate a model for a theory and expand a partial model (model expansion).
+IDP also offers access to a theorem prover, thereby offering the ability to calculate entailment between logical theories.
+Currently, however, not all features of $FO(.)$ can be used in entailment.
 
-The main difference between a logical solver, like IDP, and traditional constraint solvers, is that the latter class of solvers supports global constraints, programming constructs such as loops and support for (real) numbers.
-Global constraints allow constraint solvers to speed up their search and are very compact.
+% => geen zekere algoritmes (sound)
+% well volledig semi decideable, entailed => proof lost for aggregates, definitions (beperkingen)
+% inductie probleem undecideable
+
+% kern: SAT solver
+% propagatie solver => domein...
+% sommige inferenties zonder SAT (bv prolog)
+% KBS (logic programming XSB, CP programming, theorem prover)
+% LTC bijv. niet in andere systemen
+
+Performance wise IDP has proven to be amongst the state of the art in multiple answer set competitions (e.g. \cite{calimeri2014third}).
+Moreover, the use of IDP as a front-end to SAT-solving has been examined in \cite{bruynooghe2014predicate}, where it was found to carry only a minor performance overhead compared to a standard SAT-solver.
+The versatility of this knowledge base system makes it a good choice for a logical solver to be used in this research.
+Additionally, the system is being actively developed and supported.
+
+Traditional constraint solvers lack some of the capabilities of IDP, but offer support for global constraints, programming constructs - such as loops - and rational numbers.
+Global constraints are compact, built-in constraints that allow constraint solvers to speed up their search.
 Since the logical constraint generation in this thesis does not focus on global constraints, however, they are not crucial for its implementation.
 Additionally, global constraints can usually be emulated using logical background knowledge passed to the solver, if necessary.
-Compactness and loops are useful for programmers, but since in this case the constraints are generated automatically these features are less important.
+Compactness and loops are useful for programmers, but since, in this case, the constraints are generated automatically, these features are less important.
 The implicit universal quantification of variables in logical clauses already allows reasoning over domains of variables.
 Currently IDP can only reason with natural numbers and contains limited optimization capabilities.
 This is its biggest disadvantage.
 There is however, a large class of problems that do not require rational numbers.
+
+\section{Optimization}
+Optimization criteria are used to discriminate between better and worse solutions.
+Soft constraints are constraints which do not have to be fulfilled, they are only true for some solutions.
+These soft constraints can be assigned weights that express their desirability.
+Such weighted soft constraints can be used as optimization criteria, by maximizing the sum of the weights of the satisfied constraints.
+
+\paragraph{Learning weights}
+The weighted MAX-SAT problem, described in section~\ref{sec:max_sat}, uses weighted propositional clauses as optimization criteria.
+Research such as \cite{campigotto2011active}, have successfully attempted to  automatically construct utility functions, by learning weights from user input.
+Inspired by this approach, this thesis attempts to learn weighted first-order logic clauses as optimization criteria.
+
+\subsection{\svm}
+Instead of using scores, the weights will be learned from rankings over example solutions.
+In this process, \svm \  \cite{joachims2002optimizing} will be used to find optimal weights based on rankings.
+\svm learns a linear functions over boolean features to fit the input rankings.
+Rankings are grouped together and can span an arbitrary amount of instances.
+Equalities are ignored, as rankings are decomposed into sets of pairwise inequalities.
+
+"Why?"

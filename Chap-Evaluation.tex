@@ -11,7 +11,7 @@ The clause learning and clausal optimization workflows will be examined separate
 This section attempts to evaluate how well the clause learning system accomplishes the first goal of this thesis.
 There are different aspects to be considered.
 Firstly, the accuracy of the learned clauses will be examined.
-The influence of the parameters - number of variables and terms per clause - on the accuracy are studied in order to get a better understanding of the clause learning algorithm.
+The influence of the parameters - number of variables and literals per clause - on the accuracy are studied in order to get a better understanding of the clause learning algorithm.
 Secondly, the efficiency with which this task is accomplished will be evaluated.
 Since clausal discovery can take a long time to find a theory on larger examples, it will be important to understand the influence of several factors on the running speed.
 In the last part, the differences between learned clauses and constraints given by a user will be examined.
@@ -45,7 +45,7 @@ The first example (figure~\ref{fig:setup_mapcolor_benelux}) features two colors,
 
 Map coloring uses types $\mathit{Country}$ and $\mathit{Color}$.
 It uses two predicates $\mathit{color/2}$ and $\mathit{neighbor/2}$, the neighbor predicate is symmetric.
-Unless mentioned otherwise, the standard parameters for map coloring are $3$ variables and~$3$ terms per clause.
+Unless mentioned otherwise, the standard parameters for map coloring are $3$ variables and~$3$ literals per clause.
 
 \paragraph{Sudoku}
 Sudoku is a slightly more difficult problem.
@@ -68,7 +68,7 @@ In the standard setting one $4 \times 4$ example (figure~\ref{fig:setup_sudoku})
 	\caption{$4 \times 4$ sudoku example}
 \end{figure}
 
-Clause learning on the sudoku is usually done with $4$ variables and~$4$ terms per clause.
+Clause learning on the sudoku is usually done with $4$ variables and~$4$ literals per clause.
 In the example, the row, column, block and value are explicitly given for each cell.
 The use of specific, disjoint types instead of one common (numeric) type for rows, columns and blocks makes the clause learning process more efficient.
 It prevents the use of the same variable for, for example, a row and a column.
@@ -162,9 +162,9 @@ Such additional constraints can often be useful for constraint solving.
 	Theories are inaccurate if they contain too little constraints or too many constraints.
 	In the first case the theory will falsely cover negative examples (false positive), while in the second case it will not cover examples that are solutions to the problem(false negative).
 	The latter case describes over-fitting, where constraints fit the training data too precisely, at the expense of excluding unseen positive examples.
-	For clause learning, this phenomenon usually occurs when the number of variables or terms gets too high compared to the size and number of examples.
+	For clause learning, this phenomenon usually occurs when the number of variables or literals gets too high compared to the size and number of examples.
 
-	To illustrate this, consider clause learning for the map coloring problem, where the number of variables and terms is increased to~$4$.
+	To illustrate this, consider clause learning for the map coloring problem, where the number of variables and literals is increased to~$4$.
 	Several additional constraints describing details of the provided examples are learned, such as: 
 	\begin{shiftedflalign*}
 		\mathit{false} &\leftarrow \mathit{color}(x, color_1) \land \mathit{color}(y, color_1)  \land \mathit{color}(z, color_1)&
@@ -176,8 +176,8 @@ Such additional constraints can often be useful for constraint solving.
 	\label{exp:cd_acc_influence_par}
 	The correctness of the learned theories can be measured by using a logical solver to test the theories on unseen examples.
 	By using positive and negative test examples, false positives and false negatives can be detected.
-	This approach is used to measure influence of the number of variables and terms for the map coloring and sudoku problems.
-	(\emph{Variables} $\times$ \emph{Terms})
+	This approach is used to measure influence of the number of variables and literals for the map coloring and sudoku problems.
+	(\emph{Variables} $\times$ \emph{Literals})
 
 	\begin{table}[!htp]
 		\begin{tabularx}{\textwidth}{l|ll}
@@ -188,7 +188,7 @@ Such additional constraints can often be useful for constraint solving.
 			False positive 	& $4 \times 3$				& $6 \times 6$	\\
 		\end{tabularx}
 		\label{tbl:cd_acc_influence}
-		\caption{Influence of number of variables and terms}
+		\caption{Influence of number of variables and literals}
 	\end{table}
 
 \end{experiment}
@@ -196,19 +196,19 @@ Such additional constraints can often be useful for constraint solving.
 \paragraph{Discussion}
 	Choosing the right parameters is critical.
 	It can be helpful to use testing examples to verify the choice of parameters.
-	The number of variables and terms can be increased until negative examples are no longer covered.
+	The number of variables and literals can be increased until negative examples are no longer covered.
 	Sometimes it is hard to generate positive or negative examples but easy to verify an example.
 	In such a scenario the learned theory can be used to generate new examples.
 	If an invalid example is generated, the theory is not specific enough.
 
 	Over-fitting can sometimes be solved manually by removing clauses from the theory.
 	Generally, adding more or larger examples will alleviate the problem.
-	For the sudoku problem, adding one $9 \times 9$ solved sudoku as example solves over-fitting for $6$ variables and $6$ terms.
+	For the sudoku problem, adding one $9 \times 9$ solved sudoku as example solves over-fitting for $6$ variables and $6$ literals.
 
-	Table~\ref{tbl:cd_acc_influence} also shows that the dependence between the number of variables and the number of terms.
-	Every new term must contain at least one variable from another term.
+	Table~\ref{tbl:cd_acc_influence} also shows that the dependence between the number of variables and the number of literals.
+	Every new literals must contain at least one variable from another literals.
 	This limits the additional clauses that can additionally be explored when only increasing the number of variables.
-	On the other hand, the number of variables also limit the effect of an increase in the number of terms, since every term can only be added once to either the head or body.
+	On the other hand, the number of variables also limit the effect of an increase in the number of literals, since every atom can only be added once to either the head or body.
 \subsection{Speed}
 
 Unless explicitly stated, all problems are run $8$ consecutive times in order to eliminate external influences.
@@ -267,7 +267,7 @@ The current implementation tries to eliminate redundant clauses as soon as possi
 							& $6 \times 6$ 			& 49.163			& 0.267
 		\end{tabularx}
 		\label{tbl:cd_speed_influence}
-		\caption{Influence of number of variables and terms}
+		\caption{Influence of number of variables and literals}
 	\end{table}
 
 \end{experiment}
@@ -275,13 +275,13 @@ The current implementation tries to eliminate redundant clauses as soon as possi
 \begin{experiment}[\textsc{Examples}]
 	Adding additional examples takes a toll on the efficiency of the algorithm.
 	This experiment measures the increase of the running time that occurs when examples are added.
-	The sudoku problem is run in two settings: $4$~variables and terms and $6$~variables and terms.
+	The sudoku problem is run in two settings: $4$~variables and literals and $6$~variables and literals.
 	Each setting has three rounds, in each round an additional $9 \times 9$ solved sudoku example is added.
 	Initially the dataset only contains the standard ($4 \times 4$) example.
 
 	\begin{table}[!htp]
 		\begin{tabularx}{\textwidth}{c|XX|XX}
-											& \multicolumn{2}{c}{4 Variables / Terms} & \multicolumn{2}{c}{6 Variables / Terms} \\
+											& \multicolumn{2}{c}{4 Variables / Literals} & \multicolumn{2}{c}{6 Variables / Literals} \\
 			\textbf{$9 \times 9$ sudokus}	& \textbf{Mean (s)} & \textbf{StdDev (s)} & \textbf{Mean (s)} & \textbf{StdDev (s)} \\
 			\toprule
 			0 & 4.768 & 0.058	& 49.163	& 0.267	\\
@@ -290,19 +290,19 @@ The current implementation tries to eliminate redundant clauses as soon as possi
 			3 & 7.967 & 0.087	& 99.640	& 0.488	\\
 		\end{tabularx}
 		\label{tbl:cd_speed_examples}
-		\caption{Influence of number of variables and terms}
+		\caption{Influence of number of variables and literals}
 	\end{table}
 \end{experiment}
 
 \paragraph{Discussion}
-Increasing the number of variables and terms per clause increases the running time, as can be seen in table~\ref{tbl:cd_speed_influence}.
-Especially the combination of higher variables \emph{and} terms can steeply increase the running time.
+Increasing the number of variables and literals per clause increases the running time, as can be seen in table~\ref{tbl:cd_speed_influence}.
+Especially the combination of higher variables \emph{and} literals can steeply increase the running time.
 By restricting the arity of the predicates that are used, the number of necessary variables can usually be reduced.
-Allowing more variables increases the number of possible clauses in each step, while allowing more terms adds additional iterations at the end.
+Allowing more variables increases the number of possible clauses in each step, while allowing more literals adds additional iterations at the end.
 
 Adding more examples can decrease the number of clauses, but mainly increases the running time of every coverage test.
 Contrary to increasing the parameters, additional examples do not increase the running time exponentially.
-Table~\ref{tbl:cd_speed_examples} shows that the running time increases by a constant factor, independent of the variables and terms.
+Table~\ref{tbl:cd_speed_examples} shows that the running time increases by a constant factor, independent of the variables and literals.
 The effect of adding examples is thus fairly predictable and the efficiency of testing multiple examples can likely be increased.
 
 \begin{question}

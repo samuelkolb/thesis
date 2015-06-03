@@ -68,7 +68,7 @@ If $c_i$ is true for \sym{I}, then $v_i$ is $1$, otherwise it is $0$. The score 
 \sum\limits^n w_i \cdot v_i
 \end{equation}
 
-As mentioned in section~\ref{sec:clausal_logic}, clauses are disjunctions or terms. A theory of clauses consists of a conjunction of clauses. Therefore, it is a logical theory in CNF [!! Expand on why clauses.]
+As mentioned in section~\ref{sec:clausal_logic}, clauses are disjunctions of literals. A theory of clauses consists of a conjunction of clauses. Therefore, it is a logical theory in CNF [!! Expand on why clauses.]
 
 \section{Input}
 The input to the clause learning system consists mainly of two parts: definitions and examples.
@@ -118,7 +118,7 @@ A standard predicate is declared as:
 \end{shiftedflalign*}
 
 There are two variants of predicate definitions.
-For a normal predicate like $\mathit{fatherOf}$ the terms $\mathit{fatherOf}(x, y)$ and $\mathit{fatherOf}(y, x)$ are not equal.
+For a normal predicate like $\mathit{fatherOf}$ the atoms $\mathit{fatherOf}(x, y)$ and $\mathit{fatherOf}(y, x)$ are not equal.
 In some circumstances, however, predicates describe symmetric relationships.
 Such predicates can be defined as:
 \begin{shiftedflalign*}
@@ -216,7 +216,7 @@ Rankings only require the user to consider few examples at a time and express hi
 \section{Clausal Discovery}
 \label{sec:clausal_discovery_approach}
 As stated previously, clausal discovery forms the core of the clause learning process.
-Algorithm~\ref{alg:cd} in section~\ref{sec:claudien} describes the clausal discovery process at a high level.
+Algorithm~\ref{alg:cd} (section~\ref{sec:claudien}, page~\pageref{alg:cd}) describes the clausal discovery process at a high level.
 The behavior of the algorithm is mainly defined by three functions: \textsc{covers(c, \sym{D})}, \textsc{entails(\sym{T}, c)} and \textsc{$\rho$(c)} - the refinement operator.
 
 The algorithm keeps a queue of candidate clauses.
@@ -266,7 +266,7 @@ In this section the different steps of the clausal discovery implementation will
 The sequence of steps begins at the moment that a new clause is created by the refinement operator.
 
 The algorithm explores the search space in a breadth-first fashion, using a first-in-first-out queue.
-Clauses are generalized by the refinement operator by adding one term to the clause.
+Clauses are generalized by the refinement operator by adding one literal to the clause.
 Therefore, the clauses are increasing in length over the course of the algorithm.
 An important consequence of this process, is that shorter clauses are added to the result set first.
 This implies, that the clause is maximally specific.
@@ -344,59 +344,182 @@ If $c$ is entailed by clauses that cover different examples, then it is still re
 \end{example}
 
 \subsection{Refinement operator}
-[!! Rewrite]
 In clausal discovery one starts with the empty clause $\square$ and in every step one atom is added to either the head or the body.
-Given a clause \obj{c} the refinement operator $\rho$ returns a set $\rho(\obj{c})$ of child clauses whose length is $length(\obj{c}) + 1$.
+Given a clause $c$, the refinement operator $\rho$ returns a set $\rho(\obj{c})$ of child clauses whose length is $length(\obj{c}) + 1$.
 What atoms are added to the clause depends on the current clause and the predicates that are used in the search.
-The implementation on the refinement operator uses a specific order in which atoms are added to a clause to eliminate duplicate clauses.
+The implementation of the refinement operator uses a specific order in which atoms are added to a clause to eliminate duplicate clauses.
 Given a maximal amount of variables, a list of possible atoms is generated and every clause is represented as a sorted list of indices referring to elements in the list.
-The remainder of this section will explain how to generate the list of atoms such that all possible clauses can at least be generated once.
-\\\\
+The following section will explain how to generate the list of atoms, such that all possible clauses are at least generated once.
+
+\paragraph{Atom list generation}
 The number of arguments of a predicate is referred to as the predicates arity.
 A predicate $\obj{p}_3$ of arity 3 takes 3 arguments, e.g. $\obj{p}_3(x, y, x)$.
-One can observe that while the arity of the previous predicate was 3, the particular instance $\obj{p}_3(x, y, x)$ only features 2 different variables.
-Such instance will be considered as having a rank of 2: $rank(\obj{p}_3(x, y, x)) = 2$.
-Considering Object Identity, $\obj{p}_3(x, y, x)$ can be viewed as an blueprint of instances of predicate $\obj{p}_3$ that feature the first variable on the first and third place and the second, different, variable on the third place.
-This blueprint or instance prototype represents the function $f^{\obj{p}_3}_{121}(v_1, v_2) = \obj{p}_3(v_1, v_2, v_1)$.
-\\\\
-Given the predicate $\obj{p}_3$ with arity 3, one can construct instance prototypes of rank 1 ($f^{p_3}_{111}$), rank 2 ($f^{p_3}_{112}$, $f^{p_3}_{121}$, $f^{p_3}_{211}$, $f^{p_3}_{122}$, $f^{p_3}_{212}$, $f^{p_3}_{221}$) and rank 3 ($f^{p_3}_{123}$).
-The set $\sym{F}^r_{p_i}$ is then defined as the set of all possible instance prototypes $f^{p_i}_{x_1, ..., x_n}$ or $f^{p_i}_\mathbf{x}$ of rank $r$.
+One can observe that, while the arity of the previous predicate was 3, it only features 2 different variables.
+Such a predicate will be considered as having a rank of 2.
+Considering Object Identity (see section~\ref{sec:bg_ref_op}), $\obj{p}_3(x, y, x)$ can be viewed as a blueprint for predicates of type $\obj{p}_3$ that feature the first variable on the first and third place and the second -  different - variable on the third place.
+This blueprint or predicate prototype represents the function $f^{\obj{p}_3}_{121}(v_1, v_2) = \obj{p}_3(v_1, v_2, v_1)$.
+
+\begin{example}
+	The following examples illustrate the use of predicate prototypes:
+	\begin{shiftedflalign*}
+	f^{\obj{p}_3}_{111}(x) &= \obj{p}_3(x, x, x) \\
+	f^{\obj{p}_3}_{121}(x, y) &= \obj{p}_3(x, y, x) \\
+	f^{\obj{p}_3}_{123}(x, y, z) &= \obj{p}_3(x, y, z)
+	\end{shiftedflalign*}
+\end{example}
+
+Given the predicate $\obj{p}_3$ with arity 3, one can construct predicate prototypes of rank 1, rank 2 and rank 3 (see example~\ref{ex:sets_of_prototypes}).
+The set $\sym{F}^r_{p_i}$ is then defined as the set of all possible predicate prototypes $f^{p_i}_{x_1, ..., x_n}$ or $f^{p_i}_\mathbf{x}$ of rank $r$.
 For every prototype it holds that every number in $[1, r]$ occurs at least once in $\mathbf{x}$ and $max(\mathbf{x}) = r$.
-In clausal discovery the user provides a set \sym{P} of predicates that can occur in the generated clauses.
+
+\begin{example}
+	\label{ex:sets_of_prototypes}
+	For predicate $p_3$, the following sets can be constructed:
+	\begin{shiftedflalign*}
+		\sym{F}^1_{p_3} &= \{f^{p_3}_{111}\} \\
+		\sym{F}^2_{p_3} &= \{f^{p_3}_{112}, f^{p_3}_{121}, f^{p_3}_{211}, f^{p_3}_{122}, f^{p_3}_{212}, f^{p_3}_{221}\} \\
+		\sym{F}^3_{p_3} &= \{f^{p_3}_{123}\}
+	\end{shiftedflalign*}
+\end{example}
+
+In the clausal discovery setting, a user provides a set \sym{P} of predicates that can occur in the generated clauses.
 Given a set \sym{P}, the set $\sym{F}^r$ is defined as $\sym{F}^r = \bigcup \{\sym{F}^r_{p_i} | p_i \in \sym{P}\}$.
-Such a set contains all instance prototypes of rank $r$.
-The reader may recall that these prototypes are actually functions that map variables to a predicate instance.
-Therefore, $\sym{F}^r$ can also be used as a function that takes $r$ variables and maps them to the set of predicate instances obtained by applying every function in $\sym{F}^r$ to those $r$ variables.
-For example consider a set $\sym{F}^2 = \{f^{p_2}_{12}, f^{p_2}_{21}\}$ then $\sym{F}^2(x, y) = \{p_2(x, y), p_2(y, x)\}$.
-\\\\
-Suppose the maximal number of variables is 3 and the maximal arity of the given predicates is 2, then the atom list used for the clausal discovery algorithm is:
+Such a set contains all predicate prototypes of rank $r$.
+The reader may recall that these prototypes are actually functions that map variables to a predicate.
+Therefore, $\sym{F}^r$ can also be used as a function that takes $r$ variables and maps them to the set of predicates, obtained by applying every function in $\sym{F}^r$ to those $r$ variables.
+
+\begin{example}
+	Consider $\sym{P} = \{p_1, p_2\}$:
+	\begin{shiftedflalign*}
+		\sym{F}^1 &= \{f^{p_1}_{1}, f^{p_2}_{11}\} \\
+		\sym{F}^1(x) &= \{p_1(x), p_2(x, x)\}
+	\end{shiftedflalign*}
+\end{example}
+
+Finally, suppose the maximal number of variables is 3 and the maximal arity of the given predicates is 2, then the atom list used for the clausal discovery algorithm is:
 \begin{align*}
-\sym{F}^1(v_1) \cup \sym{F}^2(v_1, v_2) \cup \sym{F}^2(v_1, v_3) \cup \sym{F}^1(v_2) \cup \sym{F}^2(v_2, v_3) \cup \sym{F}^1(v_3)
+\sym{L} = \sym{F}^1(v_1) \cup \sym{F}^2(v_1, v_2) \cup \sym{F}^2(v_1, v_3) \cup \sym{F}^1(v_2) \cup \sym{F}^2(v_2, v_3) \cup \sym{F}^1(v_3)
 \end{align*}
 Any clause with 3 variables can be represented as an ordered sequence of atoms drawn from this list.
-\\\\
-While clauses can be expressed as ordered sequences of indices in the atom list, not all sequences are valid clauses.
-Different constraints limit the legal combination of atoms.
-The first constraint is that clauses must be connected, which means that given a clause, the next atom must feature at least one variable that already exists in the clause.
-Secondly variables are introduced in order, so after the introduction of $v_1$, the atom introducing $v_3$ cannot appear before the atom introducing $v_2$.
-An atom can of course introduce multiple variables.
-The third constraint is that atoms appearing in the head of the clause cannot introduce new variables.
-Lastly the user can provide typing information which is used to exclude inconsistent atoms.
-This can be done during the generation of the list by removing atoms which are inconsistent with the types of the predicate arguments (e.g. $f^{p_3}_{111}$ for $p_3(Type_1, Type_2, Type_1)$) and during the algorithm, if a newly added atom would be inconsistent with the types of the variables already introduced in the clause.
+The list is sorted by variables, where $v_1 < v_2 < v_3$, and then predicates.
+
+\begin{example}
+	\label{ex:ref_op_list}
+	Consider, again, $\sym{P} = \{p_1, p_2\}$ and 2 variables, then:
+	\begin{shiftedflalign*}
+		\sym{L} &= \sym{F}^1(v_1) \cup \sym{F}^2(v_1, v_2) \cup \sym{F}^1(v_2) \\
+		&= \{p_1(v_1), p_2(v_1, v_1), p_2(v_1, v_2), p_2(v_2, v_1), p_1(v_2), p_2(v_2, v_2)\}
+	\end{shiftedflalign*}
+
+	The clause $c = p_2(v_1, v_1) \leftarrow p_1(v_1) \land p_2(v_1, v_2)$ can be written as $\sym{L}(2) \leftarrow \sym{L}(1) \land \sym{L}(3)$ or $\{\lnot \sym{L}(1), \lnot \sym{L}(3), \sym{L}(2)\}$.
+\end{example}
+
+\paragraph{Building clauses}
+The refinement operator uses the atom list to generalize clauses by adding atoms which occurs later in the atom list.
+Clauses are build in two stages.
+In the first stage, atoms are added to the body.
+In the second stage, atoms are added to the head.
+Before the second stage, the atom list is reset.
+Atoms that have been added in the first stage cannot be added in the second stage (this would result in a redundant clause that is always true).
+
+\begin{example}
+	The clause shown in example~\ref{ex:ref_op_list} would be build as follows:
+	\begin{shiftedflalign*}
+		\textit{Stage 1 }  & \{\lnot \sym{L}(1)\} \\
+		& \{\lnot \sym{L}(1), \lnot \sym{L}(3)\} \\
+		\textit{Stage 2 }  & \{\lnot \sym{L}(1), \lnot \sym{L}(3), \sym{L}(2)\} = c
+	\end{shiftedflalign*}
+
+	The refinement operator would then generate the following clauses:
+	\begin{shiftedflalign*}
+		\rho(c) = \{
+			&\{\lnot \sym{L}(1), \lnot \sym{L}(3), \sym{L}(2), \sym{L}(4)\}
+				%(p_2(v_2, v_1) \lor p_2(v_1, v_1) \leftarrow p_1(v_1) \land p_2(v_1, v_2))
+			\\
+			&\{\lnot \sym{L}(1), \lnot \sym{L}(3), \sym{L}(2), \sym{L}(5)\}
+				%(p_1(v_2) \lor p_2(v_1, v_1) \leftarrow p_1(v_1) \land p_2(v_1, v_2))
+			\\
+			&\{\lnot \sym{L}(1), \lnot \sym{L}(3), \sym{L}(2), \sym{L}(6)\}\}
+				%(p_2(v_2, v_2) \lor p_2(v_1, v_1) \leftarrow p_1(v_1) \land p_2(v_1, v_2))
+	\end{shiftedflalign*}
+\end{example}
+
+\paragraph{Syntactic restrictions}
+Different restrictions limits what clauses are generated.
+One such restriction is typing information, which is used statically and dynamically.
+When the atom list is generated, atoms that are inconsistent with respect to the typing information of the predicates are removed from the list.
+During the algorithm atoms that are inconsistent with the types that have been assigned to variables are not added.
+
+\begin{example}
+	Typing restrictions are illustrated on some examples using a type $T$ and two disjoint subtypes $S_1$ and $S_2$ of $T$.
+
+	\begin{table}[!htp]
+		\begin{tabularx}{\textwidth}{llX}
+				\textbf{Type definition} & \textbf{Atom} & \textbf{Prune?} \\
+				\toprule
+				$p_2(S_1, S_2)$ & $p_2(v_1, v_1)$ & Statically \\
+				$p_2(T, S_1)$ & $p_2(v_1, v_1)$ & Dynamically if $\mathit{type}(v_1) \neq S_1$ \\
+				$p_1(T)$ & $p_1(v_1)$ & No (if there are no other types) 
+		\end{tabularx}
+	\end{table}
+
+\end{example}
+
+Further restrictions are that clauses must be connected and range restricted, which are checked at runtime.
+To check if an atom~$a$ can be added to a clause~$c$, consider $V_a$, the set of variables occurring in~$a$ and $V_c$, the variables occurring in~$c$.
+If $min(V_a) > max(V_c)$, then the atom is not added because the clause would not be connected.
+Additionally, if more than one new variable is introduced in the new atom, they must be introduced in increasing order to avoid the generation of duplicate clauses.
+If the clause is in stage 2 and $max(V_a) > max(V_c)$, then the atom is not added because the clause would not be range restricted.
+
+\paragraph{Representative}
+Often a clause is not unique and there are multiple ways to formulate it.
+Even though the use of the atom list removes most duplicates, there are still some clauses that are reformulations of other clauses.
+
+\begin{example}
+	Consider the graph coloring predicates $\mathit{neighbor}$ and $\mathit{color}$ and clauses:
+	\begin{shiftedflalign*}
+		c_1 &= \{\lnot \mathit{color}(v_1, v_2), \lnot \mathit{neighbor}(v_1, v_3)\} \\
+		c_2 &= \{\lnot \mathit{neighbor}(v_1, v_2), \lnot \mathit{color}(v_1, v_3)\}
+	\end{shiftedflalign*}
+	Then clause~$c_2$ is just a reformulation of the clause~$c_1$.
+\end{example}
+
+\begin{example}
+	A more complex example are the clauses:
+	\begin{shiftedflalign*}
+		c_3 &= \{\lnot \mathit{color}(v_1, v_2), \lnot \mathit{neighbor}(v_1, v_3), \lnot \mathit{color}(v_4, v_2)\} \\
+		c_4 &= \{\lnot \mathit{color}(v_1, v_2), \lnot \mathit{color}(v_3, v_2), \lnot \mathit{neighbor}(v_3, v_4)\}
+	\end{shiftedflalign*}
+	These clauses again formulate the same constraint.
+\end{example}
+
+These duplicates are harder to detect, especially the second example.
+Often not all of these reformulations are detected and avoided by refinement operators in literature. [!! "Ask Anton, C-farmer"]
+Detecting these duplicates requires an order that specifies that, for example, clause~$c_3$ is ``smaller'' than clause~$c_4$.
+This order can be provided by the atom list and looking at the positions of the smallest occurring atoms in the clause.
+
+Using this order the representative clause can be defined as the smallest clause of all equivalent clauses.
+If the current clause is the representative clause it is generated, otherwise is not.
+The representative clause for a clause~$c$ is found by shuffling the literals in the clause.
+If a shuffled clause can be built using the refinement operator that is smaller than the clause~$c$, $c$ can be discarded.
 
 \subsection{Pruning}
-" Write                    																																																				"
+After the algorithm is finished, the resulting theory is pruned, because newer clauses could entail older clauses.
+The procedure used for pruning is the same as for entailment.
+For each clause an entailment test is run to see if the clause is entailed by the rest of the theory.
+The resulting theory is more compact, without loosing expressiveness.
 
-\section{Logical system} [!! Why IDP?]
+\section{Logical system}
 \label{sec:logical_system}
 One of the key features of the clause learning system implemented for this thesis, is the use of a logical system to compute two core functions: coverage and entailment.
 The clausal discovery implementation makes use of a generic  interface - the LogicExecutor - to interact with a logical system.
 An implementation of this interface provides the interaction with a specific system.
-Currently, the clause learning implementation uses the IDP [!! Ref] knowledge base system, which was described briefly in section~\ref{sec:logical_constraint_solving}.
-IDP uses $FO(\cdotp)$, an extension of first order logic.
-This extension supports types, aggregates, inductive definitions and more, which provides the possibility to provide rich background knowledge.
-Unfortunately, the entailment functionality does not support all the features of this extension.
-[!! Ref, generation vs test] IDP uses three elements to describe problems and constraints.
+
+Currently, the clause learning implementation uses the IDP knowledge base system, which was described briefly in section~\ref{sec:logical_constraint_solving}.
+IDP uses $FO(\cdotp)$, an extension of first order logic, which supports types, aggregates, inductive definitions and more.
+Since the entailment functionality does not currently support all of these features, including these features in the background theory will require either providing a more limited theory for entailment than for coverage or suppressing the entailment test.
+
+IDP uses three elements to describe problems and constraints.
 The first element is a vocabulary which contains type and predicate definitions.
 Secondly, theories consisting of $FO(\cdotp)$ statements are used to express constraints.
 The third element are structures, which represent partial or total instances or models.

@@ -2,7 +2,7 @@
 \chapter{Evaluation}
 \label{cha:evaluation}
 
-Several experiments have been run in order to assess how well the implementation accomplishes the clause learning and clausal optimization tasks.
+Several experiments have been performed in order to assess how well the implementation accomplishes the clause learning and clausal optimization tasks.
 Moreover, the influence of different factors internal and external to the algorithm is evaluated.
 The clause learning and clausal optimization workflows will be examined separately, in that order.
 
@@ -64,8 +64,8 @@ In the standard setting one $4 \times 4$ example (figure~\ref{fig:setup_sudoku})
 		2 & 1 & 4 & 3 \\
 		3 & 4 & 1 & 2 \\ \hline
 	\end{tabular}
-	\label{fig:setup_sudoku}
 	\caption{$4 \times 4$ sudoku example}
+	\label{fig:setup_sudoku}
 \end{figure}
 
 Clause learning on the sudoku is usually done with $4$ variables and~$4$ literals per clause.
@@ -187,8 +187,8 @@ Such additional constraints can often be useful for constraint solving.
 			Correct 		& $3 \times 3$				& $4 \times 4$, $5 \times 5$, $6 \times 4$, $4 \times 6$ \\
 			False positive 	& $4 \times 3$				& $6 \times 6$	\\
 		\end{tabularx}
-		\label{tbl:cd_acc_influence}
 		\caption{Influence of number of variables and literals}
+		\label{tbl:cd_acc_influence}
 	\end{table}
 
 \end{experiment}
@@ -211,7 +211,7 @@ Such additional constraints can often be useful for constraint solving.
 	On the other hand, the number of variables also limit the effect of an increase in the number of literals, since every atom can only be added once to either the head or body.
 \subsection{Speed}
 
-Unless explicitly stated, all problems are run $8$ consecutive times in order to eliminate external influences.
+Unless explicitly stated, all experiments are performed $8$ consecutive times in order to eliminate external influences.
 The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core i7 with 4 cores and hyper threading, 16GB RAM}.
 
 \begin{question}
@@ -219,7 +219,8 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 \end{question}
 
 \begin{experiment}
-	In order to gain an overview over the running times and provide a benchmark for tests on various influences, the standard examples are each run using the standard clause learning process.
+\label{exp:benchmark}
+	In order to gain an overview over the execution times and provide a benchmark for tests on various influences, the standard examples are each performed using the standard clause learning process.
 	These values are used to calculate normalized scores for other experiments.
 	
 	\begin{table}[!htp]
@@ -231,8 +232,8 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 			Elevator 		& 3.182 			& 0.073 \\
 			Co-housing 		& 25.903			& 0.446
 		\end{tabularx}
-		\label{tbl:exp_speed_standard}
 		\caption{Running times for standard examples}
+		\label{tbl:exp_speed_standard}
 	\end{table}
 
 \end{experiment}
@@ -240,20 +241,21 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 \paragraph{Discussion}
 Table~\ref{tbl:exp_speed_standard} shows that smaller examples can be run rather efficiently.
 Several efficient tests and parallelization of the algorithm make this possible, although the performance of the implementation was not the main focus and improvements are possible in many ways.
-Since the search space is exponential, however, running times can increase fast.
+Since the search space is exponential, however, execution times can increase fast.
 The current implementation tries to eliminate redundant clauses as soon as possible but only clauses that cover enough examples can be used for pruning.
 
 \begin{question}
-	What is the influence of the parameters and input data on the running time?
+	What is the influence of the parameters and input data on the execution time?
 \end{question}
 
 \begin{experiment}[\textsc{Parameters}]
+	There are two parameters that a user controls directly: the number veriables per clause and the number of literals per clause.
 	Experiment~\ref{exp:cd_acc_influence_par} showed the influence of the parameters on the accuracy of the algorithm.
-	In this experiment the running time for these settings is calculated.
+	In this experiment the execution time for these settings is calculated.
 
 	\begin{table}[!htp]
 		\begin{tabularx}{\textwidth}{lc|XX}
-			\textbf{Name}	& \textbf{Parameters}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
+			\textbf{Name}	& \textbf{Variables $\times$ Literals}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
 			\toprule
 			Map coloring 	& $2 \times 3$ 			& 0.690				& 0.023	\\
 							& $3 \times 3$ 			& 1.511				& 0.053	\\
@@ -266,22 +268,22 @@ The current implementation tries to eliminate redundant clauses as soon as possi
 							& $5 \times 5$ 			& 25.995			& 0.168	\\
 							& $6 \times 6$ 			& 49.163			& 0.267
 		\end{tabularx}
-		\label{tbl:cd_speed_influence}
 		\caption{Influence of number of variables and literals}
+		\label{tbl:cd_speed_influence}
 	\end{table}
 
 \end{experiment}
 
 \begin{experiment}[\textsc{Examples}]
 	Adding additional examples takes a toll on the efficiency of the algorithm.
-	This experiment measures the increase of the running time that occurs when examples are added.
+	This experiment measures the increase of the execution time that occurs when examples are added.
 	The sudoku problem is run in two settings: $4$~variables and literals and $6$~variables and literals.
 	Each setting has three rounds, in each round an additional $9 \times 9$ solved sudoku example is added.
 	Initially the dataset only contains the standard ($4 \times 4$) example.
 
 	\begin{table}[!htp]
 		\begin{tabularx}{\textwidth}{c|XX|XX}
-											& \multicolumn{2}{c}{4 Variables / Literals} & \multicolumn{2}{c}{6 Variables / Literals} \\
+			& \multicolumn{2}{c}{4 Variables / Literals} & \multicolumn{2}{c}{6 Variables / Literals} \\
 			\textbf{$9 \times 9$ sudokus}	& \textbf{Mean (s)} & \textbf{StdDev (s)} & \textbf{Mean (s)} & \textbf{StdDev (s)} \\
 			\toprule
 			0 & 4.768 & 0.058	& 49.163	& 0.267	\\
@@ -289,25 +291,32 @@ The current implementation tries to eliminate redundant clauses as soon as possi
 			2 & 7.026 & 0.112	& 80.489	& 0.287	\\
 			3 & 7.967 & 0.087	& 99.640	& 0.488	\\
 		\end{tabularx}
-		\label{tbl:cd_speed_examples}
 		\caption{Influence of number of variables and literals}
+		\label{tbl:cd_speed_examples}
 	\end{table}
 \end{experiment}
 
 \paragraph{Discussion}
-Increasing the number of variables and literals per clause increases the running time, as can be seen in table~\ref{tbl:cd_speed_influence}.
-Especially the combination of higher variables \emph{and} literals can steeply increase the running time.
+Increasing the number of variables and literals per clause increases the execution time, as can be seen in table~\ref{tbl:cd_speed_influence}.
+Especially the combination of higher variables \emph{and} literals can steeply increase the execution time.
 By restricting the arity of the predicates that are used, the number of necessary variables can usually be reduced.
 Allowing more variables increases the number of possible clauses in each step, while allowing more literals adds additional iterations at the end.
 
-Adding more examples can decrease the number of clauses, but mainly increases the running time of every coverage test.
-Contrary to increasing the parameters, additional examples do not increase the running time exponentially.
-Table~\ref{tbl:cd_speed_examples} shows that the running time increases by a constant factor, independent of the variables and literals.
-The effect of adding examples is thus fairly predictable and the efficiency of testing multiple examples can likely be increased.
+Adding more examples can be used to prevent over-fitting and thus the accuracy of the learned theory.
+On the one hand, this might reduce the execution time, as less clauses are generated.
+However, additional examples increase the execution time of every coverage test.
+Table~\ref{tbl:cd_speed_examples} shows that the execution time increases by a constant factor, independent of the variables and literals.
+This shows that the reduction of clauses has a neglectable influence on the execution time.
+Contrary to increasing the parameters, additional examples do not increase the execution time exponentially.
+The effect of adding examples is thus fairly predictable and the efficiency of testing multiple examples can yet be increased.
 
 \begin{question}
-	How do the syntactic restrictions influence the running time?
+	How do the syntactic restrictions influence the execution time?
+	\label{q:cd_speed_influence_res}
 \end{question}
+
+The exact execution times for the different experiments are reported in table~\ref{tbl:speed_results} which offers a comprehensive overview.
+In the experiments the normalized execution time will be used which is the average execution time for a problem divided by the average execution time of the becnhmark which is described in experiment~\ref{exp:benchmark}.
 
 \begin{experiment}[\textsc{Range restriction}]
 	The clause learning algorithm normally only explores range restricted clauses.
@@ -315,16 +324,16 @@ The effect of adding examples is thus fairly predictable and the efficiency of t
 	In this experiment the standard problems are run, while lifting the constraint that clauses must be range restricted.
 
 	\begin{table}[!htp]
-		\begin{tabularx}{\textwidth}{XXXX}
-			\textbf{Name} 	& \textbf{Normalized}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
-			\toprule
-			Map coloring 	& 2.928					& 4.629				& 0.199 \\
-			Sudoku 			& 3.367					& 16.118			& 0.154 \\
-			Elevator 		& 12.713				& 40.453 			& 0.319 \\
-			Co-housing 		& 8.021					& 207.768			& 0.330
+		\begin{tabularx}{\textwidth}{XX}
+		\textbf{Name} 	& \textbf{Time (baseline)} \\
+		\toprule
+		Map coloring 	& 2.928					\\
+		Sudoku 			& 3.367					\\
+		Elevator 		& 12.713				\\
+		Co-housing 		& 8.021					
 		\end{tabularx}
+		\caption{Execution times for standard examples without range restriction}
 		\label{tbl:exp_speed_no_range}
-		\caption{Running times for standard examples without range restriction}
 	\end{table}
 
 \end{experiment}
@@ -332,57 +341,57 @@ The effect of adding examples is thus fairly predictable and the efficiency of t
 \begin{experiment}[\textsc{Connected clauses}]
 	Clauses are constructed such that they are connected.
 	This is another restriction that decreases the size of the search space.
-	The following table shows running times while allowing disconnected clauses.
+	The following table shows execution times while allowing disconnected clauses.
 
 	\begin{table}[!htp]
-		\begin{tabularx}{\textwidth}{XXXX}
-			\textbf{Name}	& \textbf{Normalized}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
-			\toprule
-			Map coloring 	& 1.005					& 1.589				& 0.110 \\
-			Sudoku 			& 1.476					& 7.068				& 0.150 \\
-			Elevator 		& 1.935					& 6.157 			& 0.114 \\
-			Co-housing 		& 4.001					& 103.633			& 0.131
+		\begin{tabularx}{\textwidth}{XX}
+		\textbf{Name}	& \textbf{Time (baseline)}	\\
+		\toprule
+		Map coloring 	& 1.005					\\
+		Sudoku 			& 1.476					\\
+		Elevator 		& 1.935					\\
+		Co-housing 		& 4.001					
 		\end{tabularx}
+		\caption{Execution times for standard examples without connectivity}
 		\label{tbl:exp_speed_no_connect}
-		\caption{Running times for standard examples without connectivity}
 	\end{table}
 
 \end{experiment}
 
 \paragraph{Discussion}
-While both restrictions increase the efficiency of the clause learning system, the impact of the connectivity restriction seems much more limited.
-Lifting range restriction adds more expressiveness, such as the possibility to state facts ($Head \leftarrow true$).
-However, it greatly increases the running time, which might prove problematic for larger problems.
 
-Given the acceptable running times for this class of problems, a future improvement could be to ease some restrictions.
-Since the lifting the connectivity restriction only moderately impacts the efficient, this constraint would be a reasonable candidate, performance wise.
+Lifting range restriction adds more expressiveness, such as the possibility to state facts ($Head \leftarrow true$) but greatly increases the execution time, which might prove problematic for larger problems.
+It would, however, possible to only partially lift this restriction and to, for example, allow only simple facts.
+
+Ommitting the connectivity restriction only moderately impacts the efficiency.
+Given the acceptable execution times in general, a future improvement could lift this restriction.
 An important consideration, however, is that lifting this restriction increases the impact of the number of variables in a clause.
 
-The learned theories have so far proven expressive enough.
-Ultimately, additional expressiveness increases the search space and thus the running time.
-Therefore, it would be best to either let the user exert some control on this trade-off in a transparent matter or automatically control parameters and restrictions.
+The learned theories have so far proven expressive enough and the syntactic restrictions have provided increased the efficiency of the clause learning process.
+Ultimately, additional expressiveness increases the search space and thus the execution time.
+The cost of lifting restrictions comes increases as the problem size grows.
+Therefore, it would be best to either let the user exert some control on this trade-off in a transparent matter or automatically control these restrictions.
 
 \begin{question}
-	What is the influence of the efficiency measures on the running time?
+	What is the influence of the efficiency measures on the execution time?
 \end{question}
 
-There are mainly two measures incorporated in the clause learning algorithm that aim to reduce the running time.
-Contrary to syntactic restrictions these do, in principle, not affect the outcome of the algorithm.
+As in question~\ref{q:cd_speed_influence_res}, execution times are usually normalized using the baseline and all exact results are provided in the overview in table~\ref{tbl:speed_results}.
 
 \begin{experiment}[\textsc{Symmetric predicates}]
 	The first design choice evaluated is the option to provide symmetric predicates.
 	The map coloring example contains a symmetric predicate $\mathit{neighbor}$.
-	By replacing this symmetric predicate with a standard predicate, the influence on the running time can be measured.
+	By replacing this symmetric predicate with a standard predicate, the influence on the execution time can be measured.
 
 	\begin{table}[!htp]
 		\begin{tabularx}{\textwidth}{XXX}
-			\textbf{Name}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
+			\textbf{Name}	& \textbf{Average time (s)}	 \\
 			\toprule
-			Standard 		& 1.581 			& 0.117 \\
-			Non-symmetric 	& 2.541 			& 0.128 \\
+			Standard 		& 1.581 ($\pm$ 0.117) \\
+			Non-symmetric 	& 2.541 ($\pm$ 0.128) \\
 		\end{tabularx}
+		\caption{Execution times symmetric vs. non-symmetric map coloring}
 		\label{tbl:exp_speed_symm}
-		\caption{Running times symmetric vs. non-symmetric map coloring}
 	\end{table}
 
 	By running the non-symmetric version $8$ times, it can be compared to the standard map coloring problem.
@@ -391,20 +400,20 @@ Contrary to syntactic restrictions these do, in principle, not affect the outcom
 
 \begin{experiment}[\textsc{Subset test}]
 	As mentioned in chapter~\ref{cha:meth}, a subset test is used to forestall some entailment tests.
-	In this experiment, the running times without subset test is measured to evaluate the effect of this test.
+	In this experiment, the execution times without subset test is measured to evaluate the effect of this test.
 	To this end, the standard problems are run without the subset test.
 
 	\begin{table}[!htp]
-		\begin{tabularx}{\textwidth}{XXXX}
-			\textbf{Name}	& \textbf{Normalized}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
-			\toprule
-			Map coloring 	& 0.985					& 1.558				& 0.117 \\
-			Sudoku 			& 1.094					& 5.239				& 0.140 \\
-			Elevator 		& 1.156					& 3.678 			& 0.094 \\
-			Co-housing 		& 1.164					& 30.145			& 0.159
+		\begin{tabularx}{\textwidth}{XX}
+		\textbf{Name}	& \textbf{Time (baseline)} \\
+		\toprule
+		Map coloring 	& 0.985 \\
+		Sudoku 			& 1.094 \\
+		Elevator 		& 1.156 \\
+		Co-housing 		& 1.164
 		\end{tabularx}
+		\caption{Execution times for standard examples without subset test}
 		\label{tbl:exp_speed_no_subset}
-		\caption{Running times for standard examples without subset test}
 	\end{table}
 \end{experiment}
 
@@ -417,31 +426,71 @@ Contrary to syntactic restrictions these do, in principle, not affect the outcom
 
 	\begin{table}[!htp]
 		\begin{tabularx}{\textwidth}{XXXX}
-			\textbf{Name}	& \textbf{Normalized}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
-			\toprule
-			Map coloring 	& 1.511					& 2.389				& 0.130 \\
-			Sudoku 			& 1.879					& 8.995				& 0.125 \\
-			Elevator 		& 1.118					& 3.559 			& 0.076 \\
-			Co-housing 		& 2.139					& 55.402			& 0.298
+		\textbf{Name}	& \textbf{Time (baseline)} \\
+		\toprule
+		Map coloring 	& 1.511	\\
+		Sudoku 			& 1.879	\\
+		Elevator 		& 1.118	\\
+		Co-housing 		& 2.139	
 		\end{tabularx}
+		\caption{Execution times for standard examples without representative test}
 		\label{tbl:exp_speed_no_representative}
-		\caption{Running times for standard examples without representative test}
 	\end{table}
 
 \end{experiment}
 
 \paragraph{Discussion}
+\begin{table}
+	\begin{tabularx}{\textwidth}{rl|XX}
+\textbf{Ommitted test}	& \textbf{Problem} 		& \textbf{Time (baseline)}	& \textbf{Average time (s)}\\
+\toprule
+None 					& Map coloring 	& 1.000 	& 1.581		($\pm$ 0.117)\\
+						& Sudoku 		& 1.000 	& 4.787		($\pm$ 0.062)\\
+						& Elevator 		& 1.000 	& 3.182 	($\pm$ 0.073)\\
+						& Co-housing 	& 1.000 	& 25.903	($\pm$ 0.446)\\
+\midrule
+Range restriction 		& Map coloring 	& 2.928		& 4.629		($\pm$ 0.199)\\
+						& Sudoku 		& 3.367		& 16.118	($\pm$ 0.154)\\
+						& Elevator 		& 12.713	& 40.453 	($\pm$ 0.319)\\
+						& Co-housing 	& 8.021		& 207.768	($\pm$ 0.330)\\
+\midrule
+Connected clauses 		& Map coloring 	& 1.005		& 1.589		($\pm$ 0.110)\\
+						& Sudoku 		& 1.476		& 7.068		($\pm$ 0.150)\\
+						& Elevator 		& 1.935		& 6.157 	($\pm$ 0.114)\\
+						& Co-housing 	& 4.001		& 103.633	($\pm$ 0.131)\\
+\midrule
+Symmetric predicates	& Map coloring 	& 1.607		& 2.541		($\pm$ 0.128)\\
+\midrule
+Subset test 			& Map coloring 	& 0.985		& 1.558		($\pm$ 0.117\\
+						& Sudoku 		& 1.094		& 5.239		($\pm$ 0.140\\
+						& Elevator 		& 1.156		& 3.678 	($\pm$ 0.094\\
+						& Co-housing 	& 1.164		& 30.145	($\pm$ 0.159\\
+\midrule
+Representative test 	& Map coloring 	& 1.511		& 2.389		($\pm$ 0.130)\\
+						& Sudoku 		& 1.879		& 8.995		($\pm$ 0.125)\\
+						& Elevator 		& 1.118		& 3.559 	($\pm$ 0.076)\\
+						& Co-housing 	& 2.139		& 55.402	($\pm$ 0.298)\\
+	\end{tabularx}
+	\caption{Overview of execution times for ommitted restrictions and tests}
+	\label{tbl:speed_results}
+\end{table}
 Experiment~\ref{tbl:exp_speed_symm} shows that including common background knowledge directly into the clause learning algorithm offers a significant speedup.
 Not only is the execution of the algorithm faster, it allows the user to model a problem faster.
-Examples are preprocessed and symmetric predicates are generated.
+The examples are preprocessed and symmetric ground predicates are generated.
 Furthermore, the user hands off the task of formulating the corresponding logical background knowledge.
 It would be interesting to explore if other similar notions of background knowledge can be implemented.
 
-The subset and representative tests both accomplish their goal: reducing the running time.
-The additional effort for executing these tests is compensated by the reduction of generated clauses and entailment tests.
-For the subset test only moderate improvements are booked but the advantage of these two tests is that they independent of examples or background knowledge.
+The subset and representative tests both accomplish their goal: reducing the execution time.
+Contrary to syntactic restrictions efficiency measure do, in principle, not affect the outcome of the algorithm.
+The experiments show that the additional effort for executing these two tests is compensated by the reduction of generated clauses and entailment tests.
+For the subset test only moderate improvements are booked but the advantage of these this test as well as the representative test, is that they are independent of examples or background knowledge.
 For more complex problems these will likely provide even greater improvements.
 The subset test depends on the amount of clauses that have been accepted or denied while the refinement test operates completely autonomously.
+\\\\
+The experiments, summarized in table~\ref{tbl:speed_results}, show clearly that all restrictions and additional tests positively impact the execution time of the clause learning algorithm.
+In all cases the necessary constraints were discovered.
+This validates the assumptions and design choices made during the implementation.
+
 
 \subsection{Compared to human}
 
@@ -457,7 +506,6 @@ This section will briefly examine how learned clauses compare to human programme
 	For the map coloring problem a theory is provided on the website of the IDP system.
 	This examples uses similar types and predicates, with the exception of using a \emph{function} instead of a predicate for the color.
 	Types and predicates have been renamed in order to correspond with the names used in the standard example.  
-
 	\begin{shiftedflalign*}
 		color(x) \neq color(y) \leftarrow neighbor(x,y) \lor neighbor(y,x).
 	\end{shiftedflalign*}
@@ -465,28 +513,29 @@ This section will briefly examine how learned clauses compare to human programme
 \end{observation}
 
 \begin{experiment}[\textsc{Speed}]
-	This experiment measures the running time of learned theories versus human programmed theories.
+\label{exp:human_speed}
+	This experiment measures the execution time of learned theories versus human programmed theories.
 	It does so by solving a new problem using the learned and existing theory using IDP.
-	The human theories have been taken from the IDP website.
-	For three different cases model expansion is run and the \emph{CPU time} is measured in IDP\footnote{Measured using LUAs inbuilt $os.clock()$}.
+	The human crafted theories have been taken from the IDP website.
+	For three different cases model expansion is performed and the \emph{CPU time} is measured in IDP\footnote{Measured using LUAs inbuilt $os.clock()$}.
 
 	The first case is map coloring.
 	In the human made theory a function is used to assign colors instead of a predicate.
 	Aside from this, the types and predicates are the same as in the standard map coloring example.
-	There are two changes that have to be made for generated theory to work on the same examples as the human theory.
+	There are two changes that have to be made for generated theory to work on the same examples as the human crafted theory.
 	Since the solver is now used to generate solutions, an extra formula has to be added to assure that every country is assigned a color:
 	\cen{$\forall \mathit{country}\  \exists \mathit{color} : \mathit{color}(\mathit{country}, \mathit{color}).$}
 	Additionally, since the clause learning problem makes use of a symmetric predicate, $\mathit{neighbor}(x, y)$ is replaced by $\mathit{neighbor}(x, y) \lor \mathit{neighbor(y,x)}$.
 	The example used is a Leighton graph with $450$ nodes and $9803$ edges\footnote{\url{http://map.gsia.cmu.edu/COLOR/instances/le450_5c.col}}, which is converted to an IDP structure.
 
 	The second case is sudoku.
-	The human theory for this example is quite different - and more concise - than the learned theory.
+	The human programmed theory for this example is quite different - and more concise - than the learned theory.
 	Therefore, the example sudoku\footnote{\url{http://www.menneske.no/sudoku/eng/showpuzzle.html?number=6913714}} has been translated into two structures, one for each theory.
 	Again, the addition of an extra formula to the learned theory is necessary to enforce that a value is assigned to each cell: 
 	\cen{$\forall \mathit{cell}\  \exists \mathit{value} : \mathit{value}(\mathit{cell}, \mathit{value}).$}
 
 	The third case is a variant on sudoku, to correct for a potential performance benefit.
-	In the human theory blocks are automatically calculated based on the row and column while they are direct input for the learned theory.
+	In the human made theory blocks are automatically calculated based on the row and column while they are direct input for the learned theory.
 	The corrected learned theory also calculates the blocks using an adapted version of the responsible formula.
 
 	% \begin{figure}
@@ -512,34 +561,36 @@ This section will briefly examine how learned clauses compare to human programme
 
 
 	\begin{table}[!htp]
-		\begin{tabularx}{\textwidth}{lr|XX}
-			\textbf{Name} & \textbf{Theory} & \textbf{Mean (s)} & \textbf{StdDev (s)} \\
+		\begin{tabularx}{\textwidth}{XX|X}
+			\textbf{Name} & \textbf{Theory} & \textbf{Average CPU time (s)} \\
 			\toprule
-			Map coloring & Human & $0.968$ & $0.023$ \\
-			& Learned & $0.403$ & $0.015$ \\
+			Map coloring & Human & $0.968$ 	($\pm 0.023$) \\
+			& Learned & $0.403$ 			($\pm 0.015$) \\
 			\midrule
-			Sudoku & Human & $1.453$ & $0.018$ \\ 
-			& Learned & $0.156$ & $0.008$ \\
-			& Corrected & $0.310$ & $0.012$
+			Sudoku & Human & $1.453$ 		($\pm 0.018$) \\ 
+			& Learned & $0.156$ 			($\pm 0.008$) \\
+			& Corrected & $0.310$ 			($\pm 0.012$)
 		\end{tabularx}
-		\label{tbl:speed_human_machine}
 		\caption{CPU times human vs.~learned theory}
+		\label{tbl:speed_human_machine}
 	\end{table}
 
 \end{experiment}
 
 \paragraph{Discussion}
-Human theories are usually more concise and use more expressive formulas.
+Human theories can be more concise and use more expressive formulas.
 While a human will focus on essential constraints that describe a problem, generated constraints describe any regularities that can be found.
-As mentioned previously, additional constraints can be helpful for a solver as they can eliminate parts of the search space.
-However, some constraints can also result from over-fitting which will be exclude valid solutions.
+As mentioned previously, these additional constraints can be helpful for a solver as they can eliminate parts of the search space.
 
-Contrary to a human, generated theories will never make errors, the generated clauses will always hold on the given examples.
-If a generated theory is too specific, a human modeling a problem might spot and remove the responsible clauses.
-Too specific theories are not useful, but, as long as a theory can be expressed, this problem can usually be solved using additional computation time.
+Generated theories can be useful to assist a human in the modelling of a problem.
+Contrary to a human, generated theories will not contain errors in the sense that the generated clauses will always hold on the given examples.
+The two problems that typically can occur when learning theories, is that the theory is too specific or too generic.
+Clauses that over-fit the training data might be easily spot by a human user.
+The problem of theories that are too general can usually be solved through more computation time. 
 
-Expert users can make better use of a logical solver to solve problems faster.
-Although solving time is usually not the primary concern when using logical constraint solvers, table~\ref{tbl:speed_human_machine} shows that the learned theory can compete with and even outperform a human solution.
+Experiment~\ref{exp:human_speed} shows that generated theories are able to compete with and even outperform human crafted theories in the evaluated cases.
+While solving time was not a key aim of this thesis and expert users can certainly tweak theories for better performance, it is motivating to see that the learned clauses are competitive in this area.
+Especially since the human made theories were crafted by users familiar with the IDP system.
 
 The language supported by, for example, IDP is much more expressive than clausal theories.
 Supporting the learning of more expressive formulas is an interesting research question.
@@ -572,8 +623,8 @@ Table~\ref{tbl:setup_housing} gives an overview of the housing scenario.
 	    \textbf{locations} & Job offer & x & x & \\
 	    & School & x & x & x 
 	\end{tabularx}
-	\label{tbl:setup_housing}
 	\caption{Characteristics and restrictions}
+	\label{tbl:setup_housing}
 \end{table}
 
 The different possible choices form $18$ distinct examples.
@@ -601,8 +652,8 @@ This template is shown in figure~\ref{fig:setup_housing_example_template}.
 			school_in(y)
 		\end{verbatim*}
 	\end{minipage}
-	\label{fig:setup_housing_example_template}
 	\caption{Housing example template}
+	\label{fig:setup_housing_example_template}
 \end{figure}
 
 In order to emulate real user preferences, a model is used used to generate pair wise rankings over the examples.
@@ -684,8 +735,8 @@ Experiments are usually run $8$ times in a row, mainly to account for the random
 			0.2 	& 0.930		& 0.046 \\
 			0.3 	& 0.980 	& 0.014 \\
 		\end{tabularx}
-		\label{tbl:exp_acc_approach2}
 		\caption{Accuracy obtained using approach~2}
+		\label{tbl:exp_acc_approach2}
 
 		Table~\ref{tbl:exp_acc_approach2} shows scores for small fractions of (noiseless) examples.
 		For larger fractions the score approaches $1.0$.
@@ -781,8 +832,8 @@ When a different model is used with constraints that are not directly expressibl
 
 \paragraph{Discussion}
 Noise on the rankings influences the accuracy, however figure~\ref{fig:nosplit_noise_noise} shows that the algorithm can deal with significant noise before the accuracy decreases sharply.
-If the fraction of provided is 0.4 the algorithm achieves a score around 0.8 despite the fact that 30\% of the ratings are inverted. 
-Even if the fraction of inverted rankings stays the same, adding more rankings makes the algorithm more robust.
+If the fraction of provided rankings is 0.4, the algorithm achieves a score around 0.8 despite the fact that 30\% of the ratings are inverted. 
+Even if the percentage of inverted rankings stays the same, adding more rankings makes the algorithm more robust.
 This effect is shown in figure~\ref{fig:nosplit_noise_rankings}.
 For use cases where noise is expected, adding more data should improve the outcome.
 
@@ -851,8 +902,8 @@ Approach~1, where the fraction of examples in the training set is chosen as $0.4
 			\toprule
 			\textbf{Mean} & 0.823 ($\pm$ 0.073) & 0.740 ($\pm$ 0.078) & 0.788 ($\pm$ 0.074) & 0.735 ($\pm$ 0.063)
 		\end{tabularx}
-		\label{tbl:thresholds}
 		\caption{Scores for different thresholds}
+		\label{tbl:thresholds}
 	\end{table}
 \end{experiment}
 

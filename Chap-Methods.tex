@@ -25,13 +25,17 @@ These are clauses that have a weight assigned to them, expressing how desirable 
 Clausal discovery and the clause learning / clausal optimization workflows are implemented in Java.
 Interaction with the user, the logical system as well as the \svm{} software is achieved through files and standard input / output.
 
-Through this chapter the map coloring problem will be used as an example for clause learning applications.
+Throughout this chapter the map coloring problem will be used as an example for clause learning applications.
 In this problem there is a set of countries and every country is assigned a color.
 Some countries are neighbors of each other.
 The main constraint is that neighboring countries may not have the same color.
 
 \section{Output}
-In order to understand the goal of this approach and this thesis, this section will provide more details on the produced outputs: constraints and weighted soft constraints.
+In order to understand the goal of this approach and this thesis, this section will provide more details on the produced outputs.
+The aim of the clause learning system is to provide hard or soft constraints that describe valid solutions.
+The clausal optimization system produces weighted soft constraints, that can be used as optimization criteria.
+
+\paragraph{Constraints}
 For the application at hand, a problem can be viewed as a description of its domain and a set of rules.
 The domain consists of all potential solutions to the problems and members of the problem domain will be referred to as instances or models.
 If an instance fulfills all the rules, it is considered to be valid or a solution to the problem.
@@ -39,16 +43,20 @@ These rules can therefore be seen as \textit{hard} constraints, constraints whic
 Considering, for example, the map coloring problem, then all colored maps are potential solutions.
 However, only maps in which countries never have the same color as their neighbors are actual solutions.
 
+In this thesis, constraints are represented as clauses and the clause learning process produces a set (or theory) of clauses.
+Using clauses to represent constraints enables the use of learning algorithms from the inductive logic programming and the use of first order logic solvers and background knowledge.
+
 \begin{example}
 Given multiple examples of correctly colored maps, the output of the clause learning system would consist of a set of clauses. One of the clauses would express the constraint: \cen{$false \leftarrow color(c_1, color_1) \land neighbor(c_1, c_2) \land color(c_2, color_1)$.}
 Because of Object Identity (see chapter~\ref{cha:bg}), variables with different names always denote different object.
 \end{example}
 
-Learned constraints can be used to generate new solutions, check if an instance is valid or expand a partial instance into a solution.
+Learned clauses can be used to generate new solutions, check if an instance is valid or expand a partial instance into a solution.
 The clauses produced by the system are considered hard constraints if they cover all the provided examples.
 A user can, however, also provide a custom minimum support value, e.g. $80\%$, then all clauses are returned that cover at least $80\%$ of the provided examples.
 This can be used to find constraints that hold most of the time but not always and is also a way to deal with noise on the examples.
 
+\paragraph{Optimization}
 Problems potentially have many solutions and not all solutions might be equally good.
 Soft constraints are constraints which solutions might fulfill but do not have to.
 By using soft constraints, one can discriminate between better and worse solutions.
@@ -58,6 +66,7 @@ Clausal optimization uses clause learning to find soft constraints in examples.
 It then automatically assign weights to them based on the preferences a user expresses over the examples.
 For clausal optimization, negative weights are also allowed.
 This means that examples that fulfill these negatively weighted constraints actually get scored less than the ones that do not.
+Using only positive weights would limit the expressiveness of the weighted clauses as optimization criteria.
 One can obtain non-negative weights by negating the clauses that have negative weights.
 The resulting logical formula would, however, not be a clause anymore.
 
@@ -68,8 +77,6 @@ If $c_i$ is true for \sym{I}, then $v_i$ is $1$, otherwise it is $0$. The score 
 \label{eq:weights_sum}
 \sum\limits^n w_i \cdot v_i
 \end{equation}
-
-As mentioned in section~\ref{sec:clausal_logic}, clauses are disjunctions of literals. A theory of clauses consists of a conjunction of clauses. Therefore, it is a logical theory in CNF [!! Expand on why clauses.]
 
 \section{Input}
 The input to the clause learning system consists mainly of two parts: definitions and examples.
@@ -398,12 +405,13 @@ Therefore, $\sym{F}^r$ can also be used as a function that takes $r$ variables a
 	\end{shiftedflalign*}
 \end{example}
 
-Finally, suppose the maximal number of variables is 3 and the maximal arity of the given predicates is 2, then the atom list used for the clausal discovery algorithm is:
+Finally, suppose the maximal number of variables is 3 and the maximal arity of the given predicates is 2, then the atom list for this problem is:
 \begin{align*}
 \sym{L} = \sym{F}^1(v_1) \cup \sym{F}^2(v_1, v_2) \cup \sym{F}^2(v_1, v_3) \cup \sym{F}^1(v_2) \cup \sym{F}^2(v_2, v_3) \cup \sym{F}^1(v_3)
 \end{align*}
 Any clause with 3 variables can be represented as an ordered sequence of atoms drawn from this list.
 The list is sorted by variables, where $v_1 < v_2 < v_3$, and then predicates.
+For example $\sym{F}^3(v_1, v_2, v_3)$ would occur before $\sym{F}^2(v_1, v_3)$.
 
 \begin{example}
 	\label{ex:ref_op_list}
@@ -467,13 +475,17 @@ During the algorithm atoms that are inconsistent with the types that have been a
 
 \end{example}
 
-Further restrictions are that clauses must be connected and range restricted, which are checked at runtime.
+Clauses must also be connected and range restricted, which is checked at runtime.
 To check if an atom~$a$ can be added to a clause~$c$, consider $V_a$, the set of variables occurring in~$a$ and $V_c$, the variables occurring in~$c$.
 If $min(V_a) > max(V_c)$, then the atom is not added because the clause would not be connected.
-Additionally, if more than one new variable is introduced in the new atom, they must be introduced in increasing order to avoid the generation of duplicate clauses.
+Additionally, if more than one new variable is introduced in a new atom, they must be introduced in increasing order to avoid the generation of duplicate clauses.
 If the clause is in stage 2 and $max(V_a) > max(V_c)$, then the atom is not added because the clause would not be range restricted.
 
-\paragraph{Representative}
+This order of the atom list is important, because it assures that clauses are generated in a connected way by placing connecting atoms first.
+For example, clauses containing only $v_2$ are generated after clauses that contain $v_1$ and~$v_2$.
+Therefore, dropping the $k$ last literals always results in a valid, connected clause.
+
+\paragraph{Representative clause}
 Often a clause is not unique and there are multiple ways to formulate it.
 Even though the use of the atom list removes most duplicates, there are still some clauses that are reformulations of other clauses.
 
@@ -496,14 +508,65 @@ Even though the use of the atom list removes most duplicates, there are still so
 \end{example}
 
 These duplicates are harder to detect, especially the second example.
-Often not all of these reformulations are detected and avoided by refinement operators in literature. [!! "Ask Anton, C-farmer"]
-Detecting these duplicates requires an order that specifies that, for example, clause~$c_3$ is ``smaller'' than clause~$c_4$.
-This order can be provided by the atom list and looking at the positions of the smallest occurring atoms in the clause.
+To solve the problem of detecting these duplicates, this thesis suggests a procedure which will be referred to as ``representative test''.
+
+The first step for detecting these duplicates is to define an order that specifies that, for example, clause~$c_3$ is ``smaller'' than clause~$c_4$.
+This order can be provided by the atom list and looking at the positions of the smallest atom that does not occur in the other clause.
 
 Using this order the representative clause can be defined as the smallest clause of all equivalent clauses.
 If the current clause is the representative clause it is generated, otherwise is not.
 The representative clause for a clause~$c$ is found by shuffling the literals in the clause.
 If a shuffled clause can be built using the refinement operator that is smaller than the clause~$c$, $c$ can be discarded.
+
+\begin{example}
+	This example illustrates how the representative test dismisses clause~$c_4$.
+	\begin{shiftedflalign*}
+		c_4 = &\{\lnot \mathit{color}(v_1, v_2), \lnot \mathit{color}(v_3, v_2), \lnot \mathit{neighbor}(v_3, v_4)\} \\
+		\mathit{shuffle} :\  &\{\lnot \mathit{color}(v_3, v_2), \lnot \mathit{neighbor}(v_3, v_4), \lnot \mathit{color}(v_1, v_2)\} \\
+		\mathit{reorder\  variables} :\  &\{\lnot \mathit{color}(v_1, v_2), \lnot \mathit{neighbor}(v_1, v_3), \lnot \mathit{color}(v_4, v_2)\} = c_3 < c_4\\
+	\end{shiftedflalign*}
+\end{example}
+
+There is only one representative clause for every clause and if a clause is not representative is it discarded.
+
+\begin{proof}
+	A representative clause must contain the same number of variables and the same predicates as the original clause.
+	Since variables are introduced in a strict order, only the placement of the predicates can vary.
+	There is exactly one minimal placement that results in a valid clause, as there must be at least one different literal.
+
+	By generating permutations of literals in a clause, all possible placements of predicates are considered.
+	Therefore, the representative clause must also be generated.
+\end{proof}
+
+% \paragraph{Optimality}
+% In chapter~\ref{cha:bg} the notions of completeness and optimality for refinement operators are introduced.
+% A refinement operator is complete if every clause is visited at least once and it is optimal if every clause is visited but once.
+
+% The refinement operator suggested in this thesis is considered to be optimal, with respect to Object Identity and syntactic restrictions.
+
+% \emph{(Completeness)}
+% 	Any clause can be written as a set of literals from the atom list and therefore, it can be built incrementally.
+% 	As shown previously, any clause can also be rewritten into a representative clause.
+% 	The order of the atom list is chosen such that connecting literals are generated first.
+% 	As a result, if the $k$ last literals of a clause $c$ are dropped, the resulting clause $c_k$ is also connected.
+% 	A property of a representative clause is, that the clause 
+
+
+% 	Leaving out the last $k$ literals $E_k$
+% 	If the clause $r - e$ is generated, than $r$ will also be generated.
+% 	But, since $r$ was representative, so must $r - e$.
+% 	Otherwise a permutation of $r$ would be smaller than $r$ which is not possible since $r$ is representative.
+
+
+% removing the last literal results in a valid clause, and if that clause is generated, then so will 
+
+
+% Clauses that are 
+
+\paragraph{Symmetric predicates}
+For symmetric predicates the order of terms is irrelevant.
+Internally, these predicates are always reduced to a unique form by ordering the variables that  occur in it.
+Atoms that contains symmetric predicates with out-of-order variables can be deleted from the atom list.
 
 \subsection{Pruning}
 After the algorithm is finished, the resulting theory is pruned, because newer clauses could entail older clauses.
@@ -610,3 +673,40 @@ In this thesis \svm{} was chosen to accomplish this task.
 Weights are chosen optimally with respect to a cost parameter $c$, which determines the trade-off between disagreeing with a user provided ranking and a simpler model.
 Assigning a low cost to disagreeing with the training rankings establishes a bias towards simpler models which can avoid over-fitting the training.
 A high cost should be assigned, however, when one is interested in a model that is more accurate with respect to the given examples and rankings.
+
+\section{Solving}
+Using the clause learning and clausal optimization system enables a user to find formal representation of the constraints that describe the problem and user's preferences.
+Clauses can be used in IDP to generate or check solutions to a problem by providing the learned constraints, defining a partial structure and performing model expansion on it.
+It may be necessary to supply some additional information, such as that every country needs to be assigned a color.
+
+\paragraph{MAX-SAT}
+Weighted clauses can be obtained using the clausal optimization process.
+Soft constraints found by the clause learning process can also be transformed into weighted clauses by using their frequency as a weight.
+The problem of finding optimal solutions for these weighted clauses can be seen as a first order generalization of weighted MAX-SAT problem (see section~\ref{sec:max_sat}).
+
+Solvers for weighted MAX-SAT attempt to optimize a formula consisting of a conjunction of positively weighted propositional clauses, by assigning values to the variables occurring in the formula.
+In this thesis, first order logic clauses are used and the weights assigned to them can be positive or negative.
+The optimization task is then very similar to the MAX-SAT setting:
+Assign values to the variables such that the sum of the weights of the clauses that are satisfied is maximized.
+
+\paragraph{Solving}
+This optimization task can be solved directly in IDP, using inductive definitions, aggregates and minimization.
+The only limitation is that the weights must be integer values.
+Therefore, the weights of the clauses are divided by the smallest absolute weight, multiplied by a constant and rounded to the closest integer if necessary.
+
+In order to model the optimization problem in IDP, every clause $c_i$ with variables $v_1, ..., v_n$ is represented by a number $i$. For every clause a predicate $t(i)$ is added to capture the truth value of the clause.
+A function $\mathit{cost}(i)$ specifies the cost of not satisfying the clause, which is equal to the integer weight of the clause.
+\begin{shiftedflalign*}
+	t(1) &\Leftrightarrow \forall v_1, ..., v_n : c_i. \\
+	cost(1) &= w_1.
+\end{shiftedflalign*}
+
+Using $t$ and $\mathit{cost}$, a function $\mathit{actual}(i)$ is then defined in IDP as 0 if $t(i)$ and $\mathit{cost}(i)$ if $\lnot t(i)$.
+This function is used in the term $\sum_i actual(i)$ to be minimized, which will allow IDP to search for an optimal solution.
+The term can be expressed in IDP using the sum aggregate:
+\begin{shiftedflalign*}
+	sum\{i, cost : actual(i) = cost : cost\}
+\end{shiftedflalign*}
+
+The IDP code for a set of learned weighted clauses can easily be generated automatically.
+An example is provided in appendix~\ref{app:co_idp}.

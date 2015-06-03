@@ -13,7 +13,7 @@ This is commonly written as $\mathit{friends}/2$.
 
 Clauses are in fact a special form of logical implications in which all variables are implicitly universally quantified. The clause mentioned above represents the implication: \cen{$B_1 \land ... \land B_m \Rightarrow H_1 \lor ... \lor H_n$.} Therefore, a clause can also be written as a disjunction of literals: \cen{$\lnot B_1 \lor ... \lor \lnot B_m \lor H_1 \lor ... \lor H_n$.} A literal consists of either an atom or a negation of an atom. Since a clause is a disjunction of literals, adding an atom to the head or the body, will make always make the clause more general. Moreover, a clause can be written as a set: \cen{$\{\lnot B_1, ..., \lnot B_m, H_1, ..., H_n\}$.}
 
-[!! thoery => CNF] Several concepts concerning clauses will be important in the context of this thesis:
+Several concepts concerning clauses will be important in the context of this thesis:
 \begin{definition}
 \label{def:funtor_free}
 A clause is functor-free iff all the terms occurring in it are variables.
@@ -58,7 +58,7 @@ There are three important properties that a refinement operator can have:
 \begin{definition}
 A refinement operator $\rho$ is ideal iff every clause in $\rho(c)$ is only minimally more general then $c$.
 \end{definition}
-Ideality is important in order to fully enumerate a search space. If $\rho$ is ideal then for any pair of clauses $c_s, c_g$ such that $c_g \in \rho(c_s)$, there cannot be a clause $c$ which is more general than $c_s$ and more specific than $c_g$.
+If $\rho$ is ideal then for any pair of clauses $c_s, c_g$ such that $c_g \in \rho(c_s)$, there cannot be a clause $c$ which is more general than $c_s$ and more specific than $c_g$.
 \begin{definition}
 A refinement operator $\rho$ is complete w.r.t. to a language \sym{L} iff $\sym{L} = \rho^*(\square)$, where $\square$ is the empty clause.
 \end{definition}
@@ -83,7 +83,7 @@ Some biases are internal to the learning algorithm. It is, however, also possibl
 A common question is whether variables in a propositional logic formula can be assigned truth values, such that the formula is satisfied.
 This problem is known as the satisfiability (SAT) problem.
 Such logic formulas can be rewritten into a special form called the conjunctive normal form (CNF).
-Formulas in this form consist of a conjunctions of clauses, which, in turn, consist of a disjunction of variables.
+Formulas in this form consist of a conjunctions of propositional clauses, which, in turn, consist of a disjunction of variables.
 
 \begin{example}
 The formula: $(a \lor b) \land (\lnot c) \land (c)$ is in conjunctive normal form.

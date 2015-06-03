@@ -2,3 +2,68 @@
 \chapter{Conclusion}
 \label{cha:conclusion}
 
+The research in this thesis has focussed on solving two problems: learning constraints and learning optimization criteria.
+Implementation for both clause learning and clausal optimization have been provided that accomplish these tasks using first order logic clauses.
+
+\paragraph{Learning constraints}
+The first goal of this thesis was to learn constraints that describe a given set of examples.
+The clause learning system has been shown to be able to fullfill this task accurately and efficiently.
+It has been able to identify hard constraints as well as soft constraints which describe the underlying problem.
+Input to the system has been restricted to information that is easily provided by a user, such as typing information and examples.
+However, the use of logical solver also enables users to provide rich background knowledge.
+
+The influence of external factors, such as the search parameters and the number of examples have been measured to provide insights on their effects.
+Various design decisions have been experimentally validated.
+
+This research demonstrates that logical clauses and ILP techniques can be used succesfully to learn constraints.
+
+\paragraph{Learning optimization criteria}
+The second goal of this thesis was to learn optimization criteria based on rankings over examples.
+The clausal optimization system was able to succesfully learn weighted clauses that are able to model user preferences.
+Compared to absolute scores, rankings are typically easier to provide for a user.
+Experiments have shown that the system is able to deal with conflicting rankings.
+Even for few examples, optimization criteria are found that can identify the optimal solution.
+
+The success of the clausal optimization system shows that the suggested representation of weighted clauses can be used to model optimization criteria.
+
+\paragraph{Solving}
+As originally stated in the introduction these learning systems aim to facilitate and automate the task of generating formal representations of problems.
+This forms the first step of the process illustrated in figure~\ref{fig:problem_to_solution2}.
+Given such a representation, a constraint solver is used to generate solutions.
+Solvers such as IDP can use hard constraints in the form of clauses to generate solutions.
+However, the weighted first order logic clauses that are used as optimization criteria in this thesis, cannot be used directly.
+The problem of identifying optimal solutions for such optimization criteria can be seen as a first order extension of the MAX-SAT problem.
+In this thesis it has been outlined how the knowledge base system IDP can be used to generate optimal solutions for weighted clauses in first order logic. 
+
+\begin{figure}
+
+	\caption{From problem to solution}
+	\centering
+		\includegraphics[width=0.9\textwidth]{ProblemToSolution.pdf}
+	\label{fig:problem_to_solution2}
+
+\end{figure}
+
+\paragraph{Future work}
+This thesis spawns several interesting opportunities for future work.
+First of all, the number of variables and literals form transparant but unintuitive parameters.
+Typically, a user will not possess any knowledge about these parameters.
+It would be interesting to use negative examples and heuristics to automatically adapt these parameters and realize a so called shift of bias during the search.
+
+Generally, negative examples can be incorporated to ensure that theories are specific enough to discriminate between positive and negative examples.
+This offers the possibility to define a stopping criterion.
+The Claudien system already had the capability to use negative examples.
+
+Adding interactivity to the clause learning or clausal optimization process can also provide numerous benefits.
+By using the output of the learning systems to generate new examples, the problem of having few examples can be alleviated.
+Active learning has been proposed in a propositional setting \cite{campigotto2011active} and the combination with (partial) queries \cite{bessiere2013constraint,bessiere2007query} could also offer additional capabilities.
+
+The symmetric predicate has been illustrated as an intuitive way to specify background knowledge that can help speed up clause learning process.
+It would be interesting to allow other types of background to be expressed in a similar way.
+
+Currently the learned clauses are independent of specific objects, which allows more flexibility.
+However, the refinement operator could be extended to allow the use of global constants which are also independent of specific examples.
+
+The learn to rank system that is used by the clausal optimization process ignores equalities.
+However, equalities can be very expressive.
+More research should be performed to determine if these would be a useful addition and how they could be incorporated.

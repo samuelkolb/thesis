@@ -11,27 +11,30 @@
 
 %+ We want to model user preferences to be able to find an optimal solution
 
-This thesis attempts to solve two problems: learning constraints from examples and learning user preferences to discriminate between different solutions.
-The clause learning process is independent, while clausal discovery requires, amongst others, a set of soft constraints.
-Typically, these are produced by the clause learning system.
+This thesis attempts to solve mainly two problems: learning constraints from examples and learning optimization criteria from user preferences.
+The systems that perform these tasks should be easy to use and take into account what kind of information a user can provide.
+Finally, the thesis also outlines how these constraints and optimiztion criteria can be used in practice.
 
 \section{Learning constraints}
+
+The first goal of this thesis is to learn constraints that describe a set of positive examples provided by a user.
+Such constraints form a formal representation of a problem.
+This formal representation can be used by a constraint solver to generate solutions to the problem.
+
 \label{sec:learning_constraints}
 
 \begin{framed}
 	\noindent
 	\begin{minipage}{\textwidth}
 		\paragraph{Goal 1}
-		Given a language of clauses~\sym{L}, a set of examples~\sym{D} and a threshold~$t$, the goal of the constraint learner is to find a complete set $\sym{T} \in 2^\sym{L}$ of maximally specific clauses, that each cover at least $t$ examples of \sym{D}.
+		Given a language of clauses~\sym{L}, a set of examples~\sym{D} and a threshold~$t$, the goal of the constraint learner is to find a complete set $\sym{T} \in 2^\sym{L}$ of maximally specific clauses, that each cover at least $t$ examples in \sym{D}.
 	\end{minipage}
 \end{framed}
 
 \paragraph{Language}
-The language \sym{L} determines what clauses are considered for inclusion in \sym{T}.
-It captures the syntactic restrictions and the bias.
-In this case, elements of \sym{L} are syntactically restricted to functor-free (definition~\ref{def:funtor_free}) clauses.
-The bias of a system captures the implicit or explicit constraints of the system.
-In this case, only range-restricted and connected clauses are considered.
+The language \sym{L} determines what clauses are considered for inclusion in~\sym{T}.
+In this thesis, \sym{L} is the language of connected, functor-free and range-restricted clauses (definitions in capter~\ref{cha:bg}) and clauses adhere to object identity.
+Object identity specifies that variables with different names cannot denote the same object.
 Furthermore, the user explicitly determines the maximal number of variables and atoms per clause, which determines the search space.
 
 \paragraph{Examples}
@@ -46,7 +49,6 @@ Additionally, users can decide to provide partial interpretations as examples, w
 \paragraph{Threshold}
 The threshold $t$ can be used to search for either hard constraints ($t = |\sym{D}|$) or soft constraints, which only have to hold on a subset of \sym{D} ($t < |\sym{D}|$).
 This can be useful when constraints might not always hold, for example, when there is noise on the examples.
-Logical constraint solvers such as IDP can generate interpretations that adhere to the theory.
 
 \paragraph{Learned theory}
 A learned theory \sym{T} contains only variables and is independent of the specific examples that were used.
@@ -64,30 +66,32 @@ This an advantage of using first-order logical constraints over propositional co
 \label{sec:learning_user_preferences}
 \label{sec:learning_optimization_criteria}
 
+The second goal of this thesis is to learn optimization criteria that model the users preferences over a set of examples.
+These optimization criteria can then be used to distinguish between better and worse solutions and to identify a optimal solution.
 
 \begin{framed}
 	\noindent
 	\begin{minipage}{\textwidth}
 		\paragraph{Goal 2}
-		Given a set of soft constraints~\sym{S} and a set of rankings~\sym{P} over an example set~\sym{D}, the goal of the clausal optimization process is to assign weights to every clause in~\sym{S} such that the order induced by the weighted clauses~(\sym{W}) optimally approximate the rankings in \sym{P}.
+		Given a set of example~\sym{D} and a set of rankings~\sym{P} over these examples, the goal of the clausal optimization process is to find soft constraints~\sym{S} and assign weights to them, such that the order induced by these weighted constraints \sym{W} optimally approximate the rankings in \sym{P}
+		% Given a set of soft constraints~\sym{S} and a set of rankings~\sym{P} over an example set~\sym{D}, the goal of the clausal optimization process is to assign weights to every clause in~\sym{S} such that the order induced by the weighted clauses~(\sym{W}) optimally approximate the rankings in \sym{P}.
 	\end{minipage}
 \end{framed}
-
-\paragraph{Soft constraints}
-The soft constraints are obtained by running clause learning on \sym{D} with a low threshold.
-Theoretically, they could also be imported from another source.
 
 \paragraph{Rankings}
 The rankings~\sym{P} are partial orderings over examples from~\sym{D}.
 Rankings are of the form: \cen{$G_1 > G_2 > ... > G_n$} and every group~$G_i \subset \sym{D}$ is a set of equally ranked examples. Equalities are not used directly by the clausal optimization algorithm, therefore, every ranking corresponds with a set of pairwise (strict) inequalities.
 
-\paragraph{Weighted clauses}
-Every weighted clause consists of a tuple $(w, c) \in \mathbb{R} \times \sym{S}$.
-Weights are real numbers, positive or negative.
-The larger the weight connected with a clause, the more of a desirable property that clause forms.
-Negatively weighted clauses represent unwanted properties, which should be avoided.
+\paragraph{Soft constraints}
+The soft constraints are clauses that cover some of the examples in~\sym{D}.
 
-Given a set~\sym{W} a score $\mathit{score}(\sym{I})$ can be calculated for each interpretation $\sym{I} \in \sym{D}$.
+\paragraph{Weighted constraints}
+Every weighted constraints consists of a tuple $(w, c) \in \mathbb{R} \times \sym{S}$.
+Weights are rational numbers, positive or negative.
+The larger the weight of a constraints, the more of a desirable property that constraints forms.
+Negatively weighted constraints represent unwanted properties, which should be avoided.
+
+Given a set~\sym{W}, a score $\mathit{score}(\sym{I})$ can be calculated for each interpretation $\sym{I} \in \sym{D}$.
 \begin{align*}
 	\mathit{score}(\sym{I}) &= \sum\limits_{(w, c)}^\sym{W} w * v(c, \sym{I}) \\
 	v(c, \sym{I}) &=
@@ -98,6 +102,10 @@ Given a set~\sym{W} a score $\mathit{score}(\sym{I})$ can be calculated for each
 \end{align*}
 
 The $\mathit{score}$ function induces a total ordering over all examples.
-Therefore, the weighted clauses \sym{W} can be used as optimization criteria, making it possible to identify the best solution.
+Therefore, the weighted constraints \sym{W} can be used as optimization criteria by searching for the interpretation that maximizes the score.
 
-[!! Possible: expand on solving]
+\section{Solving}
+Hard constraints in the form of clauses can be used directly by a logical solver to generate solutions.
+This is not possible for the optimization criteria that are learned by the clausal optimization process.
+To the knowledge of the author, there are no solvers that can use the chosen representation directly.
+Therefore, it is a third goal of this thesis to outline how these optimization criteria can be used in practice.

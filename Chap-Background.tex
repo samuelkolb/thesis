@@ -16,7 +16,7 @@ Clauses are in fact a special form of logical implications in which all variable
 Several concepts concerning clauses will be important in the context of this thesis:
 \begin{definition}
 \label{def:funtor_free}
-A clause is functor-free iff all the terms occurring in it are variables.
+A clause is functor-free if and only if all the terms occurring in it are variables.
 \end{definition}
 Functor-free clauses do not contain constants and are independent of any . Such clauses are generic clauses, in the sense that they are not associated with a specific domain.
 \begin{example}
@@ -28,23 +28,21 @@ Clause~$c_1$ expresses that friendship is symmetric. It is a functor-free clause
 
 \begin{definition}
 \label{def:range_restricted}
-A clause is range-restricted iff there is no variable in the head of the clause which does not also appear in the body of the clause.
+A clause is range-restricted if and only if there is no variable in the head of the clause which does not also appear in the body of the clause.
 \end{definition}
 
 \begin{example}
-Clause~$c_1$ from example~\ref{ex:functor_free} is range-restricted, because the variables occuring in the head ($x$ and~$y$) also occur in the body. On the other hand, the clause \cen{$friends(x, x) \leftarrow true$} is not range-restricted, since the variable~$x$ only occurs in the head.
+Clause~$c_1$ from example~\ref{ex:functor_free} is range-restricted, because the variables occurring in the head ($x$ and~$y$) also occur in the body. On the other hand, the clause \cen{$friends(x, x) \leftarrow true$} is not range-restricted, since the variable~$x$ only occurs in the head.
 \end{example}
 
 \begin{definition}
 \label{def:connected}
-A clause is connected iff for any partition of atoms in the clause into two non-empty subsets, there must be at least one variable which occurs in both subsets.
+A clause is connected if and only if for any partition of atoms in the clause into two non-empty subsets, there must be at least one variable which occurs in both subsets.
 \end{definition}
 
 \begin{example}
-Consider the clauses \cen{$c_1 = \{friends(x, y), friends(y, z)\}$\\$c_2 = \{friends(x, y), friends(a, b)\}$.} In clause~$c_1$ the two atoms in the body of the clause are linked by variable $y$. Therefore, clause~$c_1$ is connected. The two atoms occuring in the body of $c_2$, however, do not share a common variable and thus $c_2$ is not connected.
+Consider the clauses \cen{$c_1 = \{friends(x, y), friends(y, z)\}$\\$c_2 = \{friends(x, y), friends(a, b)\}$.} In clause~$c_1$ the two atoms in the body of the clause are linked by variable $y$. Therefore, clause~$c_1$ is connected. The two atoms occurring in the body of $c_2$, however, do not share a common variable and thus $c_2$ is not connected.
 \end{example}
-
-[!! "Explain interpretation?"]
 
 \section{Refinement Operator}
 \label{sec:bg_ref_op}
@@ -56,15 +54,15 @@ Given a language \sym{L} and a refinement operator $\rho: \sym{L} \mapsto 2^\sym
 \end{definition}
 There are three important properties that a refinement operator can have:
 \begin{definition}
-A refinement operator $\rho$ is ideal iff every clause in $\rho(c)$ is only minimally more general then $c$.
+A refinement operator $\rho$ is ideal if and only if every clause in $\rho(c)$ is only minimally more general then $c$.
 \end{definition}
 If $\rho$ is ideal then for any pair of clauses $c_s, c_g$ such that $c_g \in \rho(c_s)$, there cannot be a clause $c$ which is more general than $c_s$ and more specific than $c_g$.
 \begin{definition}
-A refinement operator $\rho$ is complete w.r.t. to a language \sym{L} iff $\sym{L} = \rho^*(\square)$, where $\square$ is the empty clause.
+A refinement operator $\rho$ is complete w.r.t. to a language \sym{L} if and only if $\sym{L} = \rho^*(\square)$, where $\square$ is the empty clause.
 \end{definition}
-When considering the recursive application of a refinement operator $\rho$, an element $c_n$ is reachable from $c_1$ iff $c_n \in \rho^*(c_1)$. In that case there is at least one path $(c_1, c_2, ..., c_n)$, where $\forall i > 1: c_i \in \rho(c_{i-1})$. This allows us to define the optimality property:
+When considering the recursive application of a refinement operator $\rho$, an element $c_n$ is reachable from $c_1$ if and only if $c_n \in \rho^*(c_1)$. In that case there is at least one path $(c_1, c_2, ..., c_n)$, where $\forall i > 1: c_i \in \rho(c_{i-1})$. This allows us to define the optimality property:
 \begin{definition}
-A refinement operator $\rho$ is optimal iff for every element $c_i \in \rho^*(c)$ there is exactly one path from $c$ to $c_i$.
+A refinement operator $\rho$ is optimal if and only if for every element $c_i \in \rho^*(c)$ there is exactly one path from $c$ to $c_i$.
 \end{definition}
 Optimal refinement operators are desirable because they can be used to search a language space \sym{L} without visiting any element more than once.
 

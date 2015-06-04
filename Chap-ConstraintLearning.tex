@@ -13,7 +13,7 @@
 
 This thesis attempts to solve mainly two problems: learning constraints from examples and learning optimization criteria from user preferences.
 The systems that perform these tasks should be easy to use and take into account what kind of information a user can provide.
-Finally, the thesis also outlines how these constraints and optimiztion criteria can be used in practice.
+Finally, the thesis also outlines how these constraints and optimization criteria can be used in practice.
 
 \section{Learning constraints}
 
@@ -33,7 +33,7 @@ This formal representation can be used by a constraint solver to generate soluti
 
 \paragraph{Language}
 The language \sym{L} determines what clauses are considered for inclusion in~\sym{T}.
-In this thesis, \sym{L} is the language of connected, functor-free and range-restricted clauses (definitions in capter~\ref{cha:bg}) and clauses adhere to object identity.
+In this thesis, \sym{L} is the language of connected, functor-free and range-restricted clauses (definitions in chapter~\ref{cha:bg}) and clauses adhere to object identity.
 Object identity specifies that variables with different names cannot denote the same object.
 Furthermore, the user explicitly determines the maximal number of variables and atoms per clause, which determines the search space.
 
@@ -83,7 +83,7 @@ The rankings~\sym{P} are partial orderings over examples from~\sym{D}.
 Rankings are of the form: \cen{$G_1 > G_2 > ... > G_n$} and every group~$G_i \subset \sym{D}$ is a set of equally ranked examples. Equalities are not used directly by the clausal optimization algorithm, therefore, every ranking corresponds with a set of pairwise (strict) inequalities.
 
 \paragraph{Soft constraints}
-The soft constraints are clauses that cover some of the examples in~\sym{D}.
+The soft constraints are clauses that cover some but not all of the examples in~\sym{D}.
 
 \paragraph{Weighted constraints}
 Every weighted constraints consists of a tuple $(w, c) \in \mathbb{R} \times \sym{S}$.
@@ -93,7 +93,7 @@ Negatively weighted constraints represent unwanted properties, which should be a
 
 Given a set~\sym{W}, a score $\mathit{score}(\sym{I})$ can be calculated for each interpretation $\sym{I} \in \sym{D}$.
 \begin{align*}
-	\mathit{score}(\sym{I}) &= \sum\limits_{(w, c)}^\sym{W} w * v(c, \sym{I}) \\
+	\mathit{score}(\sym{I}) &= \sum\limits_{(w, c)}^\sym{W} w \cdot v(c, \sym{I}) \\
 	v(c, \sym{I}) &=
 	\begin{cases}
 		1,& \text{if } \sym{I} \models c\\

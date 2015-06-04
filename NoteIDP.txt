@@ -1,0 +1,9 @@
+% => geen zekere algoritmes (sound)
+% well volledig semi decideable, entailed => proof lost for aggregates, definitions (beperkingen)
+% inductie probleem undecideable
+
+% kern: SAT solver
+% propagatie solver => domein...
+% sommige inferenties zonder SAT (bv prolog)
+% KBS (logic programming XSB, CP programming, theorem prover)
+% LTC bijv. niet in andere systemen

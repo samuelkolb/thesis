@@ -84,8 +84,8 @@ The last predicate $\mathit{panic}/1$ expresses that a person is in panic.
 There is one constraint: if an elevator is crowded then it is possible that all the people in elevator panic.
 
 There are three examples, two of them contain a crowded elevator and of these two, there is one example where the people in that elevator panicked.
-Therefore, the constraint that a person panicks when inside a crowded elevator holds for \emph{two} out of three examples.
-The threshhold on this problem is chosen as $0.5$.
+Therefore, the constraint that a person panics when inside a crowded elevator holds for \emph{two} out of three examples.
+The threshold on this problem is chosen as $0.5$ and the number of variables and literals as 4 and 3 respectively.
 
 \paragraph{Co-housing}
 The co-housing problem is a somewhat more complex problem.
@@ -109,6 +109,7 @@ Two friends (persons) are looking at different situations (areas) to live and wo
 \end{minipage}
 \\\\
 
+This problem is solved using 4 variables and 4 literals per clause.
 Background knowledge is used to calculate what is considered as cheap.
 It also limits the amount of people to $2$ and expresses that every area has only one cost.
 There are $5$~examples that each adhere to $4$~constraints:
@@ -119,6 +120,7 @@ There are $5$~examples that each adhere to $4$~constraints:
 	\item A person who lives in a cheap area has a car
 	\item If the two persons live together, they live in an expensive area.
 \end{enumerate}
+
 
 \subsection{Accuracy}
 
@@ -249,7 +251,7 @@ The current implementation tries to eliminate redundant clauses as soon as possi
 \end{question}
 
 \begin{experiment}[\textsc{Parameters}]
-	There are two parameters that a user controls directly: the number veriables per clause and the number of literals per clause.
+	There are two parameters that a user controls directly: the number of variables per clause and the number of literals per clause.
 	Experiment~\ref{exp:cd_acc_influence_par} showed the influence of the parameters on the accuracy of the algorithm.
 	In this experiment the execution time for these settings is calculated.
 
@@ -306,7 +308,7 @@ Adding more examples can be used to prevent over-fitting and thus the accuracy o
 On the one hand, this might reduce the execution time, as less clauses are generated.
 However, additional examples increase the execution time of every coverage test.
 Table~\ref{tbl:cd_speed_examples} shows that the execution time increases by a constant factor, independent of the variables and literals.
-This shows that the reduction of clauses has a neglectable influence on the execution time.
+This shows that the reduction of clauses has a negligible influence on the execution time.
 Contrary to increasing the parameters, additional examples do not increase the execution time exponentially.
 The effect of adding examples is thus fairly predictable and the efficiency of testing multiple examples can yet be increased.
 
@@ -316,7 +318,7 @@ The effect of adding examples is thus fairly predictable and the efficiency of t
 \end{question}
 
 The exact execution times for the different experiments are reported in table~\ref{tbl:speed_results} which offers a comprehensive overview.
-In the experiments the normalized execution time will be used which is the average execution time for a problem divided by the average execution time of the becnhmark which is described in experiment~\ref{exp:benchmark}.
+In the experiments the normalized execution time will be used which is the average execution time for a problem divided by the average execution time of the benchmark which is described in experiment~\ref{exp:benchmark}.
 
 \begin{experiment}[\textsc{Range restriction}]
 	The clause learning algorithm normally only explores range restricted clauses.
@@ -363,7 +365,7 @@ In the experiments the normalized execution time will be used which is the avera
 Lifting range restriction adds more expressiveness, such as the possibility to state facts ($Head \leftarrow true$) but greatly increases the execution time, which might prove problematic for larger problems.
 It would, however, possible to only partially lift this restriction and to, for example, allow only simple facts.
 
-Ommitting the connectivity restriction only moderately impacts the efficiency.
+Omitting the connectivity restriction only moderately impacts the efficiency.
 Given the acceptable execution times in general, a future improvement could lift this restriction.
 An important consideration, however, is that lifting this restriction increases the impact of the number of variables in a clause.
 
@@ -442,9 +444,10 @@ As in question~\ref{q:cd_speed_influence_res}, execution times are usually norma
 \paragraph{Discussion}
 \begin{table}
 	\begin{tabularx}{\textwidth}{rl|XX}
-\textbf{Ommitted test}	& \textbf{Problem} 		& \textbf{Time (baseline)}	& \textbf{Average time (s)}\\
+
+\textbf{Omitted}	& \textbf{Problem} 		& \textbf{Time (baseline)}	& \textbf{Average time (s)}\\
 \toprule
-None 					& Map coloring 	& 1.000 	& 1.581		($\pm$ 0.117)\\
+Nothing (baseline)		& Map coloring 	& 1.000 	& 1.581		($\pm$ 0.117)\\
 						& Sudoku 		& 1.000 	& 4.787		($\pm$ 0.062)\\
 						& Elevator 		& 1.000 	& 3.182 	($\pm$ 0.073)\\
 						& Co-housing 	& 1.000 	& 25.903	($\pm$ 0.446)\\
@@ -461,17 +464,17 @@ Connected clauses 		& Map coloring 	& 1.005		& 1.589		($\pm$ 0.110)\\
 \midrule
 Symmetric predicates	& Map coloring 	& 1.607		& 2.541		($\pm$ 0.128)\\
 \midrule
-Subset test 			& Map coloring 	& 0.985		& 1.558		($\pm$ 0.117\\
-						& Sudoku 		& 1.094		& 5.239		($\pm$ 0.140\\
-						& Elevator 		& 1.156		& 3.678 	($\pm$ 0.094\\
-						& Co-housing 	& 1.164		& 30.145	($\pm$ 0.159\\
+Subset test 			& Map coloring 	& 0.985		& 1.558		($\pm$ 0.117)\\
+						& Sudoku 		& 1.094		& 5.239		($\pm$ 0.140)\\
+						& Elevator 		& 1.156		& 3.678 	($\pm$ 0.094)\\
+						& Co-housing 	& 1.164		& 30.145	($\pm$ 0.159)\\
 \midrule
 Representative test 	& Map coloring 	& 1.511		& 2.389		($\pm$ 0.130)\\
 						& Sudoku 		& 1.879		& 8.995		($\pm$ 0.125)\\
 						& Elevator 		& 1.118		& 3.559 	($\pm$ 0.076)\\
 						& Co-housing 	& 2.139		& 55.402	($\pm$ 0.298)\\
 	\end{tabularx}
-	\caption{Overview of execution times for ommitted restrictions and tests}
+	\caption{Overview of execution times for omitted restrictions and tests}
 	\label{tbl:speed_results}
 \end{table}
 Experiment~\ref{tbl:exp_speed_symm} shows that including common background knowledge directly into the clause learning algorithm offers a significant speedup.
@@ -571,7 +574,7 @@ This section will briefly examine how learned clauses compare to human programme
 			& Learned & $0.156$ 			($\pm 0.008$) \\
 			& Corrected & $0.310$ 			($\pm 0.012$)
 		\end{tabularx}
-		\caption{CPU times human vs.~learned theory}
+		\caption{CPU times human vs. learned theory}
 		\label{tbl:speed_human_machine}
 	\end{table}
 
@@ -582,7 +585,7 @@ Human theories can be more concise and use more expressive formulas.
 While a human will focus on essential constraints that describe a problem, generated constraints describe any regularities that can be found.
 As mentioned previously, these additional constraints can be helpful for a solver as they can eliminate parts of the search space.
 
-Generated theories can be useful to assist a human in the modelling of a problem.
+Generated theories can be useful to assist a human in the modeling of a problem.
 Contrary to a human, generated theories will not contain errors in the sense that the generated clauses will always hold on the given examples.
 The two problems that typically can occur when learning theories, is that the theory is too specific or too generic.
 Clauses that over-fit the training data might be easily spot by a human user.
@@ -591,16 +594,17 @@ The problem of theories that are too general can usually be solved through more 
 Experiment~\ref{exp:human_speed} shows that generated theories are able to compete with and even outperform human crafted theories in the evaluated cases.
 While solving time was not a key aim of this thesis and expert users can certainly tweak theories for better performance, it is motivating to see that the learned clauses are competitive in this area.
 Especially since the human made theories were crafted by users familiar with the IDP system.
+Especially for non experts, the clause learning system can be useful for modeling a problem.
+An advantage of the system, however, is that is can also work autonomously in an automated setting.
 
 The language supported by, for example, IDP is much more expressive than clausal theories.
 Supporting the learning of more expressive formulas is an interesting research question.
-Nevertheless, it is not the main aim of the clause learning system to replace experts.
-The clause learning system is intended as a tool for modeling, discovering structures and working autonomously in an automated setting.
 
 \section{Optimization}
 This section examines how well the second goal of the thesis, the learning of optimization criteria, has been accomplished.
 Contrary to the previous section, the evaluation will focus only on the accuracy with which the learned soft constraints are able to approximate an underlying model.
 Different factors will be explored that influence the results of the clausal optimization system.
+The efficiency of the clausal optimization mainly depends on the efficiency of the clause learning system.
 
 \subsection{Setup}
 
@@ -752,7 +756,7 @@ Experiments are usually run $8$ times in a row, mainly to account for the random
 		live_in(A3), work_in(A1), school_in(A1)
 	\end{verbatim}
 	This solution fulfills constraints two and three and thus receives a score of $1.25$.
-	Running clausal discovery with a training set and ranking fraction of $0.4$ resuls in a set of soft constraints.
+	Running clausal discovery with a training set and ranking fraction of $0.4$ results in a set of soft constraints.
 	Solving for these constraints returns the optimal solution according to those constraints.
 	\begin{verbatim}
 		live_in(A3), work_in(A2), school_in(A2)
@@ -852,7 +856,7 @@ Approach~1, where the fraction of examples in the training set is chosen as $0.4
 \begin{experiment}[\textsc{Cost factor}]
 	
 	Clausal optimization uses a cost factor which represents the cost of disagreeing with a provided ranking in favor of a simpler model (see section~\ref{sec:clausal_opt_approach}).
-	This parameter can help avoid overfitting.
+	This parameter can help avoid over-fitting.
 	The standard setting in the clausal optimization is $0.2$.
 	In this experiment the influence of the cost factor has been measured for different noise levels.
 	Figure~\ref{fig:c_factors} shows the influence of the cost factor on the score for fixed noise levels.
@@ -875,7 +879,7 @@ Approach~1, where the fraction of examples in the training set is chosen as $0.4
 \begin{experiment}[\textsc{Prune using hard constraints}]
 	
 	In the clause learning implementation the choice was made to allow hard constraints to prune soft constraints (see section~\ref{sec:clausal_discovery_approach}).
-	This simplfies the model as fewer clauses are learned at the expense of pruning some clauses with discriminative power if the hard constraints just coincidently cover all the given examples.
+	This simplifies the model as fewer clauses are learned at the expense of pruning some clauses with discriminative power if the hard constraints just coincidently cover all the given examples.
 	This experiment compares the standard implementation with an alternative implementation that does not allow hard constraints to prune for increasing noise levels.
 	The results can be seen in figure~\ref{fig:hard_constraints}.
 

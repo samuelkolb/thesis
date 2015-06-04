@@ -2,7 +2,16 @@
 \chapter{Approach}
 \label{cha:meth}
 
-[!! Bridge to previous chapter]
+In this chapter, the clause learning and clausal discovery systems are outlined.
+The clause learning system has the ability to automatically learn clauses from examples.
+At the core of the clause learning process is a new version of the clausal discovery system.
+The main differences to clausal discovery engine Claudien (see section~\ref{sec:claudien}) are a different bias and a different refinement operator.
+Furthermore, the clausal discovery program interacts with a logical system (IDP) to calculate two main functions $\mathit{coverage}$ and \textit{entailment}.
+
+The clausal optimization system uses user-provided rankings and learn-to-rank software (\svm) (see section~\ref{sec:svm}) to produce weighted soft constraints.
+These soft constraints are represented as clauses and the clause learning system is used to find these clauses.
+
+Figure~\ref{fig:high_level_structure} provides an overview of the approach implemented in this thesis.
 
 \begin{figure}
 
@@ -13,17 +22,8 @@
 
 \end{figure}
 
-Figure~\ref{fig:high_level_structure} provides an overview of the approach implemented in this thesis.
-One feature of the system is clause learning, the ability to automatically learn clauses from examples.
-At the core of the clause learning process is a new version of the clausal discovery system.
-The main differences to clausal discovery engine Claudien (see section~\ref{sec:claudien}) are a different bias and a different refinement operator.
-Furthermore, the clausal discovery program interacts with a generic logical system to calculate coverage and entailment.
-The second feature is clausal optimization.
-Hereby user-provided rankings and the \svm{} (see section~\ref{sec:svm}) program are used to produce weighted soft constraints.
-These are clauses that have a weight assigned to them, expressing how desirable it is to fulfill that clause.
-
-Clausal discovery and the clause learning / clausal optimization workflows are implemented in Java.
-Interaction with the user, the logical system as well as the \svm{} software is achieved through files and standard input / output.
+Both clause learning and clausal discovery are implemented in Java.
+Interaction with the user, the logical system as well as the  software is achieved through files and standard input / output.
 
 Throughout this chapter the map coloring problem will be used as an example for clause learning applications.
 In this problem there is a set of countries and every country is assigned a color.
@@ -693,12 +693,13 @@ Assign values to the variables such that the sum of the weights of the clauses t
 This optimization task can be solved directly in IDP, using inductive definitions, aggregates and minimization.
 The only limitation is that the weights must be integer values.
 Therefore, the weights of the clauses are divided by the smallest absolute weight, multiplied by a constant and rounded to the closest integer if necessary.
+Removing this restriction for IDP is currently being researched and future releases might be able to deal with rational numbers directly.
 
 In order to model the optimization problem in IDP, every clause $c_i$ with variables $v_1, ..., v_n$ is represented by a number $i$. For every clause a predicate $t(i)$ is added to capture the truth value of the clause.
 A function $\mathit{cost}(i)$ specifies the cost of not satisfying the clause, which is equal to the integer weight of the clause.
 \begin{shiftedflalign*}
-	t(1) &\Leftrightarrow \forall v_1, ..., v_n : c_i. \\
-	cost(1) &= w_1.
+	t(i) &\Leftrightarrow \forall v_1, ..., v_n : c_i. \\
+	cost(i) &= w_1.
 \end{shiftedflalign*}
 
 Using $t$ and $\mathit{cost}$, a function $\mathit{actual}(i)$ is then defined in IDP as 0 if $t(i)$ and $\mathit{cost}(i)$ if $\lnot t(i)$.

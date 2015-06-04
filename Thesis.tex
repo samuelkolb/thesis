@@ -28,8 +28,9 @@
 \usepackage{tabularx,booktabs,multirow}
 \usepackage{longtable}
 \usepackage{framed}
+\usepackage{breakcites}
 
-\graphicspath{{Graphics/}, {Graphics/Graphs/}}
+\graphicspath{{Graphics/}, {Graphics/Graphs/}{Paper/Graphics/}}
 
 \newcommand{\sym}[1]{\ensuremath{\mathcal{#1}}}
 \newcommand{\obj}[1]{\ensuremath{#1}}
@@ -84,11 +85,22 @@
 \tableofcontents*
 
 \begin{abstract}
-My abstract
+This thesis presents systems that are able to automatically learn constraints from examples and optimization criteria from rankings.
+Both hard and soft constraints can be learned and constraints are represented a first order logical clauses.
+The uses of such clauses enables the use of ILP techniques such as clausal discovery.
+In this research optimization criteria are represented as weighted clauses.
+Several experiments show that both systems are able to achieve their tasks.
+The influence of various internal and external influences is experimentally tested.
+Optimization criteria that can identify the correct optimal solution can be found even for few examples and noisy rankings.
+Finally, a procedure is outlined that allows weighted first order logic clauses to be used for optimization. 
 \end{abstract}
 
 \begin{abstract*}
-Mijn abstract
+
+\paragraph{Abstract}
+\input{Paper/AbstractNL}
+\input{Paper/CorePaper}
+
 \end{abstract*}
 
 % A list of figures and tables is optional

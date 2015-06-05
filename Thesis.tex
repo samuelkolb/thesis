@@ -11,9 +11,18 @@ Beperking worden geleerd in de vorm van clausules in eerste orde logica door het
 Voor de optimalisatie criteria wordt het gebruik van gewogen clausules voorgesteld.
 Beide systemen zijn in staat om essenti\"ele beperkingen en optimalisatie criteria te leren.
 De invloed van verschillende interne en externe factoren wordt onderzocht.
-Er wordt een procedure voorgesteld om de gewogen clausules in eerste orde logica te gebruiken om optimale oplossingen te vinden.}}
+Er wordt een procedure voorgesteld om de gewogen clausules in eerste orde logica te gebruiken om optimale oplossingen te vinden.\\\\This thesis presents two systems that are able to automatically learn constraints from examples and optimization criteria from rankings, respectively.
+Both hard and soft constraints can be learned and constraints are represented as first order logical clauses.
+Choosing such clauses as representations enables the use of ILP techniques such as clausal discovery.
+In this research optimization criteria are represented as weighted clauses.
+Several experiments show that both systems are able to achieve their tasks.
+The impact of various internal and external factors is experimentally tested to provide insights into the way they influence the learning systems.
+For all examples, the clause learning system could find the essential constraints.
+The learning system for optimization criteria is shown to achieve accurate results and can learn criteria that identify the correct optimal solution even for few examples and noisy rankings.
+Finally, a procedure is outlined that allows weighted first order logic clauses to be used for optimization.
+}}
 % Uncomment the next line for generating the cover page
-%\setup{coverpageonly}
+\setup{coverpageonly}
 % Uncomment the next \setup to generate only the first pages (e.g., if you
 % are a Word user.
 %\setup{frontpagesonly}
@@ -87,7 +96,8 @@ Er wordt een procedure voorgesteld om de gewogen clausules in eerste orde logica
 
 % Finally the hyperref package is used for pdf files.
 % This can be commented out for printed versions.
-\usepackage[pdfusetitle,colorlinks,plainpages=false]{hyperref}
+%\usepackage[pdfusetitle,colorlinks,plainpages=false]{hyperref}
+\usepackage[pdfusetitle,plainpages=false]{hyperref}
 
 %\includeonly{chap-n}
 \begin{document}

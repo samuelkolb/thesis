@@ -159,10 +159,10 @@ Inspired by this approach, this thesis attempts to learn weighted first-order lo
 \subsection{\svm}
 \label{sec:svm}
 Instead of using scores, the weights will be learned from rankings over example solutions.
-In this process, \svm \cite{joachims2002optimizing} will be used to find optimal weights based on rankings.
+In this process, \svm{} \cite{joachims2002optimizing} will be used to find optimal weights based on rankings.
 Rankings are grouped together and can span an arbitrary amount of instances.
 Equalities are ignored, as rankings are decomposed into sets of pairwise inequalities.
 
-\svm is used because it learns a linear functions to fit the input rankings.
+\svm{} is used because it learns a linear functions to fit the input rankings.
 Therefore, the learned weights can be used directly as weights for the soft constraints.
-For \svm a robust and efficient software system is available.
+For \svm{} a robust and efficient software system is available.

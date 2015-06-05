@@ -225,9 +225,10 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 	How fast is the clause learning system?
 \end{question}
 
-\begin{experiment}
+\begin{experiment}[\textsc{Standard execution time}]
 \label{exp:benchmark}
 	In order to gain an overview over the execution times and provide a benchmark for tests on various influences, the standard examples are each performed using the standard clause learning process.
+	Table~\ref{tbl:exp_speed_standard} presents an overview of the execution times.
 	These values are used to calculate normalized scores for other experiments.
 	
 	\begin{table}[!htp]
@@ -246,7 +247,7 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 \end{experiment}
 
 \paragraph{Discussion}
-Table~\ref{tbl:exp_speed_standard} shows that smaller examples can be run rather efficiently.
+Experiment~\ref{exp:benchmark} shows that smaller examples can be run rather efficiently.
 Several efficient tests and parallelization of the algorithm make this possible, although the performance of the implementation was not the main focus and improvements are possible in many ways.
 Since the search space is exponential, however, execution times can increase fast.
 The current implementation tries to eliminate redundant clauses as soon as possible but only clauses that cover enough examples can be used for pruning.

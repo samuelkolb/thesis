@@ -670,14 +670,14 @@ That linear function can then be used to calculate a score for that example.
 In this thesis \svm{} was chosen to accomplish this task since it a robust an efficient system.
 Contrary to other ranking systems it uses a linear model.
 The weights that it assigns to the features can be used directly as weights for the optimization criteria.
-The input format that is used by \svm is also supported by many other learn-to-rank implementations.
+The input format that is used by \svm{} is also supported by many other learn-to-rank implementations.
 Therefore, other linear ranking systems such as Coordinate Ascent \cite{metzler2007linear} could also be plugged into the clausal optimization implementation.
 
 \paragraph{Cost}
 Weights are chosen optimally with respect to a cost parameter $c$, which determines the trade-off between disagreeing with a user provided ranking and a simpler model.
 Assigning a low cost to disagreeing with the training rankings establishes a bias towards simpler models which can avoid over-fitting the training.
 A high cost should be assigned, however, when one is interested in a model that is more accurate with respect to the given examples and rankings.
-\svm supports a cost parameter which has to be adapted for the number of rankings used for training.
+\svm{} supports a cost parameter which has to be adapted for the number of rankings used for training.
 
 \section{Solving}
 Using the clause learning and clausal optimization system enables a user to find formal representation of the constraints that describe the problem and user's preferences.

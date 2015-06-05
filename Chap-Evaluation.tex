@@ -7,8 +7,8 @@ Moreover, the influence of different factors internal and external to the algori
 The clause learning and clausal optimization workflows will be examined separately, in that order.
 
 \section{Learning}
-
-This section attempts to evaluate how well the clause learning system accomplishes the first goal of this thesis.
+The first goal of this thesis was to find clauses that cover a given set of examples.
+This section attempts to evaluate how well the clause learning system accomplishes this goal.
 There are different aspects to be considered.
 Firstly, the accuracy of the learned clauses will be examined.
 The influence of the parameters - number of variables and literals per clause - on the accuracy are studied in order to get a better understanding of the clause learning algorithm.
@@ -44,7 +44,8 @@ The first example (figure~\ref{fig:setup_mapcolor_benelux}) features two colors,
 \end{figure}
 
 Map coloring uses types $\mathit{Country}$ and $\mathit{Color}$.
-It uses two predicates $\mathit{color/2}$ and $\mathit{neighbor/2}$, the neighbor predicate is symmetric.
+It uses two predicates $\mathit{color/2}$ and $\mathit{neighbor/2}$.
+The neighbor predicate is symmetric.
 Unless mentioned otherwise, the standard parameters for map coloring are $3$ variables and~$3$ literals per clause.
 
 \paragraph{Sudoku}
@@ -76,12 +77,12 @@ It prevents the use of the same variable for, for example, a row and a column.
 \paragraph{Elevator}
 The elevator problem is a simple problem with two types: $\mathit{Person}$ and $\mathit{Elevator}$.
 There are three predicates.
-The first predicate it $\mathit{inside}/2$ expressing what elevator a person is in.
+The first predicate is $\mathit{inside}/2$, expressing what elevator a person is in.
 Background knowledge states that every person must be in exactly one elevator.
 Secondly, the $\mathit{crowded}/1$ predicate defines that an elevator is crowded.
 This predicate is calculated using background knowledge, and an elevator is crowded if there are three people in it.
 The last predicate $\mathit{panic}/1$ expresses that a person is in panic.
-There is one constraint: if an elevator is crowded then it is possible that all the people in elevator panic.
+There is one constraint: if an elevator is crowded then it is possible that all the people in the elevator panic.
 
 There are three examples, two of them contain a crowded elevator and of these two, there is one example where the people in that elevator panicked.
 Therefore, the constraint that a person panics when inside a crowded elevator holds for \emph{two} out of three examples.
@@ -123,6 +124,7 @@ There are $5$~examples that each adhere to $4$~constraints:
 
 
 \subsection{Accuracy}
+This section will explore how accurate the learned theories are and what influence the parameters (number of variables and literals per clause) have on the accuracy.
 
 \begin{question}
 	Do learned theories model the real constraints of a problem?
@@ -140,7 +142,7 @@ There are $5$~examples that each adhere to $4$~constraints:
 		\mathit{false} &\leftarrow \mathit{color}(x, color) \land \mathit{neighbor}(x, y)  \land \mathit{color}(y, color)&
 	\end{shiftedflalign*}
 	The first constraint describes that no country is its own neighbor and the second constraint expresses that no country has two colors.
-	Finally, the third constraints states that no neighboring countries have the same color.
+	Finally, the third constraint states that no neighboring countries have the same color.
 
 	Recall that variables with different names denote different objects.
 	Thus, for example, in the second clause, $\mathit{color_1} \neq \mathit{color_2}$.
@@ -148,12 +150,12 @@ There are $5$~examples that each adhere to $4$~constraints:
 \end{observation}
 
 \paragraph{Discussion}
-The clause learning is able to find the essential constraints, both for hard constraints as for soft constraints.
+The clause learning is able to find the essential hard and soft constraints.
 It does so even in settings when there are multiple independent constraints over relatively few predicates.
 In such cases the pruning inside the algorithm can prevent explicit representations of some constraints.
 
-Aside from the essential constraints it contains constraints that model other implicit constraints.
-Such additional constraints can often be useful for constraint solving.
+Aside from the essential constraints generated theories often contains clauses that model implicit rules.
+Such additional constraints can often be useful for constraint solvers.
 
 \begin{question}
 	What is the influence of the parameters on the accuracy?
@@ -211,8 +213,10 @@ Such additional constraints can often be useful for constraint solving.
 	Every new literals must contain at least one variable from another literals.
 	This limits the additional clauses that can additionally be explored when only increasing the number of variables.
 	On the other hand, the number of variables also limit the effect of an increase in the number of literals, since every atom can only be added once to either the head or body.
+
 \subsection{Speed}
 
+This section attempts to examine the efficiency of the clause learning system and the influence of internal and external factors on the execution time.
 Unless explicitly stated, all experiments are performed $8$ consecutive times in order to eliminate external influences.
 The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core i7 with 4 cores and hyper threading, 16GB RAM}.
 
@@ -304,7 +308,7 @@ Especially the combination of higher variables \emph{and} literals can steeply i
 By restricting the arity of the predicates that are used, the number of necessary variables can usually be reduced.
 Allowing more variables increases the number of possible clauses in each step, while allowing more literals adds additional iterations at the end.
 
-Adding more examples can be used to prevent over-fitting and thus the accuracy of the learned theory.
+Adding more examples can be used to prevent over-fitting and thus improve the accuracy of the learned theory.
 On the one hand, this might reduce the execution time, as less clauses are generated.
 However, additional examples increase the execution time of every coverage test.
 Table~\ref{tbl:cd_speed_examples} shows that the execution time increases by a constant factor, independent of the variables and literals.
@@ -363,7 +367,8 @@ In the experiments the normalized execution time will be used which is the avera
 \paragraph{Discussion}
 
 Lifting range restriction adds more expressiveness, such as the possibility to state facts ($Head \leftarrow true$) but greatly increases the execution time, which might prove problematic for larger problems.
-It would, however, possible to only partially lift this restriction and to, for example, allow only simple facts.
+It would, however, be possible to only partially lift this restriction.
+For example, only simple facts could be allowed.
 
 Omitting the connectivity restriction only moderately impacts the efficiency.
 Given the acceptable execution times in general, a future improvement could lift this restriction.
@@ -486,7 +491,8 @@ It would be interesting to explore if other similar notions of background knowle
 The subset and representative tests both accomplish their goal: reducing the execution time.
 Contrary to syntactic restrictions efficiency measure do, in principle, not affect the outcome of the algorithm.
 The experiments show that the additional effort for executing these two tests is compensated by the reduction of generated clauses and entailment tests.
-For the subset test only moderate improvements are booked but the advantage of these this test as well as the representative test, is that they are independent of examples or background knowledge.
+For the subset test only moderate improvements are booked.
+However, the advantage of the subset test and the representative test is that they are independent of the number of examples or the complexity of the background knowledge.
 For more complex problems these will likely provide even greater improvements.
 The subset test depends on the amount of clauses that have been accepted or denied while the refinement test operates completely autonomously.
 \\\\
@@ -601,7 +607,7 @@ The language supported by, for example, IDP is much more expressive than clausal
 Supporting the learning of more expressive formulas is an interesting research question.
 
 \section{Optimization}
-This section examines how well the second goal of the thesis, the learning of optimization criteria, has been accomplished.
+This section examines how well the second goal of the thesis, the learning of optimization criteria from user preferences, has been accomplished.
 Contrary to the previous section, the evaluation will focus only on the accuracy with which the learned soft constraints are able to approximate an underlying model.
 Different factors will be explored that influence the results of the clausal optimization system.
 The efficiency of the clausal optimization mainly depends on the efficiency of the clause learning system.
@@ -671,6 +677,7 @@ The standard model consists of $4$ weighted constraints:
 
 \subsection{Accuracy}
 
+This section explores how accurately learned optimization criteria describe an underlying model and how the accuracy is impacted by several factors.
 Generally, the experiments in this section follow one of two approaches.
 \begin{description}
 	\item[Approach 1] The available examples are split into a training and a test set.

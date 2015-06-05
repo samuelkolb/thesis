@@ -13,7 +13,7 @@
 
 This thesis attempts to solve mainly two problems: learning constraints from examples and learning optimization criteria from user preferences.
 The systems that perform these tasks should be easy to use and take into account what kind of information a user can provide.
-Finally, the thesis also outlines how these constraints and optimization criteria can be used in practice.
+Additionally, this thesis also outlines how these constraints and optimization criteria can be used in practice.
 
 \section{Learning constraints}
 
@@ -54,7 +54,7 @@ This can be useful when constraints might not always hold, for example, when the
 A learned theory \sym{T} contains only variables and is independent of the specific examples that were used.
 These constraints can, therefore, be used for other problem domains.
 For example, constraints learned from a $4 \times 4$ sudoku can, in principle, be used for a $9 \times 9$ sudoku.\footnote{An $n \times n$ sudoku consists of $n$ rows, columns and blocks containing each the numbers $1$ to $n$.}
-This an advantage of using first-order logical constraints over propositional constraints.
+This is an advantage of using first-order logical constraints over propositional constraints.
 
 % \subsection{Evaluating constraints}
 % Given the output of the learning phase, this thesis will examine the question: can a theory \sym{T} of learned clauses be used successfully to model constraint problems?
@@ -91,7 +91,7 @@ Weights are rational numbers, positive or negative.
 The larger the weight of a constraints, the more of a desirable property that constraints forms.
 Negatively weighted constraints represent unwanted properties, which should be avoided.
 
-Given a set~\sym{W}, a score $\mathit{score}(\sym{I})$ can be calculated for each interpretation $\sym{I} \in \sym{D}$.
+Given a set~\sym{W}, a score $\mathit{score}(\sym{I})$ can be calculated for each interpretation $\sym{I} \in \sym{D}$ as follows:
 \begin{align*}
 	\mathit{score}(\sym{I}) &= \sum\limits_{(w, c)}^\sym{W} w \cdot v(c, \sym{I}) \\
 	v(c, \sym{I}) &=
@@ -109,3 +109,11 @@ Hard constraints in the form of clauses can be used directly by a logical solver
 This is not possible for the optimization criteria that are learned by the clausal optimization process.
 To the knowledge of the author, there are no solvers that can use the chosen representation directly.
 Therefore, it is a third goal of this thesis to outline how these optimization criteria can be used in practice.
+
+\begin{framed}
+	\noindent
+	\begin{minipage}{\textwidth}
+	\paragraph{Goal 3}
+	Define a procedure such that given a set~\sym{W} of weighted constraints, a program can be synthesized that is able to compute the optimal solution with respect to \sym{W}.
+	\end{minipage}
+\end{framed}

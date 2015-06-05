@@ -1,0 +1,24 @@
+vocabulary V {
+	type Color
+	type Country isa int
+	neighbor(Country,Country)
+	color(Country, Color)
+}
+theory T:V {
+	!c[Country] : ?col[Color] : color(c,col).
+	!Country1[Country]: (neighbor(Country1, Country1) => false).
+	!Color3[Color] Country1[Country] Color2[Color]: ((color(Country1, Color2) & color(Country1, Color3) & (Color2 ~= Color3)) => false).
+	!Country3[Country] Country1[Country] Color2[Color]: ((color(Country1, Color2) & (neighbor(Country1, Country3) | neighbor(Country3, Country1)) & color(Country3, Color2) & (Country1 ~= Country3)) => false).
+}
+structure S:V{
+	Country={1..450}
+	Color={Blue;Red;Yellow;Green;Black}
+	neighbor={(1,440);(1,164); /* Omitted */ }
+}
+procedure main(){
+	for i=1,8 do
+		local x = os.clock()
+		m = modelexpand(T,S)
+		print(os.clock() - x)
+	end
+}

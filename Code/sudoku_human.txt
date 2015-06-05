@@ -1,0 +1,31 @@
+vocabulary V {
+
+	type rij isa int
+	type kolom isa int
+	type cijfer	isa int
+	type blok isa int
+
+	ligtInBlok(rij,kolom,blok)
+	oplossing(rij,kolom) : cijfer
+}
+theory T0 : V {
+
+	! rij : ! cijfer : ? kolom : oplossing(rij,kolom) = cijfer.
+	! kolom : ! cijfer : ? rij : oplossing(rij,kolom) = cijfer.
+	! blok : ! cijfer : ? rij kolom : ligtInBlok(rij,kolom,blok) & oplossing(rij,kolom) = cijfer.
+	{ ligtInBlok(rij,kolom,blok) <- blok = (((rij - 1) - (rij - 1)%3) / 3) * 3 + (((kolom - 1)-(kolom - 1)%3) / 3) + 1.}
+}
+structure S:V {
+	rij = {1..9}
+	kolom = {1..9}
+	cijfer = {1..9}
+	blok = {1..9}
+	oplossing<ct> = {(1,2,9);(1,4,7);(2,1,4);(2,7,3);(2,9,1);(3,4,4);(3,7,5);(4,4,9);(4,8,7);(4,9,8);(6,2,8);(6,3,6);(6,6,3);(6,7,2);(7,3,4);(7,6,6);(8,3,8);(8,7,1);(8,8,2);(8,9,6);(9,2,1);(9,6,5)}
+}
+procedure main() {
+	for i=1,8 do
+		local x = os.clock()
+		m = modelexpand(T0,S)
+		print(os.clock() - x)
+	end
+}

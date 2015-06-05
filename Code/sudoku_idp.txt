@@ -1,0 +1,44 @@
+vocabulary V {
+	type Cell
+	type Row
+	type Column
+	type Value isa int
+	type Block
+	row(Cell, Row)
+	col(Cell, Column)
+	value(Cell, Value)
+	block(Cell, Block)
+}
+theory T0:V {
+!c[Cell] : ?v[Value] : value(c, v).
+!Cell1[Cell] Row2[Row] Row3[Row]: ((row(Cell1, Row2) & row(Cell1, Row3) & (Row2 ~= Row3)) => false).
+!Cell1[Cell] Column2[Column] Column3[Column]: ((col(Cell1, Column2) & col(Cell1, Column3) & (Column2 ~= Column3)) => false).
+!Cell1[Cell] Value3[Value] Value2[Value]: ((value(Cell1, Value2) & value(Cell1, Value3) & (Value2 ~= Value3)) => false).
+!Cell1[Cell] Block2[Block] Block3[Block]: ((block(Cell1, Block2) & block(Cell1, Block3) & (Block2 ~= Block3)) => false).
+!Cell1[Cell] Column3[Column] Cell4[Cell] Row2[Row]: ((row(Cell1, Row2) & col(Cell1, Column3) & row(Cell4, Row2) & col(Cell4, Column3) & (Cell1 ~= Cell4)) => false).
+!Cell1[Cell] Value3[Value] Cell4[Cell] Row2[Row]: ((row(Cell1, Row2) & value(Cell1, Value3) & row(Cell4, Row2) & value(Cell4, Value3) & (Cell1 ~= Cell4)) => false).
+!Cell1[Cell] Column2[Column] Value3[Value] Cell4[Cell]: ((col(Cell1, Column2) & value(Cell1, Value3) & col(Cell4, Column2) & value(Cell4, Value3) & (Cell1 ~= Cell4)) => false).
+!Cell1[Cell] Block3[Block] Value2[Value] Cell4[Cell]: ((value(Cell1, Value2) & block(Cell1, Block3) & value(Cell4, Value2) & block(Cell4, Block3) & (Cell1 ~= Cell4)) => false).
+
+}
+structure S : V {
+	Cell = {cell1; cell2; /* Omitted */}
+	Row = {r2; r3; r4; r5; r6; r7; r8; r9; r1}
+	Column = {c1; c2; c3; c4; c5; c6; c7; c8; c9}
+	Value = {1; 2; 3; 4; 5; 6; 7; 8; 9}
+	Block = {b1; b2; b3; b4; b5; b6; b7; b8; b9}
+	row = {(cell1, r1); (cell2, r1); /* Omitted */}
+	col = {(cell1, c1); (cell2, c2); /* Omitted */}
+	block = {(cell1, b1); (cell2, b1); /* Omitted */}
+
+	value<ct> = {(cell2, 9);(cell4, 7);(cell10, 4);(cell16, 3);(cell18, 1);(cell22, 4);(cell25, 5);(cell31, 9);(cell35, 7);(cell36, 8);(cell47, 8);(cell48, 6);(cell51, 3);(cell52, 2);(cell57, 4);(cell60, 6);(cell66, 8);(cell70, 1);(cell71, 2);(cell72, 6);(cell74, 1);(cell78, 5);}
+
+
+}
+procedure main() {
+	for i=1,8 do
+		local x = os.clock()
+		m = modelexpand(T0,S)
+		print(os.clock() - x)
+	end
+}

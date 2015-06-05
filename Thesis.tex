@@ -6,7 +6,12 @@
   assistant={}}
 
 % The following \setup may be removed entirely if no filing card is wanted
-\setup{filingcard, translatedtitle={Nederlandse titel}, udc=, shortabstract={}}
+\setup{filingcard, translatedtitle={Het leren van beperkingen en optimalisatie criteria}, udc={681.3*I20}, shortabstract={Deze thesis presenteert een leersysteem voor beperkingen en een leersysteem voor optimalisatie criteria.
+Beperking worden geleerd in de vorm van clausules in eerste orde logica door het gebruik van ILP technieken.
+Voor de optimalisatie criteria wordt het gebruik van gewogen clausules voorgesteld.
+Beide systemen zijn in staat om essenti\"ele beperkingen en optimalisatie criteria te leren.
+De invloed van verschillende interne en externe factoren wordt onderzocht.
+Er wordt een procedure voorgesteld om de gewogen clausules in eerste orde logica te gebruiken om optimale oplossingen te vinden.}}
 % Uncomment the next line for generating the cover page
 %\setup{coverpageonly}
 % Uncomment the next \setup to generate only the first pages (e.g., if you
@@ -29,6 +34,15 @@
 \usepackage{longtable}
 \usepackage{framed}
 \usepackage{breakcites}
+\usepackage{listings}
+\usepackage{pdfpages}
+
+\lstset{
+    frame=single,
+    breaklines=true,
+    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{black}\hookrightarrow\space}}
+}
+
 
 \graphicspath{{Graphics/}, {Graphics/Graphs/}{Paper/Graphics/}}
 
@@ -79,26 +93,43 @@
 \begin{document}
 
 \begin{preface}
-  
+I thank my promoter Prof. dr. Luc de Raedt, who has inspired me throughout my academic career and never hesitated to provide his help and guidance in these years.
+\\\\
+I thank my promoter and daily supervisor Dr. ir. Anton Dries, who has always been available for me, even on short notice.
+\\\\
+Furthermore, I express my gratitude for the technical assistance and insights provided by Bart Bogaerts, Prof. dr. Jesse Davis, Prof. dr. Marc Denecker en Vladimir Dzyuba.
+\\\\
+I would also like to acknowledge some of the people that are close to me and have provided me with direct or indirect help during the completion of my thesis:
+A big thank you to my girlfriend An, for her continuous support and her corrections.
+I thank my friends Anna and Glenn for providing me with helpful corrections during the writing process.
+Last, but not least, thank you Helena, Roxane and Wolfgang for supporting me in all my endeavors.
 \end{preface}
 
 \tableofcontents*
 
 \begin{abstract}
-This thesis presents systems that are able to automatically learn constraints from examples and optimization criteria from rankings.
-Both hard and soft constraints can be learned and constraints are represented a first order logical clauses.
-The uses of such clauses enables the use of ILP techniques such as clausal discovery.
+This thesis presents two systems that are able to automatically learn constraints from examples and optimization criteria from rankings, respectively.
+Both hard and soft constraints can be learned and constraints are represented as first order logical clauses.
+Choosing such clauses as representations enables the use of ILP techniques such as clausal discovery.
 In this research optimization criteria are represented as weighted clauses.
 Several experiments show that both systems are able to achieve their tasks.
-The influence of various internal and external influences is experimentally tested.
-Optimization criteria that can identify the correct optimal solution can be found even for few examples and noisy rankings.
-Finally, a procedure is outlined that allows weighted first order logic clauses to be used for optimization. 
+The impact of various internal and external factors is experimentally tested to provide insights into the way they influence the learning systems.
+For all examples, the clause learning system could find the essential constraints.
+The learning system for optimization criteria is shown to achieve accurate results and can learn criteria that identify the correct optimal solution even for few examples and noisy rankings.
+Finally, a procedure is outlined that allows weighted first order logic clauses to be used for optimization.
 \end{abstract}
 
 \begin{abstract*}
 
+\textit{Deze samenvatting komt overeen met het artikel dat te vinden is in appendix~\ref{app:article}}.
+
 \paragraph{Abstract}
-\input{Paper/AbstractNL}
+Deze thesis presenteert een leersysteem voor beperkingen en een leersysteem voor optimalisatie criteria.
+Beperking worden geleerd in de vorm van clausules in eerste orde logica door het gebruik van ILP technieken.
+Voor de optimalisatie criteria wordt het gebruik van gewogen clausules voorgesteld.
+Beide systemen zijn in staat om essenti\"ele beperkingen en optimalisatie criteria te leren.
+De invloed van verschillende interne en externe factoren wordt onderzocht.
+Er wordt een procedure voorgesteld om de gewogen clausules in eerste orde logica te gebruiken om optimale oplossingen te vinden.
 \input{Paper/CorePaper}
 
 \end{abstract*}
@@ -135,6 +166,13 @@ Finally, a procedure is outlined that allows weighted first order logic clauses 
 %\include{app-A}
 % ... and so on until
 %\include{app-n}
+
+\appendix
+\input{AppendixCode}
+\input{AppendixExamples}
+\input{AppendixIDP}
+\input{AppendixPoster}
+\input{AppendixArticle}
 
 \backmatter
 % The bibliography comes after the appendices.

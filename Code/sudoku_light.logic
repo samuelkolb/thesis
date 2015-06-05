@@ -1,0 +1,47 @@
+type Cell
+type Row
+type Column
+type Value > int
+type Block
+
+pred row(Cell, Row)
+pred col(Cell, Column)
+pred value(Cell, Value)
+pred block(Cell, Block)
+
+example 1 {
+    const Cell cell01 cell02 % Omitted % cell15 cell16
+    const Row r1 r2 r3 r4
+    const Column c1 c2 c3 c4
+    const Value 1 2 3 4
+    const Block b1 b2 b3 b4
+
+    row(cell01, r1)
+    % Omitted %
+    row(cell16, r4)
+
+    col(cell01, c1)
+    % Omitted %
+    col(cell16, c4)
+
+    block(cell01, b1)
+    % Omitted %
+    block(cell16, b4)
+
+    value(cell01, 1)
+    value(cell02, 3)
+    value(cell03, 2)
+    value(cell04, 4)
+    value(cell05, 4)
+    value(cell06, 2)
+    value(cell07, 3)
+    value(cell08, 1)
+    value(cell09, 2)
+    value(cell10, 1)
+    value(cell11, 4)
+    value(cell12, 3)
+    value(cell13, 3)
+    value(cell14, 4)
+    value(cell15, 1)
+    value(cell16, 2)
+}

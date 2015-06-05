@@ -1,0 +1,54 @@
+vocabulary V {
+    // Generic
+    type cost isa int
+    type clause isa nat
+    t(clause)
+    cost(clause):cost
+    actual(clause):cost
+
+    // Specific
+    type Area
+    live_in(Area)
+    low_crime(Area)
+    school_in(Area)
+    work_in(Area)
+    cheap(Area)
+    job_offer(Area)
+}
+theory T:V {
+    // Costs
+    {
+        !c : actual(c) = cost(c) <- ~t(c).
+        !c : actual(c) = 0 <- t(c).
+    }
+    t(1) <=> !a : live_in(a) => low_crime(a).
+    t(2) <=> !a : work_in(a) => school_in(a).
+    t(3) <=> !a : school_in(a) => low_crime(a).
+    t(4) <=> !a : cheap(a) & live_in(a) => false.
+
+    // Support
+    ?1 a : live_in(a).
+    ?1 a : work_in(a).
+    ?1 a : school_in(a).
+
+    // Hard
+    !a : work_in(a) => job_offer(a).
+}
+structure S:V {
+    // Costs
+    cost = {0; 1; 2; 4; -4} // INCLUDE THAT ZERO
+    clause = {1..4}
+    cost = {(1, 2); (2, 1); (3, 4); (4, -4)}
+
+    Area = {A1; A2; A3}
+    low_crime = {A1; A2}
+    cheap = {A3}
+    job_offer = {A1; A2}
+}
+term O:V{
+    sum{c[clause], a[cost] : actual(c)}
+}
+procedure main(){
+    stdoptions.cpsupport=true
+    print(minimize(T,S,O)[1])
+}

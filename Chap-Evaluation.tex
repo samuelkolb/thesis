@@ -20,6 +20,7 @@ In the last part, the differences between learned clauses and constraints given 
 There are two key problems that are used to evaluate different questions.
 Their standard setup will be described in this section.
 Different experiments can vary on the specific examples and parameters that are used and it will be mentioned when this is the case.
+The example files can be found in the appendix, section~\ref{app:cl_examples}.
 
 \paragraph{Map coloring}
 The map coloring problem has already been used as a running example in the previous section.
@@ -506,7 +507,7 @@ This validates the assumptions and design choices made during the implementation
 This section will briefly examine how learned clauses compare to human programmed theories.
 
 \begin{question}
-	What is the relation between machine learned and user provided clauses?
+	What is the relation between machine learned clauses and machine learned theories?
 \end{question}
 
 \begin{observation}[\textsc{Map coloring example}]
@@ -545,7 +546,10 @@ This section will briefly examine how learned clauses compare to human programme
 
 	The third case is a variant on sudoku, to correct for a potential performance benefit.
 	In the human made theory blocks are automatically calculated based on the row and column while they are direct input for the learned theory.
-	The corrected learned theory also calculates the blocks using an adapted version of the responsible formula.
+	The corrected learned theory also calculates the blocks using an adapted version of the responsible formula from the human crafted theory.
+
+	The files containing the IDP code can be found in the appendix, section~\ref{app:solving_human}.
+
 
 	% \begin{figure}
 	% 	\centering
@@ -675,6 +679,8 @@ The standard model consists of $4$ weighted constraints:
 	& \text{-}1.00 : \mathit{false} \leftarrow \mathit{live\_in}(a) \land \mathit{cheap}(a) &
 \end{shiftedflalign*}
 
+The housing example file can be found in the appendix, section~\ref{app:co_examples}
+
 \subsection{Accuracy}
 
 This section explores how accurately learned optimization criteria describe an underlying model and how the accuracy is impacted by several factors.
@@ -686,7 +692,7 @@ Generally, the experiments in this section follow one of two approaches.
 Both approaches then follow the same process, which is visualized in figure~\ref{fig:co_test_setup}.
 
 First, all pairwise rankings over the examples in the training set are generated using the model constraints and a fraction of these are selected.
-A fraction of these remaining rankings are then inverted to simulate noise.
+A fraction of the remaining rankings are then inverted to simulate noise.
 The clausal optimization process is used to generate soft constraints which in turn are used generate pairwise ratings over the test set.
 These pairwise rankings are compared to the pairwise rankings generated over the test set by the model constraints.
 By counting the number of rankings that disagree and dividing this by the total number of rankings, one obtains the Kendall tau distance $\mathit{KD}$.
@@ -796,7 +802,7 @@ Experiments are usually run $8$ times in a row, mainly to account for the random
 \end{experiment}
 
 \paragraph{Discussion}
-Figure~\ref{fig:accuracy_splits_rankings} shows that given a set of examples, the accuracy improves, as expected, when more rankings are provided.
+Figure~\ref{fig:accuracy_splits_rankings} shows that, given a set of examples, the accuracy improves, as expected, when more rankings are provided.
 The size of the training set, however, limits the accuracy that can be reached.
 Larger training sets significantly improve the score, as can be seen in figure~\ref{fig:accuracy_splits_training}.
 The training set influences the constraints that are learned, while the rankings only influence the weights.
@@ -930,6 +936,6 @@ Using the hard constraint for pruning results in a more compact theory, apparent
 It makes the choice for the clause learning parameters more important, though, because over-fitting will introduce false hard constraints.
 
 Experiment~\ref{exp:threshold} shows that for problems such as the housing problem, a small threshold allows the clausal optimization algorithm to better model the underlying preferences.
-If over-fitting would occur through the smaller threshold, it would be likely to decrease the score as the learned model is compared on unseen testing examples.
+If over-fitting would occur through the smaller threshold, it would be likely to decrease the score, as the learned model is tested on unseen testing examples.
 In problems with more examples a larger threshold might still be necessary to avoid over-fitting.
 Equally, if a more compact model is desired, the threshold should be increased.

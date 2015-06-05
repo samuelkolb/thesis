@@ -6,19 +6,19 @@ In this chapter the most important concepts and terms are explained. It is assum
 
 \section{Clausal logic}
 \label{sec:clausal_logic}
-In this thesis constraints are represented as logical clauses. A logical clause consists of a head and a body. In the clause\cen{$H_1, ..., H_n \leftarrow B_1, ..., B_m$,} the atoms $H_1, ..., H_n$ form the head of the clause and $B_1, ..., B_m$ the body. 
+In this thesis, constraints are represented as logical clauses. A logical clause consists of a head and a body. In the clause\cen{$H_1, ..., H_n \leftarrow B_1, ..., B_m$,} the atoms $H_1, ..., H_n$ form the head of the clause and $B_1, ..., B_m$ the body. 
 
-Atoms represent facts, that is they are either true or false. Trivially, the logical constants $true$ and $false$ are atoms. Furthermore, an atom can be formed using a predicate symbol and a set of terms, e.g. $friends(Jack, x)$. The predicate symbol is the name of the predicate. Predicates denote relations between terms. Terms are expressions representing logical objects, either constants (such as $Jack$) or variables (such as $x$). The arity of a predicate is the number of terms it is applied to, for example, the arity of the previous $friends$ predicate is $2$.
+Atoms represent facts, they are either true or false. Trivially, the logical constants $true$ and $false$ are atoms. Furthermore, an atom can be formed using a predicate symbol and a set of terms, e.g. $friends(Jack, x)$. The predicate symbol is the name of the predicate. Predicates denote relations between terms. Terms are expressions representing logical objects, either constants (such as $Jack$) or variables (such as $x$). The arity of a predicate is the number of terms it is applied to, for example, the arity of the previous $friends$ predicate is $2$.
 This is commonly written as $\mathit{friends}/2$.
 
-Clauses are in fact a special form of logical implications in which all variables are implicitly universally quantified. The clause mentioned above represents the implication: \cen{$B_1 \land ... \land B_m \Rightarrow H_1 \lor ... \lor H_n$.} Therefore, a clause can also be written as a disjunction of literals: \cen{$\lnot B_1 \lor ... \lor \lnot B_m \lor H_1 \lor ... \lor H_n$.} A literal consists of either an atom or a negation of an atom. Since a clause is a disjunction of literals, adding an atom to the head or the body, will make always make the clause more general. Moreover, a clause can be written as a set: \cen{$\{\lnot B_1, ..., \lnot B_m, H_1, ..., H_n\}$.}
+Clauses are in fact a special form of logical implications in which all variables are implicitly universally quantified. The clause mentioned above represents the implication: \cen{$B_1 \land ... \land B_m \Rightarrow H_1 \lor ... \lor H_n$.} Therefore, a clause can also be written as a disjunction of literals: \cen{$\lnot B_1 \lor ... \lor \lnot B_m \lor H_1 \lor ... \lor H_n$.} A literal consists of either an atom or a negation of an atom. Since a clause is a disjunction of literals, adding an atom to the head or the body will make always make the clause more general. Moreover, a clause can be written as a set: \cen{$\{\lnot B_1, ..., \lnot B_m, H_1, ..., H_n\}$.}
 
 Several concepts concerning clauses will be important in the context of this thesis:
 \begin{definition}
 \label{def:funtor_free}
 A clause is functor-free if and only if all the terms occurring in it are variables.
 \end{definition}
-Functor-free clauses do not contain constants and are independent of any . Such clauses are generic clauses, in the sense that they are not associated with a specific domain.
+Functor-free clauses do not contain constants. Such clauses are generic clauses, in the sense that they are not associated with a specific domain.
 \begin{example}
 \label{ex:functor_free}
 Consider two domains $\sym{D}_1 = \{MyCat, MyDog\}$ and $\sym{D}_2 = \{John, Suzy\}$ and two clauses \cen{$c_1 = friends(y, x) \leftarrow friends(x, y)$\\
@@ -72,9 +72,9 @@ The main task of a refinement operator is to calculate the (minimal) generalizat
 \section{Bias}
 Using a refinement operator, a learning system can traverse the search space of candidate hypothesis. A bias influences the results of the search space, by constraining the search space. Without bias, many search spaces become too large to reasonably explore.
 
-Using clauses to represent constraints is a form of bias, since not all constraints can be expressed using clauses. Several biases have been explored so far. One can restrict the search space to clauses that are range-restricted and\,/\,or connected. Object Identity also forms an important bias on the format of clauses. These all form so called \textit{language} biases. Another form of bias is a \textit{preference} bias. For example, an algorithm can prefer a set of smaller (more specific) clauses over a set of larger (more general) clauses.
+Using clauses to represent constraints is a form of bias, since not all constraints can be expressed using clauses. Several biases have been explored so far. One can restrict the search space to clauses that are range-restricted and\,/\,or connected. Object Identity also forms an important bias on the format of clauses. These types of biases are called \textit{language} biases. Another form of bias is a \textit{preference} bias. For example, an algorithm can prefer a set of smaller (more specific) clauses over a set of larger (more general) clauses.
 
-Some biases are internal to the learning algorithm. It is, however, also possible to let a user determine a bias. A user can for example limit the maximal number of variables in a clause or provide typing information. Both examples constrain the search space. Such an explicit bias, which can be specified by the user, is called a \textit{declarative} bias.
+Some biases are internal to the learning algorithm. It is, however, also possible to let a user determine a bias. A user can, for example, limit the maximal number of variables in a clause or provide typing information. Both examples constrain the search space. Such an explicit bias, which can be specified by the user, is called a \textit{declarative} bias.
 
 \section{MAX-SAT}
 \label{sec:max_sat}

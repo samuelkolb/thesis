@@ -1,0 +1,22 @@
+vocabulary V {
+	type Color
+	type Country isa nat
+	neighbor(Country,Country)
+	color(Country):Color
+}
+theory T:V {
+	!a1[Country] a2[Country]:neighbor(a1,a2) | neighbor(a2,a1) => color(a1) ~= color(a2).
+}
+structure S:V{
+	Country={1..450}
+	Color={Blue;Red;Yellow;Green;Black}
+	neighbor={(1,440);(1,164); /* Omitted */}
+}
+procedure main(){
+	for i=1,8 do
+		local x = os.clock()
+		m = modelexpand(T,S)
+		print(os.clock() - x)
+	end
+}
+

@@ -1,0 +1,66 @@
+vocabulary V {
+    // Generic
+    type cost isa int
+    type clause isa nat
+    t(clause)
+    cost(clause):cost
+    actual(clause):cost
+
+    // Specific
+    type Area
+    live_in(Area)
+    low_crime(Area)
+    school_in(Area)
+    work_in(Area)
+    cheap(Area)
+    job_offer(Area)
+}
+theory T:V {
+    // Costs
+    {
+        !c : actual(c) = cost(c) <- ~t(c).
+        !c : actual(c) = 0 <- t(c).
+    }
+    t(1) <=> !Area1[Area]: ((live_in(Area1) & school_in(Area1)) => false).
+    t(2) <=> !Area1[Area]: ((live_in(Area1) & cheap(Area1)) => false).
+    t(3) <=> !Area1[Area]: ((live_in(Area1) & job_offer(Area1)) => false).
+    t(4) <=> !Area1[Area]: (live_in(Area1) => school_in(Area1)).
+    t(5) <=> !Area1[Area]: (live_in(Area1) => cheap(Area1)).
+    t(6) <=> !Area1[Area]: (live_in(Area1) => job_offer(Area1)).
+    t(7) <=> !Area1[Area]: ((school_in(Area1) & work_in(Area1)) => false).
+    t(8) <=> !Area1[Area]: ((school_in(Area1) & cheap(Area1)) => false).
+    t(9) <=> !Area1[Area]: ((school_in(Area1) & job_offer(Area1)) => false).
+    t(10) <=> !Area1[Area]: (school_in(Area1) => live_in(Area1)).
+    t(11) <=> !Area1[Area]: (school_in(Area1) => low_crime(Area1)).
+    t(12) <=> !Area1[Area]: (school_in(Area1) => work_in(Area1)).
+    t(13) <=> !Area1[Area]: (school_in(Area1) => cheap(Area1)).
+    t(14) <=> !Area1[Area]: ((work_in(Area1) & cheap(Area1)) => false).
+    t(15) <=> !Area1[Area]: (work_in(Area1) => school_in(Area1)).
+    t(16) <=> !Area1[Area]: (work_in(Area1) => cheap(Area1)).
+
+    // Support
+    ?1 a : live_in(a).
+    ?1 a : work_in(a).
+    ?1 a : school_in(a).
+
+    // Hard
+    !a : work_in(a) => job_offer(a).
+}
+structure S:V {
+    // Costs
+    cost = {0; 18;-18;4;-19;-4;-25;29;-19;25;-29;3;-3}
+    clause = {1..16}
+    cost = {(1,18);(2,-18);(3,4);(4,-19);(5,18);(6,-4);(7,-25);(8,29);(9,-25);(10,-19);(11,25);(12,25);(13,-29);(14,3);(15,25);(16,-3)}
+
+    Area = {A1; A2; A3}
+    low_crime = {A1; A2}
+    cheap = {A3}
+    job_offer = {A1; A2}
+}
+term O:V{
+    sum{c[clause], a[cost] : actual(c) = a : a}
+}
+procedure main(){
+    stdoptions.cpsupport=true
+    print(minimize(T,S,O)[1])
+}

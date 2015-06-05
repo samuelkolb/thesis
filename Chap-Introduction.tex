@@ -11,19 +11,19 @@
 
 \end{figure}
 
-People use computers to solve complex problems, which are hard to solve by hand. Traditionally, programs or algorithms are written to tell the computer \emph{how} to solve a particular problem. These programs are essentially precise, step-by-step instructions. This approach is usually called imperative programming. Alternatively, declarative programming suggests to specify a high level language in which problems can be formulated without specifying how to solve it. Generic programs, called solvers, are used to find solutions to problems formulated in this language.
-Ideally, using this approach a user's sole focus is on formulating the problem at hand. Figure~\ref{fig:problem_to_solution} illustrates the typical steps to obtain a solution for a problem.
+People use computers to solve complex problems, which are hard to solve by hand. Traditionally, programs or algorithms are written to tell the computer \emph{how} to solve a particular problem. These programs are essentially precise, step-by-step instructions. This approach is usually called imperative programming. Alternatively, declarative programming suggests to specify a high level language in which problems can be formulated without specifying how to solve them. Generic programs, called solvers, are used to find solutions to problems formulated in this language.
+Ideally, using this approach, a user's sole focus is on formulating the problem at hand. Figure~\ref{fig:problem_to_solution} illustrates the typical steps to obtain a solution for a problem.
 
 A popular movement within declarative programming is constraint programming. The idea behind constraint programming is that users specify constraints that act upon a set of variables, each of which has a specified domain. It is the task of the constraint solver to assign values from these domains to the different variables such that all the constraints hold. The solver has a large degree of freedom in choosing a search strategy and ideally the user does not need to be familiar with the underlying algorithms.
 
 \paragraph{Problem}
-Aside from successful applications in research, constraint programming has gained adoption outside of academia and is being used in industrial applications \cite{Simonis:IndustrialApplicationsCP}. Most research, however, is focused on obtaining a solution, given a representation of the problem. In practice, however, it can be challenging for non-experts to formulate the constraints to describe their problems. The high learning curve limits the amount of people that can use constraint solvers.
+Aside from successful applications in research, constraint programming has gained adoption outside of academia and is being used in industrial applications \cite{Simonis:IndustrialApplicationsCP}. Most research is focused on obtaining a solution, given a representation of the problem. In practice, however, it can be challenging for non-experts to formulate the constraints to describe their problems. The high learning curve limits the amount of people that can use constraint solvers.
 
 The first goal of this thesis is to automate the step of modeling a problem, in order to, amongst others, make constraint solving more accessible. In this approach a computer system is used to automatically find constraints, using examples of what the user considers valid solutions. The resulting constraints can then be used by an existing constraint solver.
 
 Constraints can not only be used to describe valid solutions. So called soft constraints express (usually desirable) properties that a solution may or may not fulfill. Solutions that obey desirable soft constraints are considered better than solutions which do not. By assigning weights to soft constraints, an optimal solution can be identified. Finding such constraints and assigning weights to them that optimally reflect the users preferences forms the second goal of this thesis. 
 
-The system outlined in this thesis attempts to learn from examples and extract knowledge. It can be used directly by a user trying to model a problem or as part of another program. The system attempts to help users bridge the gap between an unknown problem and obtaining a formal representation. Therefore, the system also focuses on being easy to use and make realistic assumptions about what information a user can provide.
+The system outlined in this thesis attempts to learn from examples and extract knowledge. It can be used directly by a user trying to model a problem or as part of another program. The system attempts to help users bridge the gap between an unknown problem and obtaining a formal representation. Therefore, the system also focuses on being easy to use and to make realistic assumptions about what information a user can provide.
 
 \paragraph{Relevance}
 The wide adoption of constraint programming demonstrates its potential to solve complicated problems. It is often used in scheduling and planning applications. However, constraint programming can be used to solve a variety of programming problems \cite{Dymchenki:GoogleCodeJamEclipse}. Improving constraint solvers is an active research domain, which shows there is an interest in using constraint solvers for problem solving.
@@ -32,12 +32,11 @@ As stated above, there is a substantial effort required to be able to use constr
 
 Approaches like  ModelSeeker \cite{Beldiceanu:ModelSeeker} have developed the ability to learn constraints passively.
 Other research on interactive acquisition of constraints has resulted in systems such as ConAcq2 \cite{bessiere2007query} and QuAck \cite{bessiere2007query}.
-This shows that constraint learning is an active research domain.
-In other fields similar tasks have been attempted.
+These developments show that constraint learning is an active research domain.
 
 The automatic acquisition of optimization criteria is motivated by the wide applicability of optimization problems and recent research by \cite{campigotto2011active}.
 In that research a weighted utility function is automatically learned.
-This approach shows that optimization criteria can be learned for propositional settings.
+This approach shows, that optimization criteria can be learned for propositional settings.
 
 \paragraph{Novelty}
 In this thesis, the approach of using established ILP techniques to learn constraints is examined. Research by \cite{Lallouet:LearningCP} has shown that there is potential for exploiting the parallels between ILP and learning constraints.
@@ -45,20 +44,20 @@ The automatic acquisition of relational logical rules has also been attempted in
 In the field or statistical relational learning, \cite{popescul2003statistical} propose an approach to learn rich relational representations from a database.
 For Markov logic networks, \cite{kok2005learning} introduced an approach to automatically learn their structure based on examples.
 
-Some of the characteristics of specific to learning constraints are challenging, especially the small set of examples one can typically expect from a user.
+Some of the characteristics specific to learning constraints are challenging, especially the small set of examples one can typically expect from a user.
 In ILP large datasets are typically assumed.
 It is desirable that a solver exists that is able to use the learned constraints to generate optimal solutions.
 
 This thesis specifically examines the use of clausal discovery \cite{DeRaedt:ClausalDiscovery} for constraint learning.
-Clausal discovery is an ILP algorithm that is adept at identifying structure in small sets of examples. In this thesis the algorithm, which was originally implemented in a system called Claudien, will be revisited. There are some key differences compared to Claudien. The new implementation tries to use information that is easy for a user to provide. Furthermore, some of the key functions in the algorithm are implemented to make use of a generic logical system (IDP \cite{wittocx2008idp,de2013prototype}) instead of Prolog query evaluation. The use of such a system also enables the use of rich logical background knowledge, which is passed to the solver. Hereby, this clause learning system can benefit from advances in the field of logical solvers.
+Clausal discovery is an ILP algorithm that is adept at identifying structure in small sets of examples. In this thesis the algorithm, which was originally implemented in a system called Claudien, will be revisited. There are some key differences compared to Claudien. The new implementation tries to use information that is easy for a user to provide. Furthermore, some of the key functions in the algorithm are implemented to make use of a logical solver (IDP \cite{wittocx2008idp,de2013prototype}) instead of Prolog query evaluation. The use of such a system also enables the use of rich logical background knowledge. Hereby, this clause learning system can benefit from advances in the field of logical solvers.
 
 Relational constraints that can be learned using clausal discovery and only cover few examples can also serve as optimization criteria.
 When assigned weights, such soft constraints can be used to induce an order over solutions.
 The optimization task is then to find a solution such that the sum of the weights of the soft constraints that hold on it is maximized.
 As the constraints are logical clauses, this optimization problem can be seen as a first order logic generalization of weighted MAX-SAT.
 This thesis attempts to learn such weighted constraints using rankings over examples.
-The optimal weights then induce an order that agrees maximally with those rankings.
-Rankings are usually easier for a user to provide, as they only consider a few examples at a time.
+The optimal weights induce an order over the examples that agrees maximally with the given rankings.
+Rankings are usually easier for a user to provide as they only consider a few examples at a time.
 
 The weighted clauses cannot be directly used in a constraint solver.
 Therefore, an approach is outlined that describes how these constraints can be used in the IDP system to obtain an optimal solution.

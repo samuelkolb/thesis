@@ -6,9 +6,9 @@ In this chapter, the clause learning and clausal discovery systems are outlined.
 The clause learning system has the ability to automatically learn clauses from examples.
 At the core of the clause learning process is a new version of the clausal discovery system.
 The main differences to clausal discovery engine Claudien (see section~\ref{sec:claudien}) are a different bias and a different refinement operator.
-Furthermore, the clausal discovery program interacts with a logical system (IDP) to calculate two main functions $\mathit{coverage}$ and \textit{entailment}.
+Furthermore, the clausal discovery program interacts with a logical system (IDP) to calculate two main functions: $\mathit{coverage}$ and \textit{entailment}.
 
-The clausal optimization system uses user-provided rankings and learn-to-rank software (\svm) (see section~\ref{sec:svm}) to produce weighted soft constraints.
+The clausal optimization system uses user-provided rankings and the learn-to-rank software (\svm) (see section~\ref{sec:svm}) to produce weighted soft constraints.
 These soft constraints are represented as clauses and the clause learning system is used to find these clauses.
 
 Figure~\ref{fig:high_level_structure} provides an overview of the approach implemented in this thesis.
@@ -25,15 +25,13 @@ Figure~\ref{fig:high_level_structure} provides an overview of the approach imple
 Both clause learning and clausal discovery are implemented in Java.
 Interaction with the user, the logical system as well as the  software is achieved through files and standard input / output.
 
-Throughout this chapter the map coloring problem will be used as an example for clause learning applications.
+Throughout this chapter, the map coloring problem will be used as an example for clause learning applications.
 In this problem there is a set of countries and every country is assigned a color.
 Some countries are neighbors of each other.
 The main constraint is that neighboring countries may not have the same color.
 
 \section{Output}
-In order to understand the goal of this approach and this thesis, this section will provide more details on the produced outputs.
-The aim of the clause learning system is to provide hard or soft constraints that describe valid solutions.
-The clausal optimization system produces weighted soft constraints, that can be used as optimization criteria.
+In order to understand the goal of this approach, this section will provide more details on the produced outputs.
 
 \paragraph{Constraints}
 For the application at hand, a problem can be viewed as a description of its domain and a set of rules.
@@ -81,7 +79,7 @@ If $c_i$ is true for \sym{I}, then $v_i$ is $1$, otherwise it is $0$. The score 
 \section{Input}
 The input to the clause learning system consists mainly of two parts: definitions and examples.
 When learning optimization criteria a third type of information is required: partial rankings over the given examples.
-Optionally a user can also provide logical background knowledge.
+Optionally, a user can also provide logical background knowledge.
 Background knowledge can be used to impose additional constraints on valid examples, explain how to generate predicates or specify already known facts.
 
 \subsection{Definitions}
@@ -191,7 +189,6 @@ Examples also contain an exhaustive list of the relations that hold on these obj
 	Currently symmetric predicates have to be fully specified, the implementation could, however, easily be changed to automate this.
 
 \end{example}
-[!! More details on format?]
 
 \subsection{Logical background knowledge}
 In many cases it can be useful to include background knowledge that the user already possesses.
@@ -319,16 +316,16 @@ When learning soft constraints, the examples covered by a clause have to be cons
 Only the subset $\sym{R}_c \subset \sym{R}$ of clauses that cover the same examples as $c$ are allowed to prune $c$.
 If $c$ is entailed by clauses that cover different examples, then it is still relevant.
 \begin{example}
-	Consider three examples $e_1, e_2$ and~$e_3$ and clauses:\\
-
-	\begin{tabular}{rl|llll}
+	Consider three examples $e_1, e_2$ and~$e_3$ and clauses:
+	\begin{table}[!htp]
+	\begin{tabularx}{\textwidth}{rl|XXXX}
 		& Clause & Case 1 & Case 2 & Case 3 & Case 4 \\
 		\midrule
 		$c_1$ & $p_2(x) \leftarrow p_1(x)$ & $e_1$ & $e_1$ & $e_1, e_2$ & $e_1, e_2, e_3$\\
 		$c_2$ & $p_3(x) \leftarrow p_2(x)$ & $e_1$ & $e_2$ & $e_1, e_3$ & $e_1$ \\
 		$c$ & $p_3(x) \leftarrow p_1(x)$ & $e_1$ & $e_1$ & $e_1$ & $e_1$
-	\end{tabular}
-	\\\\
+	\end{tabularx}
+	\end{table}
 	where every case shows the examples covered by each clause.
 	Clauses $c_1$ and~$c_2$ logically entail clause~$c$.
 
@@ -353,7 +350,7 @@ If $c$ is entailed by clauses that cover different examples, then it is still re
 \end{example}
 
 \subsection{Refinement operator}
-In clausal discovery one starts with the empty clause $\square$ and in every step one atom is added to either the head or the body.
+In clausal discovery one starts with the empty clause ($\square$) and in every step one atom is added to either the head or the body.
 Given a clause $c$, the refinement operator $\rho$ returns a set $\rho(\obj{c})$ of child clauses whose length is $length(\obj{c}) + 1$.
 What atoms are added to the clause depends on the current clause and the predicates that are used in the search.
 The implementation of the refinement operator uses a specific order in which atoms are added to a clause to eliminate duplicate clauses.
@@ -538,9 +535,13 @@ There is only one representative clause for every clause and if a clause is not 
 	Therefore, the representative clause must also be generated.
 \end{proof}
 
-% \paragraph{Optimality}
-% In chapter~\ref{cha:bg} the notions of completeness and optimality for refinement operators are introduced.
-% A refinement operator is complete if every clause is visited at least once and it is optimal if every clause is visited but once.
+\paragraph{Optimality}
+In chapter~\ref{cha:bg} the notions of completeness and optimality for refinement operators are introduced.
+A refinement operator is complete if every clause is visited at least once and it is optimal if every clause is visited but once.
+By generating clauses in a connected way using the atom list, the whole search space is explored.
+Only non-representative clauses are pruned and every clause has a corresponding representative clause.
+Therefore, the refinement operator is complete.
+Since every clause is only generated if it is the representative clause and there is but one such clause, the refinement operator is also optimal.
 
 % The refinement operator suggested in this thesis is considered to be optimal, with respect to Object Identity and syntactic restrictions.
 
@@ -569,7 +570,7 @@ Internally, these predicates are always reduced to a unique form by ordering the
 Atoms that contains symmetric predicates with out-of-order variables can be deleted from the atom list.
 
 \subsection{Pruning}
-After the algorithm is finished, the resulting theory is pruned, because newer clauses could entail older clauses.
+After the algorithm is finished the resulting theory is pruned, because newer clauses could entail older clauses.
 The procedure used for pruning is the same as for entailment.
 For each clause an entailment test is run to see if the clause is entailed by the rest of the theory.
 The resulting theory is more compact, without loosing expressiveness.
@@ -666,13 +667,17 @@ That linear function can then be used to calculate a score for that example.
 
 \end{example}
 
-In this thesis \svm{} was chosen to accomplish this task.
-[!! "Why \svm{}?"]
+In this thesis \svm{} was chosen to accomplish this task since it a robust an efficient system.
+Contrary to other ranking systems it uses a linear model.
+The weights that it assigns to the features can be used directly as weights for the optimization criteria.
+The input format that is used by \svm is also supported by many other learn-to-rank implementations.
+Therefore, other linear ranking systems such as Coordinate Ascent \cite{metzler2007linear} could also be plugged into the clausal optimization implementation.
 
 \paragraph{Cost}
 Weights are chosen optimally with respect to a cost parameter $c$, which determines the trade-off between disagreeing with a user provided ranking and a simpler model.
 Assigning a low cost to disagreeing with the training rankings establishes a bias towards simpler models which can avoid over-fitting the training.
 A high cost should be assigned, however, when one is interested in a model that is more accurate with respect to the given examples and rankings.
+\svm supports a cost parameter which has to be adapted for the number of rankings used for training.
 
 \section{Solving}
 Using the clause learning and clausal optimization system enables a user to find formal representation of the constraints that describe the problem and user's preferences.
@@ -710,4 +715,4 @@ The term can be expressed in IDP using the sum aggregate:
 \end{shiftedflalign*}
 
 The IDP code for a set of learned weighted clauses can easily be generated automatically.
-Exact code is provided for an example in appendix~\ref{app:co_idp}.
+Exact code is provided for an example in the appendix, section~\ref{app:co_idp}.

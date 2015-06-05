@@ -233,7 +233,7 @@ The experiments are run on the same machine\footnote{Mac OSX, 2.3 GHz Intel Core
 	
 	\begin{table}[!htp]
 		\begin{tabularx}{\textwidth}{XXX}
-			\textbf{Name}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
+			\textbf{Name}	& \textbf{Average time (s)}	& \textbf{StdDev (s)} \\
 			\toprule
 			Map coloring 	& 1.581				& 0.117 \\
 			Sudoku 			& 4.787				& 0.062 \\
@@ -263,18 +263,18 @@ The current implementation tries to eliminate redundant clauses as soon as possi
 
 	\begin{table}[!htp]
 		\begin{tabularx}{\textwidth}{lc|XX}
-			\textbf{Name}	& \textbf{Variables $\times$ Literals}	& \textbf{Mean (s)}	& \textbf{StdDev (s)} \\
+			\textbf{Name}	& \textbf{Variables $\times$ Literals}	& \textbf{Average time (s)} \\
 			\toprule
-			Map coloring 	& $2 \times 3$ 			& 0.690				& 0.023	\\
-							& $3 \times 3$ 			& 1.511				& 0.053	\\
-							& $4 \times 3$ 			& 2.223				& 0.072	\\
+			Map coloring 	& $2 \times 3$ 			& 0.690				($\pm$ 0.023)	\\
+							& $3 \times 3$ 			& 1.511				($\pm$ 0.053)	\\
+							& $4 \times 3$ 			& 2.223				($\pm$ 0.072)	\\
 			\midrule	
-			Sudoku 			& $3 \times 3$ 			& 1.258				& 0.023	\\
-							& $4 \times 4$ 			& 4.768				& 0.058	\\
-							& $6 \times 4$ 			& 6.269				& 0.050	\\
-							& $4 \times 6$ 			& 4.746				& 0.047	\\
-							& $5 \times 5$ 			& 25.995			& 0.168	\\
-							& $6 \times 6$ 			& 49.163			& 0.267
+			Sudoku 			& $3 \times 3$ 			& 1.258				($\pm$ 0.023)	\\
+							& $4 \times 4$ 			& 4.768				($\pm$ 0.058)	\\
+							& $6 \times 4$ 			& 6.269				($\pm$ 0.050)	\\
+							& $4 \times 6$ 			& 4.746				($\pm$ 0.047)	\\
+							& $5 \times 5$ 			& 25.995			($\pm$ 0.168)	\\
+							& $6 \times 6$ 			& 49.163			($\pm$ 0.267)
 		\end{tabularx}
 		\caption{Influence of number of variables and literals}
 		\label{tbl:cd_speed_influence}
@@ -290,14 +290,14 @@ The current implementation tries to eliminate redundant clauses as soon as possi
 	Initially the dataset only contains the standard ($4 \times 4$) example.
 
 	\begin{table}[!htp]
-		\begin{tabularx}{\textwidth}{c|XX|XX}
-			& \multicolumn{2}{c}{4 Variables / Literals} & \multicolumn{2}{c}{6 Variables / Literals} \\
-			\textbf{$9 \times 9$ sudokus}	& \textbf{Mean (s)} & \textbf{StdDev (s)} & \textbf{Mean (s)} & \textbf{StdDev (s)} \\
+		\begin{tabularx}{\textwidth}{c|XX}
+			& 4 Variables / Literals & 6 Variables / Literals \\
+			\textbf{$9 \times 9$ sudokus}	& \textbf{Average time (s)} & \textbf{Average time (s)} \\
 			\toprule
-			0 & 4.768 & 0.058	& 49.163	& 0.267	\\
-			1 & 5.862 & 0.060	& 63.801	& 0.769	\\
-			2 & 7.026 & 0.112	& 80.489	& 0.287	\\
-			3 & 7.967 & 0.087	& 99.640	& 0.488	\\
+			0 & 4.768 ($\pm$ 0.058)	& 49.163	($\pm$ 0.267)	\\
+			1 & 5.862 ($\pm$ 0.060)	& 63.801	($\pm$ 0.769)	\\
+			2 & 7.026 ($\pm$ 0.112)	& 80.489	($\pm$ 0.287)	\\
+			3 & 7.967 ($\pm$ 0.087)	& 99.640	($\pm$ 0.488)	\\
 		\end{tabularx}
 		\caption{Influence of number of variables and literals}
 		\label{tbl:cd_speed_examples}

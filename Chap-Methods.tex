@@ -704,7 +704,7 @@ In order to model the optimization problem in IDP, every clause $c_i$ with varia
 A function $\mathit{cost}(i)$ specifies the cost of not satisfying the clause, which is equal to the integer weight of the clause.
 \begin{shiftedflalign*}
 	t(i) &\Leftrightarrow \forall v_1, ..., v_n : c_i. \\
-	cost(i) &= w_1.
+	cost(i) &= w_i.
 \end{shiftedflalign*}
 
 Using $t$ and $\mathit{cost}$, a function $\mathit{actual}(i)$ is then defined in IDP as 0 if $t(i)$ and $\mathit{cost}(i)$ if $\lnot t(i)$.
